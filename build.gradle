@@ -1,0 +1,118 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'io.franzbecker.gradle-lombok'
+
+println """
+***************************************
+ You are building ProjectRetile!
+
+ If you encounter trouble:
+ 1) Read the wiki if you haven't yet
+ 2) Try running 'build' in a separate Gradle run
+ 3) Use gradlew and not gradle
+ 4) If you still need help, ask per Spigot PM. Do not open a Issue
+
+***************************************
+"""
+
+group 'com.github.acquized'
+version '1.0.0-SNAPSHOT'
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        name 'oss-sonatype'
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+    maven {
+        name 'acquized-repo'
+        url 'http://www.acquized.pw/content/repositories/releases/'
+    }
+    maven {
+        name 'blackypaw-repo'
+        url 'http://repo.blackypaw.com/content/groups/public/'
+    }
+    maven {
+        name 'jitpack-central'
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    // Provided at Runtime
+    compile group: 'net.md-5', name: 'bungeecord-api', version: '1.10-SNAPSHOT'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.10'
+
+    // Compile using ShadowJar
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '2.4.7'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
+    compile group: 'dev.wolveringer', name: 'BungeeUtil', version: '1.6.7.9'
+    compile group: 'com.eclipsesource.minimal-json', name: 'minimal-json', version: '0.9.4'
+    compile group: 'com.blackypaw', name: 'simpleconfig', version: '1.1.0'
+
+    // Test
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath 'io.franzbecker:gradle-lombok:1.6'
+    }
+}
+
+//noinspection GroovyMissingReturnStatement
+shadowJar {
+    relocate 'com.zaxxer.hikari', 'com.github.acquized.retile.libs.hikaricp'
+    relocate 'org.slf4j', 'com.github.acquized.retile.libs.slf4j'
+    relocate 'com.eclipsesource.json', 'com.github.acquized.retile.libs.json.simple'
+    relocate 'dev.wolveringer', 'com.github.acquized.retile.libs.bungeeutils'
+    relocate 'org.apache.commons', 'com.github.acquized.retile.libs.apache.commons'
+    relocate 'org.json', 'com.github.acquized.retile.libs.json.central'
+    relocate 'org.jsoup', 'com.github.acquized.retile.libs.json.jsoup'
+    relocate 'com.blackypaw.simpleconfig', 'com.github.acquized.retile.libs.config'
+    dependencies {
+        include(dependency('com.zaxxer:HikariCP:2.4.7'))
+        include(dependency('org.slf4j:slf4j-simple:1.7.21'))
+        include(dependency('dev.wolveringer:BungeeUtil:1.6.7.9'))
+        include(dependency('com.eclipsesource.minimal-json:minimal-json:0.9.4'))
+        include(dependency('com.blackypaw:simpleconfig:1.1.0'))
+    }
+}
+
+processResources {
+    expand project.properties
+}
+
+task delombok {
+    description 'Delomboks the entire source code tree'
+    def srcDelomboked = 'build/src-delomboked'
+    def srcJava = 'src'
+
+    inputs.files file( srcJava )
+    outputs.dir file( srcDelomboked )
+
+    doLast {
+        def collection = files( configurations.compile + configurations.testCompile )
+        def sumTree = collection + fileTree( dir: 'bin' )
+
+        ant.taskdef( name: 'delombok', classname: 'lombok.delombok.ant.DelombokTask',
+                classpath: configurations.compile.asPath +
+                        configurations.testCompile.asPath )
+        ant.delombok( from:srcJava, to:srcDelomboked, classpath: sumTree.asPath )
+
+
+        // Replace current src directory with delomboked source
+        copy {
+            from srcDelomboked
+            into srcJava
+        }
+    }
+}
