@@ -18,6 +18,8 @@ import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
 import com.github.acquized.retile.hub.converter.Cache;
 import com.github.acquized.retile.i18n.I18n;
+import com.github.acquized.retile.sql.Database;
+import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.utils.Utility;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -28,12 +30,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.sql.SQLException;
 
 public class ProjectRetile extends Plugin {
 
     public static String prefix = Utility.RED + "> " + Utility.GRAY;
     @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
+    @Getter private Database database;
     @Getter private DBConfig dbConfig;
     @Getter private Config config;
 
@@ -44,6 +48,13 @@ public class ProjectRetile extends Plugin {
         prefix = Utility.format(config.prefix);
         new I18n().load();
         Cache.setInstance(new Cache());
+        try {
+            database = new MySQL(dbConfig.adress, dbConfig.port, dbConfig.database, dbConfig.username, dbConfig.password.toCharArray());
+            database.connect();
+        } catch (SQLException ex) {
+            log.error("Could not connect to MySQL Database! Did you enter the correct Details?", ex);
+            return;
+        }
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
