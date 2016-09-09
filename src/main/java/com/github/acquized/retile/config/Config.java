@@ -26,12 +26,6 @@ public class Config extends SimpleConfig {
             "For this to work, there needs to be a messages_<locale>.properties File in the locale Folder.")
     public String locale = "en";
 
-    @Comment("Put in here your prefered UUID Conversation Service. \n" +
-             "If you don't know what this is, just leave it blank. \n" +
-             "Bad things will happen if you don't know what you're doing! \n" +
-             "Visit the Wiki for a list of Conversation Services.")
-    public String conversationService = "MCAPI/CANADA/539439";
-
     @Comment("Should Messages be clickable? This will automaticly execute the preffered Command.")
     public boolean clickableMessages = true;
 

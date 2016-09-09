@@ -16,6 +16,7 @@ package com.github.acquized.retile;
 
 import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
+import com.github.acquized.retile.hub.converter.Cache;
 import com.github.acquized.retile.i18n.I18n;
 import com.github.acquized.retile.utils.Utility;
 import lombok.Getter;
@@ -31,10 +32,10 @@ import java.io.File;
 public class ProjectRetile extends Plugin {
 
     public static String prefix = Utility.RED + "> " + Utility.GRAY;
+    @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
     @Getter private DBConfig dbConfig;
     @Getter private Config config;
-    @Getter private static ProjectRetile instance;
 
     @Override
     public void onEnable() {
@@ -42,6 +43,7 @@ public class ProjectRetile extends Plugin {
         loadConfigs();
         prefix = Utility.format(config.prefix);
         new I18n().load();
+        Cache.setInstance(new Cache());
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
