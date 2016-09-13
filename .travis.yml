@@ -1,2 +1,7 @@
 language: java
 sudo: false
+before_install:
+- mkdir mvntmp
+- cd mvntmp
+- wget -O BungeeUtil.jar https://raw.githubusercontent.com/WolverinDEV/BungeeUtil/jars/buildedJars/jars/BungeeUtil-1.6.7.15.jar
+- mvn install:install-file -Dfile=BungeeUtil.jar -DgroupId=dev.wolveringer -DartifactId=BungeeUtil -Dversion=1.6.7.9 -Dpackaging=jar
