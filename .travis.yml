@@ -5,10 +5,11 @@ before_install:
 - cd mvntmp
 - wget -O BungeeUtil.jar https://raw.githubusercontent.com/WolverinDEV/BungeeUtil/jars/buildedJars/jars/BungeeUtil-1.6.7.15.jar
 - mvn install:install-file -Dfile=BungeeUtil.jar -DgroupId=dev.wolveringer -DartifactId=BungeeUtil -Dversion=1.6.7.9 -Dpackaging=jar
+- chmod +x gradlew
 install:
-- ./gradlew assemble
+- ./$TRAVIS_BUILD_DIR/gradlew assemble
 script:
-- ./gradlew check
+- ./$TRAVIS_BUILD_DIR/gradlew check
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
