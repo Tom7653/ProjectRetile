@@ -12,6 +12,10 @@ dependencies:
 
 test:
   override:
-    - ./gradlew jar test
+    - ./gradlew clean
+    - ./gradlew shadowJar
+    - ./gradlew test
   post:
-    - cp build/libs/ProjectRetile-1.0.0-SNAPSHOT.jar $CIRCLE_ARTIFACTS/ProjectRetile.jar
+    - cp build/libs/ProjectRetile-1.0.0-SNAPSHOT-all.jar $CIRCLE_ARTIFACTS/ProjectRetile.jar
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
