@@ -14,8 +14,20 @@
  */
 package com.github.acquized.retile.hub;
 
-public abstract class Report {
+import java.util.UUID;
 
-    // todo
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
+@Getter
+@Setter
+public class Report {
+
+    private UUID reporter;
+    private UUID victim;
+    private String reason;
+    private long timestamp;
 
 }

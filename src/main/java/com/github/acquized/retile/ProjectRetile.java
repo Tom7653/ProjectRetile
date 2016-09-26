@@ -54,8 +54,9 @@ public class ProjectRetile extends Plugin {
         try {
             database = new MySQL(dbConfig.adress, dbConfig.port, dbConfig.database, dbConfig.username, dbConfig.password.toCharArray());
             database.connect();
+            database.setup();
         } catch (SQLException ex) {
-            log.error("Could not connect to MySQL Database! Did you enter the correct Details?", ex);
+            log.error("Could not connect to / setup MySQL Database! Did you enter the correct Details?", ex);
             return;
         }
         registerListeners(ProxyServer.getInstance().getPluginManager());
