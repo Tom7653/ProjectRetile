@@ -16,9 +16,9 @@ package com.github.acquized.retile.i18n;
 
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.utils.Utility;
-import lombok.SneakyThrows;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -33,23 +33,20 @@ public class I18n {
     public static ResourceBundle bundle;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SneakyThrows
     public I18n() {
-        if(!DIRECTORY.isDirectory()) {
-            DIRECTORY.mkdirs();
-        }
-        for (String l : SUPPORTED_LOCALES) {
-            File f = new File(DIRECTORY, "messages_" + l + ".properties");
-            if(!f.exists()) {
-                Files.copy(ProjectRetile.getInstance().getResourceAsStream(f.getName()), f.toPath());
+        try {
+            if (!DIRECTORY.isDirectory()) {
+                DIRECTORY.mkdirs();
             }
+            for (String l : SUPPORTED_LOCALES) {
+                File f = new File(DIRECTORY, "messages_" + l + ".properties");
+                if (!f.exists()) {
+                    Files.copy(ProjectRetile.getInstance().getResourceAsStream(f.getName()), f.toPath());
+                }
+            }
+        } catch (IOException ex) {
+            ProjectRetile.getInstance().getLog().error("Could not create Messages Files.", ex);
         }
-    }
-
-    @SneakyThrows
-    public void load() {
-        ClassLoader loader = new URLClassLoader(new URL[]{ DIRECTORY.toURI().toURL() });
-        bundle = ResourceBundle.getBundle("messages", new Locale(ProjectRetile.getInstance().getConfig().locale), loader);
     }
 
     public static String getMessage(String key) {
@@ -60,14 +57,24 @@ public class I18n {
         return Utility.format(bundle.getString(key), obj);
     }
 
-    // Shortcuts for Static Imports
-
     public static String tl(String key) {
         return getMessage(key);
     }
 
+    // Shortcuts for Static Imports
+
     public static String tl(String key, Object... obj) {
         return getMessage(key, obj);
+    }
+
+    public void load() {
+        try {
+            ClassLoader loader = new URLClassLoader(new URL[]{DIRECTORY.toURI().toURL()});
+            bundle = ResourceBundle.getBundle("messages", new Locale(ProjectRetile.getInstance().getConfig().locale), loader);
+        } catch (IOException ex) {
+            ProjectRetile.getInstance().getLog().error("Could not load messages_" + ProjectRetile.getInstance().getConfig().locale + ".properties File. " +
+                    "Please check for Errors.", ex);
+        }
     }
 
 }

@@ -21,16 +21,19 @@ import com.github.acquized.retile.i18n.I18n;
 import com.github.acquized.retile.sql.Database;
 import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.utils.Utility;
-import lombok.Getter;
-import lombok.SneakyThrows;
+
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
+
+import lombok.Getter;
 
 public class ProjectRetile extends Plugin {
 
@@ -66,21 +69,28 @@ public class ProjectRetile extends Plugin {
         log.info("ProjectRetile v{} has been disabled.", getDescription().getVersion());
     }
 
-    @SneakyThrows
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void loadConfigs() {
         // config.cfg
-        config = new Config();
-        File file;
-        config.initialize(file = new File(getDataFolder(), "config.cfg"));
-        if(!config.version.equalsIgnoreCase(getDescription().getVersion())) {
-            file.delete();
-            config.initialize(new File(getDataFolder(), "config.cfg"));
+        try {
+            config = new Config();
+            File file;
+            config.initialize(file = new File(getDataFolder(), "config.cfg"));
+            if (!config.version.equalsIgnoreCase(getDescription().getVersion())) {
+                file.delete();
+                config.initialize(new File(getDataFolder(), "config.cfg"));
+            }
+        } catch (IOException ex) {
+            log.error("Could not load config.cfg File - Please check for Errors", ex);
         }
 
         // database.cfg
-        dbConfig = new DBConfig();
-        dbConfig.initialize(new File(getDataFolder(), "database.cfg"));
+        try {
+            dbConfig = new DBConfig();
+            dbConfig.initialize(new File(getDataFolder(), "database.cfg"));
+        } catch (IOException ex) {
+            log.error("Could not load database.cfg File - Please check for Errors", ex);
+        }
     }
 
     private void registerListeners(PluginManager pm) {

@@ -18,13 +18,13 @@ import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.sql.Database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AllArgsConstructor;
-import lombok.Cleanup;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class MySQL implements Database {
@@ -59,7 +59,7 @@ public class MySQL implements Database {
 
     @Override
     public void update(String query) {
-        @Cleanup PreparedStatement ps;
+        PreparedStatement ps;
         try {
             ps = getConnection().prepareStatement(query);
             ps.executeUpdate();
@@ -70,8 +70,8 @@ public class MySQL implements Database {
 
     @Override
     public ResultSet query(String query) {
-        @Cleanup PreparedStatement ps;
-        @Cleanup ResultSet rs = null;
+        PreparedStatement ps;
+        ResultSet rs = null;
         try {
             ps = getConnection().prepareStatement(query);
             rs = ps.executeQuery();

@@ -14,22 +14,26 @@
  */
 package com.github.acquized.retile.hub.converter;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
-import com.github.acquized.retile.ProjectRetile;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
 
-import javax.net.ssl.HttpsURLConnection;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import com.github.acquized.retile.ProjectRetile;
+
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class Cache {
 
@@ -46,35 +50,48 @@ public class Cache {
                 }
             });
 
-    @SneakyThrows
     public static String resolve(UUID uuid) {
-        URL url = new URL("https://mcapi.ca/name/uuid/" + uuid.toString() + "?" + System.currentTimeMillis());
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
-        conn.setRequestMethod("GET");
-        conn.setUseCaches(true);
-        conn.setDoOutput(true);
+        try {
+            URL url = new URL("https://mcapi.ca/name/uuid/" + uuid.toString() + "?" + System.currentTimeMillis());
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
+            conn.setRequestMethod("GET");
+            conn.setUseCaches(true);
+            conn.setDoOutput(true);
 
-        JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
-        return obj.get("name").asString();
+            JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
+            return obj.get("name").asString();
+        } catch (IOException ex) {
+            ProjectRetile.getInstance().getLog().error("Could not connect to McAPI.ca for resolving the Name of '" + uuid.toString() + "'.", ex);
+            return "Request Failed @ " + uuid.hashCode();
+        }
     }
 
-    @SneakyThrows
     public static UUID resolve(String name) {
-        URL url = new URL("https://mcapi.ca/uuid/player/" + name + "?" + System.currentTimeMillis());
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
-        conn.setRequestMethod("GET");
-        conn.setUseCaches(true);
-        conn.setDoOutput(true);
+        try {
+            URL url = new URL("https://mcapi.ca/uuid/player/" + name + "?" + System.currentTimeMillis());
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
+            conn.setRequestMethod("GET");
+            conn.setUseCaches(true);
+            conn.setDoOutput(true);
 
-        JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
-        return UUID.fromString(obj.get("uuid_formatted").asString());
+            JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
+            instance.addEntry(UUID.fromString(obj.get("uuid_formatted").asString()), name);
+            return UUID.fromString(obj.get("uuid_formatted").asString());
+        } catch (IOException ex) {
+            ProjectRetile.getInstance().getLog().error("Could not connect to McAPI.ca for resolving th UUID of '" + name + "'.", ex);
+            return UUID.randomUUID();
+        }
     }
 
-    @SneakyThrows
     public String username(UUID uuid) {
-        return cache.get(uuid);
+        try {
+            return cache.get(uuid);
+        } catch (ExecutionException ex) {
+            ProjectRetile.getInstance().getLog().error("Could not connect to local Cache regaring Username Resolving of '" + uuid.toString() + "'.", ex);
+            return "Cache Failed @ " + uuid.hashCode();
+        }
     }
 
     public UUID uuid(String name) {
@@ -86,7 +103,6 @@ public class Cache {
         return resolve(name);
     }
 
-    @SneakyThrows
     public void addEntry(UUID uuid, String name) {
         if(cache.getIfPresent(uuid) == null) {
             cache.put(uuid, name);
@@ -96,7 +112,6 @@ public class Cache {
         }
     }
 
-    @SneakyThrows
     public void removeEntry(UUID uuid) {
         if(cache.getIfPresent(uuid) != null) {
             cache.invalidate(uuid);
