@@ -1,5 +1,5 @@
 # ProjectRetile
-[![Circle CI](https://img.shields.io/circleci/project/Acquized/ProjectRetile.svg?maxAge=2592000&style=flat-square)](https://circleci.com/gh/Acquized/ProjectRetile)
+[![Circle CI](https://img.shields.io/circleci/project/Acquized/ProjectRetile.svg?maxAge=300&style=flat-square)](https://circleci.com/gh/Acquized/ProjectRetile)
 [![Version](https://img.shields.io/github/release/Acquized/ProjectRetile.svg?maxAge=2592000&style=flat-square)]()
 [![Downloads](https://img.shields.io/github/downloads/Acquized/ProjectRetile/total.svg?maxAge=2592000&style=flat-square)](https://github.com/Acquized/ProjectRetile/releases)  
 
