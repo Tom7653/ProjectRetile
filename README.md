@@ -1,5 +1,5 @@
 # ProjectRetile
-[![Travis CI](https://img.shields.io/travis/Acquized/ProjectRetile/master.svg?maxAge=2592000&style=flat-square)](https://travis-ci.org/Acquized/ProjectRetile)
+[![Circle CI](https://img.shields.io/circleci/project/Acquized/ProjectRetile.svg?maxAge=2592000&style=flat-square)](https://circleci.com/gh/Acquized/ProjectRetile)
 [![Version](https://img.shields.io/github/release/Acquized/ProjectRetile.svg?maxAge=2592000&style=flat-square)]()
 [![Downloads](https://img.shields.io/github/downloads/Acquized/ProjectRetile/total.svg?maxAge=2592000&style=flat-square)](https://github.com/Acquized/ProjectRetile/releases)  
 
@@ -15,7 +15,7 @@ Please visit [the Wiki](https://github.com/Acquized/ProjectRetile/wiki) for Info
 Precompiled binaries are avaible for the end user at our [Spigot Page]().  
   
 ### Continous Integration
-ProjectRetile uses [Travis CI](https://travis-ci.org/) for Continous Integration. You can visit the Project [here](https://travis-ci.org/Acquized/ProjectRetile).  
+ProjectRetile uses [Circle CI](https://circleci.com/) for Continous Integration. You can visit the Project [here](https://circleci.com/gh/Acquized/ProjectRetile).  
   
 ### Maven
 ```xml

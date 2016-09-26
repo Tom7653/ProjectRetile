@@ -1,0 +1,15 @@
+machine:
+  java:
+    version: openjdk8
+
+dependencies:
+  pre:
+    - wget -O BungeeUtil.jar https://raw.githubusercontent.com/WolverinDEV/BungeeUtil/jars/buildedJars/jars/BungeeUtil-1.6.7.15.jar
+    - mvn install:install-file -Dfile=BungeeUtil.jar -DgroupId=dev.wolveringer -DartifactId=BungeeUtil -Dversion=1.6.7.9 -Dpackaging=jar
+  override:
+    - chmod +x gradlew
+    - ./gradlew dependencies
+
+test:
+  override:
+    - ./gradlew test
