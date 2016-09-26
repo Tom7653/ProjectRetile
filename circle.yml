@@ -12,6 +12,6 @@ dependencies:
 
 test:
   override:
-    - ./gradlew test
+    - ./gradlew jar test
   post:
     - cp build/libs/ProjectRetile-1.0.0-SNAPSHOT.jar $CIRCLE_ARTIFACTS/ProjectRetile.jar
