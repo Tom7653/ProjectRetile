@@ -59,8 +59,8 @@ public class MySQL implements Database {
 
     @Override
     public void setup() throws SQLException {
-        update("CREATE TABLE IF NOT EXISTS `retile` (reporter VARCHAR(64), victim VARCHAR(64), reason VARCHAR(128), reportdate DATETIME);");
-        update("CREATE TABLE IF NOT EXISTS `queue` (reporter VARCHAR(64), victim VARCHAR(64), reason VARCHAR(128), reportdate DATETIME);");
+        update("CREATE TABLE IF NOT EXISTS `retile` (token VARCHAR(12), reporter VARCHAR(64), victim VARCHAR(64), reason VARCHAR(128), reportdate DATETIME);");
+        update("CREATE TABLE IF NOT EXISTS `queue` (token VARCHAR(12), reporter VARCHAR(64), victim VARCHAR(64), reason VARCHAR(128), reportdate DATETIME);");
     }
 
     @Override

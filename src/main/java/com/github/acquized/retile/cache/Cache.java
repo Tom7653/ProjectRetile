@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.acquized.retile.hub.converter;
+package com.github.acquized.retile.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -21,6 +21,7 @@ import com.google.common.cache.LoadingCache;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.annotations.Beta;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,6 +36,7 @@ import javax.net.ssl.HttpsURLConnection;
 import lombok.Getter;
 import lombok.Setter;
 
+@Beta
 public class Cache {
 
     @Getter @Setter public static Cache instance;

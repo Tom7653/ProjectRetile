@@ -14,9 +14,11 @@
  */
 package com.github.acquized.retile;
 
+import com.github.acquized.retile.api.RetileAPI;
+import com.github.acquized.retile.api.RetileAPIProvider;
+import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
-import com.github.acquized.retile.hub.converter.Cache;
 import com.github.acquized.retile.i18n.I18n;
 import com.github.acquized.retile.sql.Database;
 import com.github.acquized.retile.sql.impl.MySQL;
@@ -42,6 +44,7 @@ public class ProjectRetile extends Plugin {
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
     @Getter private Database database;
     @Getter private DBConfig dbConfig;
+    @Getter private RetileAPI api;
     @Getter private Config config;
 
     @Override
@@ -59,6 +62,7 @@ public class ProjectRetile extends Plugin {
             log.error("Could not connect to / setup MySQL Database! Did you enter the correct Details?", ex);
             return;
         }
+        api = new RetileAPIProvider();
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());

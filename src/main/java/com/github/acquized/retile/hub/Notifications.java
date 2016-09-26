@@ -14,20 +14,24 @@
  */
 package com.github.acquized.retile.hub;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+public class Notifications {
 
-@AllArgsConstructor
-@Getter
-@Setter
-public class Report {
+    private static List<UUID> noNotifications = new ArrayList<>();
 
-    private UUID reporter;
-    private UUID victim;
-    private String reason;
-    private long timestamp;
+    public static boolean isReceivingNotifications(UUID uuid) {
+        return !noNotifications.contains(uuid);
+    }
+
+    public static void disallowNotificationsFor(UUID uuid) {
+        noNotifications.add(uuid);
+    }
+
+    public static void enableNotificationsFor(UUID uuid) {
+        noNotifications.remove(uuid);
+    }
 
 }

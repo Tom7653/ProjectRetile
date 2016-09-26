@@ -50,11 +50,11 @@ public class I18n {
     }
 
     public static String getMessage(String key) {
-        return Utility.format(bundle.getString(key));
+        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key));
     }
 
     public static String getMessage(String key, Object... obj) {
-        return Utility.format(bundle.getString(key), obj);
+        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key), obj);
     }
 
     public static String tl(String key) {
