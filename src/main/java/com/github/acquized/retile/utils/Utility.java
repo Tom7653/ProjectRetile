@@ -14,13 +14,13 @@
  */
 package com.github.acquized.retile.utils;
 
-import lombok.experimental.UtilityClass;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Map;
+
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Utility {
@@ -106,11 +106,6 @@ public class Utility {
 
     public static boolean isEmpty(Collection collection) {
         return collection.size() <= 0;
-    }
-
-    @Deprecated // It is recommended to use Object#hashCode in case they defined a custom HashCode
-    public static int hashCode(Object obj) {
-        return new HashCodeBuilder().append(obj).toHashCode();
     }
 
 }
