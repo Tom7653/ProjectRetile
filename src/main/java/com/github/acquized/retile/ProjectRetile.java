@@ -22,6 +22,7 @@ import com.github.acquized.retile.config.DBConfig;
 import com.github.acquized.retile.i18n.I18n;
 import com.github.acquized.retile.sql.Database;
 import com.github.acquized.retile.sql.impl.MySQL;
+import com.github.acquized.retile.ui.Bridge;
 import com.github.acquized.retile.utils.Utility;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.sql.SQLException;
 
+import dev.wolveringer.BungeeUtil.BungeeUtil;
 import lombok.Getter;
 
 import static com.github.acquized.retile.utils.Utility.GRAY;
@@ -66,6 +68,7 @@ public class ProjectRetile extends Plugin {
             return;
         }
         api = new RetileAPIProvider();
+        setupBungeeUtil();
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
@@ -99,6 +102,19 @@ public class ProjectRetile extends Plugin {
         } catch (InvalidConfigurationException ex) {
             log.error("Could not load database.yml File - Please check for Errors", ex);
         }
+    }
+
+    private void setupBungeeUtil() {
+        if(BungeeUtil.getInstance() == null)
+            BungeeUtil.createInstance(this);
+        if(!BungeeUtil.getInstance().isInjected()) {
+            if(BungeeUtil.getInstance().inject() == 1) {
+                log.error("Could not inject BungeeUtil! Please restart the Proxy.");
+                return;
+            }
+        }
+        BungeeUtil.getInstance().load();
+        Bridge.injectBridge();
     }
 
     private void registerListeners(PluginManager pm) {
