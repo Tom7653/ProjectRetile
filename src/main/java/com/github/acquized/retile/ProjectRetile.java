@@ -24,6 +24,7 @@ import com.github.acquized.retile.sql.Database;
 import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.utils.Utility;
 
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -32,14 +33,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
 import lombok.Getter;
 
+import static com.github.acquized.retile.utils.Utility.GRAY;
+import static com.github.acquized.retile.utils.Utility.RED;
+
 public class ProjectRetile extends Plugin {
 
-    public static String prefix = Utility.RED + "> " + Utility.GRAY;
+    public static String prefix = RED + "> " + GRAY;
     @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
     @Getter private Database database;
@@ -55,7 +58,7 @@ public class ProjectRetile extends Plugin {
         new I18n().load();
         Cache.setInstance(new Cache());
         try {
-            database = new MySQL(dbConfig.adress, dbConfig.port, dbConfig.database, dbConfig.username, dbConfig.password.toCharArray());
+            database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
             database.connect();
             database.setup();
         } catch (SQLException ex) {
@@ -76,25 +79,25 @@ public class ProjectRetile extends Plugin {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void loadConfigs() {
-        // config.cfg
+        // config.yml
         try {
-            config = new Config();
             File file;
-            config.initialize(file = new File(getDataFolder(), "config.cfg"));
+            config = new Config(file = new File(getDataFolder(), "config.yml"));
+            config.init();
             if (!config.version.equalsIgnoreCase(getDescription().getVersion())) {
                 file.delete();
-                config.initialize(new File(getDataFolder(), "config.cfg"));
+                config.init();
             }
-        } catch (IOException ex) {
-            log.error("Could not load config.cfg File - Please check for Errors", ex);
+        } catch (InvalidConfigurationException ex) {
+            log.error("Could not load config.yml File - Please check for Errors", ex);
         }
 
-        // database.cfg
+        // database.yml
         try {
-            dbConfig = new DBConfig();
-            dbConfig.initialize(new File(getDataFolder(), "database.cfg"));
-        } catch (IOException ex) {
-            log.error("Could not load database.cfg File - Please check for Errors", ex);
+            dbConfig = new DBConfig(new File(getDataFolder(), "database.yml"));
+            dbConfig.init();
+        } catch (InvalidConfigurationException ex) {
+            log.error("Could not load database.yml File - Please check for Errors", ex);
         }
     }
 

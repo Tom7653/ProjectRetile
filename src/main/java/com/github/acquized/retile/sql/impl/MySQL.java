@@ -31,9 +31,7 @@ public class MySQL implements Database {
 
     private static HikariDataSource dataSource; // only static because lombok
 
-    private final String adress;
-    private final int port;
-    private final String database;
+    private final String url;
     private final String username;
     private final char[] password;
 
@@ -41,7 +39,7 @@ public class MySQL implements Database {
     public void connect() throws SQLException {
         HikariConfig cfg = new HikariConfig();
         cfg.setDriverClassName("com.mysql.jdbc.Driver");
-        cfg.setJdbcUrl("jdbc:mysql://" + adress + ":" + port + "/" + database);
+        cfg.setJdbcUrl(url);
         cfg.setUsername(username);
         cfg.setPassword(new String(password));
         cfg.setMinimumIdle(5);

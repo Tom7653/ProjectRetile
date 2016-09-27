@@ -14,22 +14,59 @@
  */
 package com.github.acquized.retile.config;
 
-import com.blackypaw.simpleconfig.SimpleConfig;
-import com.blackypaw.simpleconfig.annotation.Comment;
+import net.cubespace.Yamler.Config.Comment;
+import net.cubespace.Yamler.Config.Comments;
+import net.cubespace.Yamler.Config.ConfigMode;
+import net.cubespace.Yamler.Config.Path;
+import net.cubespace.Yamler.Config.YamlConfig;
 
-public class Config extends SimpleConfig {
+import java.io.File;
 
-    @Comment("Put in here the Prefix that should be infront of every Message")
+public class Config extends YamlConfig {
+
+    @Comment("Set here the Prefix that will be infront of every Messages")
+    @Path("ProjectRetile.Prefix")
     public String prefix = "&c> &7";
 
-    @Comment("Put in here a Language Code in which the Messages should be printed. \n" +
-            "For this to work, there needs to be a messages_<locale>.properties File in the locale Folder.")
+    @Comments({
+            "Set here the Language Code that should be used for Message Printing",
+            "This requires a File named \"messages_<locale>.properties\" in the \"locale\" Directory.",
+            "If no file with the Locale's Paramter exist, a error will be thrown."
+    })
+    @Path("ProjectRetile.Locale")
     public String locale = "en";
 
-    @Comment("Should Messages be clickable? This will automaticly execute the preffered Command.")
-    public boolean clickableMessages = true;
-
-    @Comment("Don't change this value unless you want to reset the Config.")
+    @Comment("Don't change this value unless you want to reset the Config")
+    @Path("ProjectRetile.Version")
     public String version = "1.0.0-SNAPSHOT";
+
+    @Comments({
+            "Should UUID and SQL Requests be sent async?",
+            "This eliminates Server lag but may cause delay between the Plugin's Actions."
+    })
+    @Path("Connections.AsyncRequests")
+    public boolean forceAsyncRequests = true;
+
+    @Comments({
+            "Is Connection Pooling allowed?",
+            "This eliminates SQL <-> Server Delay but may need cause high Bandwidth",
+            "Disable if noticeable Ping Lags occur while proceeding Reports. Recommended to keep on true."
+    })
+    @Path("Connections.AllowPools")
+    public boolean allowConnectionPools = true;
+
+    // -------------------------------------------------
+
+    public Config(File file) {
+        CONFIG_FILE = file;
+        CONFIG_HEADER = new String[]{
+                "  ____            _           _   ____      _   _ _      ",
+                " |  _ \\ _ __ ___ (_) ___  ___| |_|  _ \\ ___| |_(_) | ___ ",
+                " | |_) | '__/ _ \\| |/ _ \\/ __| __| |_) / _ \\ __| | |/ _ \\",
+                " |  __/| | | (_) | |  __/ (__| |_|  _ <  __/ |_| | |  __/",
+                " |_|   |_|  \\___// |\\___|\\___|\\__|_| \\_\\___|\\__|_|_|\\___|",
+                "               |__/                                      "};
+        CONFIG_MODE = ConfigMode.DEFAULT;
+    }
 
 }

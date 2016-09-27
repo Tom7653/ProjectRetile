@@ -14,24 +14,44 @@
  */
 package com.github.acquized.retile.config;
 
-import com.blackypaw.simpleconfig.SimpleConfig;
-import com.blackypaw.simpleconfig.annotation.Comment;
+import net.cubespace.Yamler.Config.Comment;
+import net.cubespace.Yamler.Config.Comments;
+import net.cubespace.Yamler.Config.ConfigMode;
+import net.cubespace.Yamler.Config.Path;
+import net.cubespace.Yamler.Config.YamlConfig;
 
-public class DBConfig extends SimpleConfig {
+import java.io.File;
 
-    @Comment("Put in here the IP Adress of your MySQL Database.")
-    public String adress = "127.0.0.1";
+public class DBConfig extends YamlConfig {
 
-    @Comment("Put in here the Port that is used to connect to your MySQL Database.")
-    public int port = 3306;
+    @Comments({
+            "Set here the URL of the Database to which should be connected",
+            "Must be \"jdbc:<Database engine>:<connection parameter>\".",
+            "Template for MySQL: jdbc:mysql://<host>:<port>/<database>"
+    })
+    @Path("URL")
+    public String jdbcURL = "jdbc:mysql://127.0.0.1:3306/ProjectRetile";
 
-    @Comment("Put in here the Database that is used to store Data in your MySQL Database.")
-    public String database = "ProjectRetile";
-
-    @Comment("Put in here your Username that is used to authentificate with the MySQL Database.")
+    @Comment("Set here the Username that should be used to authentificate with the Database")
+    @Path("Username")
     public String username = "root";
 
-    @Comment("Put in here your Password that is used to authentificate with the MySQL Database.")
+    @Comment("Set here the Password that should be used to authentificate with the Database")
+    @Path("Password")
     public String password = "passw0rd";
+
+    // -------------------------------------------------
+
+    public DBConfig(File file) {
+        CONFIG_FILE = file;
+        CONFIG_HEADER = new String[]{
+                "  ____            _           _   ____      _   _ _      ",
+                " |  _ \\ _ __ ___ (_) ___  ___| |_|  _ \\ ___| |_(_) | ___ ",
+                " | |_) | '__/ _ \\| |/ _ \\/ __| __| |_) / _ \\ __| | |/ _ \\",
+                " |  __/| | | (_) | |  __/ (__| |_|  _ <  __/ |_| | |  __/",
+                " |_|   |_|  \\___// |\\___|\\___|\\__|_| \\_\\___|\\__|_|_|\\___|",
+                "               |__/                                      "};
+        CONFIG_MODE = ConfigMode.DEFAULT;
+    }
 
 }
