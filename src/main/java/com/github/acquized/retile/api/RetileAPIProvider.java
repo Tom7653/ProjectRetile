@@ -104,7 +104,6 @@ public class RetileAPIProvider implements RetileAPI {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void addReport(Report report) throws RetileAPIException {
         List<ProxiedPlayer> staff = new ArrayList<>();
 

@@ -15,6 +15,8 @@
 package com.github.acquized.retile.utils;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -54,6 +56,14 @@ public class Utility {
 
     public static String format(String msg, Object... args) {
         return ChatColor.translateAlternateColorCodes('&', MessageFormat.format(msg, args));
+    }
+
+    public static BaseComponent[] formatLegacy(String msg) {
+        return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', msg));
+    }
+
+    public static BaseComponent[] formatLegacy(String msg, Object... args) {
+        return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', MessageFormat.format(msg, args)));
     }
 
     public static boolean isTrue(boolean b) {

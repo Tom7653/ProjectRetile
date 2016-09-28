@@ -36,6 +36,10 @@ public class Config extends YamlConfig {
     @Path("ProjectRetile.Locale")
     public String locale = "en";
 
+    @Comment("Should the Updater be enabled? The Updater checks every Hour for a new Version.")
+    @Path("ProjectRetile.Updater")
+    public boolean updater = true;
+
     @Comment("Don't change this value unless you want to reset the Config")
     @Path("ProjectRetile.Version")
     public String version = "1.0.0-SNAPSHOT";

@@ -17,6 +17,9 @@ package com.github.acquized.retile.i18n;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.utils.Utility;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -57,14 +60,15 @@ public class I18n {
         return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key), obj);
     }
 
-    public static String tl(String key) {
-        return getMessage(key);
-    }
 
     // Shortcuts for Static Imports
 
-    public static String tl(String key, Object... obj) {
-        return getMessage(key, obj);
+    public static BaseComponent[] tl(String key) {
+        return TextComponent.fromLegacyText(getMessage(key));
+    }
+
+    public static BaseComponent[] tl(String key, Object... obj) {
+        return TextComponent.fromLegacyText(getMessage(key, obj));
     }
 
     public void load() {

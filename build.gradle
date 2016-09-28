@@ -81,6 +81,7 @@ shadowJar {
     dependencies {
         include(dependency('com.zaxxer:HikariCP:2.4.7'))
         include(dependency('org.slf4j:slf4j-simple:1.7.21'))
+        include(dependency('org.slf4j:slf4j-api:1.7.21'))
         include(dependency('dev.wolveringer:BungeeUtil:1.6.7.9'))
         include(dependency('com.eclipsesource.minimal-json:minimal-json:0.9.4'))
         include(dependency('net.cubespace.yamler:Yamler-Bungee:2.4.0'))
