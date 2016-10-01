@@ -73,7 +73,7 @@ public class RetileCommand extends Command {
             sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
             return;
         }
-        sender.sendMessage(formatLegacy("&c> &7Syntax: &3/retile [Debug, Reload]"));
+        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Syntax: " + DARK_AQUA + "/retile [Debug, Reload]"));
     }
 
 }
