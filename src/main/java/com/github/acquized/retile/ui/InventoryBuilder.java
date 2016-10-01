@@ -15,7 +15,7 @@
 package com.github.acquized.retile.ui;
 
 import dev.wolveringer.BungeeUtil.Player;
-import dev.wolveringer.BungeeUtil.item.ItemStack;
+import dev.wolveringer.BungeeUtil.item.ItemBuilder;
 import dev.wolveringer.api.inventory.Inventory;
 
 public class InventoryBuilder {
@@ -36,8 +36,8 @@ public class InventoryBuilder {
         return this;
     }
 
-    public InventoryBuilder item(int slot, ItemStack item) {
-        inventory.setItem(slot, item);
+    public InventoryBuilder item(int slot, ItemBuilder item) {
+        inventory.setItem(slot, item.build());
         return this;
     }
 
