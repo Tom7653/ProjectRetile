@@ -1,7 +1,8 @@
 # ProjectRetile
 [![Circle CI](https://img.shields.io/circleci/project/Acquized/ProjectRetile.svg?maxAge=300&style=flat-square)](https://circleci.com/gh/Acquized/ProjectRetile)
 [![Version](https://img.shields.io/github/release/Acquized/ProjectRetile.svg?maxAge=2592000&style=flat-square)]()
-[![Downloads](https://img.shields.io/github/downloads/Acquized/ProjectRetile/total.svg?maxAge=2592000&style=flat-square)](https://github.com/Acquized/ProjectRetile/releases)  
+[![Downloads](https://img.shields.io/github/downloads/Acquized/ProjectRetile/total.svg?maxAge=2592000&style=flat-square)](https://github.com/Acquized/ProjectRetile/releases)
+[![Gitter](https://img.shields.io/gitter/room/Acquized/ProjectRetile.js.svg?maxAge=2592000&style=flat-square)](https://gitter.im/Acquized/ProjectRetile?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)  
 
 ProjectRetile is the new, modern & hackable Report Plugin.  
   
