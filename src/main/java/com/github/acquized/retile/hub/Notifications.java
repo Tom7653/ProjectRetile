@@ -14,24 +14,32 @@
  */
 package com.github.acquized.retile.hub;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class Notifications {
 
-    private static List<UUID> noNotifications = new ArrayList<>();
+    @Getter @Setter private static Notifications instance;
+    public Map<UUID, Boolean> staff = new HashMap<>();
 
-    public static boolean isReceivingNotifications(UUID uuid) {
-        return !noNotifications.contains(uuid);
+    public void addStaff(UUID uuid) {
+        staff.put(uuid, true);
     }
 
-    public static void disallowNotificationsFor(UUID uuid) {
-        noNotifications.add(uuid);
+    public void removeStaff(UUID uuid) {
+        staff.remove(uuid);
     }
 
-    public static void enableNotificationsFor(UUID uuid) {
-        noNotifications.remove(uuid);
+    public boolean isStaff(UUID uuid) {
+        return staff.containsKey(uuid);
+    }
+
+    public boolean isReceiving(UUID uuid) {
+        return (isStaff(uuid)) && (staff.get(uuid));
     }
 
 }

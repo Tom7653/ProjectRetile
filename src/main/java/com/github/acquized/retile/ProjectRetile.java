@@ -20,7 +20,10 @@ import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.commands.RetileCommand;
 import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
+import com.github.acquized.retile.hub.Notifications;
 import com.github.acquized.retile.i18n.I18n;
+import com.github.acquized.retile.listeners.Disconnect;
+import com.github.acquized.retile.listeners.PostLogin;
 import com.github.acquized.retile.sql.Database;
 import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.ui.Bridge;
@@ -69,6 +72,7 @@ public class ProjectRetile extends Plugin {
             log.error("Could not connect to / setup MySQL Database! Did you enter the correct Details?", ex);
             return;
         }
+        Notifications.setInstance(new Notifications());
         api = new RetileAPIProvider();
         setupBungeeUtil();
         registerListeners(ProxyServer.getInstance().getPluginManager());
@@ -132,7 +136,8 @@ public class ProjectRetile extends Plugin {
     }
 
     private void registerListeners(PluginManager pm) {
-
+        pm.registerListener(this, new Disconnect());
+        pm.registerListener(this, new PostLogin());
     }
 
     private void registerCommands(PluginManager pm) {

@@ -111,7 +111,7 @@ public class RetileAPIProvider implements RetileAPI {
         String victim = Cache.getInstance().username(report.getVictim());
 
         for(ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-            if((p.hasPermission("projectretile.report.receive")) && (Notifications.isReceivingNotifications(Cache.getInstance().uuid(p.getName())))) {
+            if(Notifications.getInstance().isReceiving(Cache.getInstance().uuid(p.getName()))) {
                 staff.add(p);
             }
         }
@@ -133,6 +133,7 @@ public class RetileAPIProvider implements RetileAPI {
     }
 
     @Override
+    @SuppressWarnings("LoopStatementThatDoesntLoop")
     public boolean doesReportExist(Report report) throws RetileAPIException {
         ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile` WHERE token = '" + report.getToken() + "'");
 
