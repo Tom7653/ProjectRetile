@@ -69,6 +69,7 @@ public class Updater {
         return null;
     }
 
+    // Async Requests - Wait for Beta Testers Response
     public static Version getNewestVersion() throws IllegalArgumentException {
         try {
             URL url = new URL(URL + PLUGIN + SUBURL + "?" + System.currentTimeMillis());

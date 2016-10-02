@@ -50,6 +50,7 @@ public class McAPICanada implements Cache {
                 }
             });
 
+    // Async Requests - Wait for Beta Testers Response
     public String resolve(UUID uuid) {
         try {
             URL url = new URL("https://mcapi.ca/name/uuid/" + uuid.toString() + "?" + System.currentTimeMillis());
@@ -67,6 +68,7 @@ public class McAPICanada implements Cache {
         }
     }
 
+    // Async Requests - Wait for Beta Testers Response
     public UUID resolve(String name) {
         try {
             URL url = new URL("https://mcapi.ca/uuid/player/" + name + "?" + System.currentTimeMillis());

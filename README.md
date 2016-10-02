@@ -39,5 +39,19 @@ ProjectRetile uses [Circle CI](https://circleci.com/) for Continous Integration.
   
 ### License
 The Project is licensed under the Apache Software License, Version 2.0. Please visit the LICENSE.txt File for the complete License.  
+<details>
+<summary>The Project's precompiled binaries shade multiple Free 2 Use Dependencies. Click here for a list of them.</summary>
+
+# Third Party Libraries
+ProjectRetile shades multiple Libraries into its precompiled Binaries. Here can you find a list of them:  
+  
+Introduction Version | Library | License | Source
+-------------------- | ------- | ------- | ------------
+v1.0.0 | HikariCP v2.4.7 (J7) | Apache-2.0 | [GitHub](https://github.com/brettwooldridge/HikariCP)
+v1.0.0 | Slf4j v1.7.21 | MIT | [GitHub](https://github.com/qos-ch/slf4j)
+v1.0.0 | BungeeUtil v1.6.7.15 | No-License | [GitHub](https://github.com/WolverinDEV/BungeeUtil)
+v1.0.0 | Minimal-Json v0.9.4 | MIT | [GitHub](https://github.com/ralfstx/minimal-json)
+v1.0.0 | Yamler v2.4.0 | No-License | [GitHub](https://github.com/Cube-Space/Yamler)
+</details>
   
 Copyright © 2016 Acquized

@@ -94,6 +94,10 @@ public class ProjectRetile extends Plugin {
         log.info("ProjectRetile v{} has been disabled.", getDescription().getVersion());
     }
 
+    /* TODO: Async Requests
+     * - https://github.com/AsyncHttpClient/async-http-client
+     */
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void loadConfigs() {
         // config.yml
