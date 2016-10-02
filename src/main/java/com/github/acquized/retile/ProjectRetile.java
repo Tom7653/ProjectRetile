@@ -17,6 +17,8 @@ package com.github.acquized.retile;
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIProvider;
 import com.github.acquized.retile.cache.Cache;
+import com.github.acquized.retile.cache.impl.McAPICanada;
+import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.commands.RetileCommand;
 import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
@@ -56,6 +58,7 @@ public class ProjectRetile extends Plugin {
     @Getter private DBConfig dbConfig;
     @Getter private RetileAPI api;
     @Getter private Config config;
+    @Getter private Cache cache;
 
     @Override
     public void onEnable() {
@@ -63,7 +66,10 @@ public class ProjectRetile extends Plugin {
         loadConfigs();
         prefix = Utility.format(config.prefix);
         new I18n().load();
-        Cache.setInstance(new Cache());
+        if(ProxyServer.getInstance().getConfig().isOnlineMode())
+            cache = new McAPICanada();
+        else
+            cache = new Offline();
         try {
             database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
             database.connect();

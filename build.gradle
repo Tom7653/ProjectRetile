@@ -47,7 +47,7 @@ dependencies {
     compile group: 'org.projectlombok', name: 'lombok', version: '1.16.10'
 
     // Compile using ShadowJar
-    compile group: 'com.zaxxer', name: 'HikariCP', version: '2.4.7'
+    compile group: 'com.zaxxer', name: 'HikariCP-java7', version: '2.4.9'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
     compile group: 'dev.wolveringer', name: 'BungeeUtil', version: '1.6.7.9'
     compile group: 'com.eclipsesource.minimal-json', name: 'minimal-json', version: '0.9.4'

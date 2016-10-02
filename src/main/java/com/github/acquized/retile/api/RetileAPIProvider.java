@@ -107,11 +107,11 @@ public class RetileAPIProvider implements RetileAPI {
     public void addReport(Report report) throws RetileAPIException {
         List<ProxiedPlayer> staff = new ArrayList<>();
 
-        String reporter = Cache.getInstance().username(report.getReporter());
-        String victim = Cache.getInstance().username(report.getVictim());
+        String reporter = ProjectRetile.getInstance().getCache().username(report.getReporter());
+        String victim = ProjectRetile.getInstance().getCache().username(report.getVictim());
 
         for(ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-            if(Notifications.getInstance().isReceiving(Cache.getInstance().uuid(p.getName()))) {
+            if(Notifications.getInstance().isReceiving(ProjectRetile.getInstance().getCache().uuid(p.getName()))) {
                 staff.add(p);
             }
         }
@@ -203,7 +203,7 @@ public class RetileAPIProvider implements RetileAPI {
     @Override
     @Deprecated
     public Cache getCache() throws RetileAPIException {
-        return Cache.getInstance();
+        return ProjectRetile.getInstance().getCache();
     }
 
 }

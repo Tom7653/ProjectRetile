@@ -12,16 +12,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.acquized.retile.cache;
+package com.github.acquized.retile.cache.impl;
+
+import com.github.acquized.retile.annotations.Beta;
+import com.github.acquized.retile.cache.Cache;
+
+import net.md_5.bungee.api.ProxyServer;
 
 import java.util.UUID;
 
-public interface Cache {
+@Beta
+public class Offline implements Cache {
 
-    String username(UUID uuid);
-    UUID uuid(String name);
+    @Override
+    public String username(UUID uuid) {
+        return ProxyServer.getInstance().getPlayer(uuid).getName();
+    }
 
-    void addEntry(UUID uuid, String name);
-    void removeEntry(UUID uuid);
+    @Override
+    public UUID uuid(String name) {
+        return ProxyServer.getInstance().getPlayer(name).getUniqueId();
+    }
+
+    @Override
+    public void addEntry(UUID uuid, String name) {}
+
+    @Override
+    public void removeEntry(UUID uuid) {}
 
 }
