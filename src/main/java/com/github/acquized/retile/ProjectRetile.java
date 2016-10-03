@@ -23,6 +23,7 @@ import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.commands.RetileCommand;
 import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
+import com.github.acquized.retile.hub.Cooldown;
 import com.github.acquized.retile.hub.Notifications;
 import com.github.acquized.retile.i18n.I18n;
 import com.github.acquized.retile.listeners.Disconnect;
@@ -86,6 +87,7 @@ public class ProjectRetile extends Plugin {
             log.error("Could not connect to / setup MySQL Database! Did you enter the correct Details?", ex);
             return;
         }
+        Cooldown.setInstance(new Cooldown());
         Notifications.setInstance(new Notifications());
         api = new RetileAPIProvider();
         setupBungeeUtil();

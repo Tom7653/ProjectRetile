@@ -24,6 +24,8 @@ import java.io.File;
 
 public class Config extends YamlConfig {
 
+    // v  ProjectRetile  v
+
     @Comment("Set here the Prefix that will be infront of every Messages")
     @Path("ProjectRetile.Prefix")
     public String prefix = "&c> &7";
@@ -36,6 +38,13 @@ public class Config extends YamlConfig {
     @Path("ProjectRetile.Locale")
     public String locale = "en";
 
+    @Comments({
+            "How long should the Cooldown be?",
+            "The Cooldown is counted in seconds and only applies to /report."
+    })
+    @Path("ProjectRetile.Cooldown")
+    public int cooldown = 60;
+
     @Comment("Should the Updater be enabled? The Updater checks every Hour for a new Version.")
     @Path("ProjectRetile.Updater")
     public boolean updater = true;
@@ -44,9 +53,12 @@ public class Config extends YamlConfig {
     @Path("ProjectRetile.Version")
     public String version = "1.0.0-SNAPSHOT";
 
+    // v  Connections  v
+
     @Comments({
             "Should UUID and SQL Requests be sent async?",
-            "This eliminates Server lag but may cause delay between the Plugin's Actions."
+            "This eliminates Server lag but may cause delay between the Plugin's Actions.",
+            "When using MySQL this is automaticly forced when the Connection Pools is set to true."
     })
     @Path("Connections.AsyncRequests")
     public boolean forceAsyncRequests = true;
@@ -58,6 +70,50 @@ public class Config extends YamlConfig {
     })
     @Path("Connections.AllowPools")
     public boolean allowConnectionPools = true;
+
+    // v  Aliases  v
+
+    @Comments({
+            "Which Aliases should the Report Command have?",
+            "The default Command /report will always stay."
+    })
+    @Path("Aliases.ReportCommand")
+    public String[] reportAliases = { "r", "ticket", "reportuser" };
+
+    @Comments({
+            "Which Aliases should the Reports Command have?",
+            "The default Command /listreports will always stay."
+    })
+    @Path("Aliases.ReportsCommand")
+    public String[] reportsAliases = { "reports", "lr" };
+
+    @Comments({
+            "Which Aliases should the Latest Command have?",
+            "The default Command /latest will always stay."
+    })
+    @Path("Aliases.LatestCommand")
+    public String[] latestAliases = { "latestreports", "lr" };
+
+    @Comments({
+            "Which Aliases should the Toggle Command have?",
+            "The default Command /togglereports will always stay."
+    })
+    @Path("Aliases.ToggleCommand")
+    public String[] toggleAliases = { "toggle", "tr" };
+
+    @Comments({
+            "Which Aliases should the Info Command have?",
+            "The default Command /reportinfo will always stay."
+    })
+    @Path("Aliases.InfoCommand")
+    public String[] infoAliases = { "inforeport", "ir", "ri", "info" };
+
+    @Comments({
+            "Which Aliases should the Queue Command have?",
+            "The default Command /waitingqueue will always stay."
+    })
+    @Path("Aliases.QueueCommand")
+    public String[] queueAliases = { "queue", "waitingqueue" };
 
     // -------------------------------------------------
 
