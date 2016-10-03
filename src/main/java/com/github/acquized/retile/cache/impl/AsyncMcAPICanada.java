@@ -26,20 +26,20 @@ import com.github.acquized.retile.cache.Cache;
 
 import net.md_5.bungee.api.ProxyServer;
 
+import org.asynchttpclient.Response;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import lombok.Getter;
 
 @Beta
-public class McAPICanada implements Cache {
+public class AsyncMcAPICanada implements Cache {
 
     @Getter
     public final LoadingCache<UUID, String> cache = CacheBuilder.newBuilder()
@@ -54,16 +54,14 @@ public class McAPICanada implements Cache {
 
     public String resolve(UUID uuid) {
         try {
-            URL url = new URL("https://mcapi.ca/name/uuid/" + uuid.toString() + "?" + System.currentTimeMillis());
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
-            conn.setRequestMethod("GET");
-            conn.setUseCaches(true);
-            conn.setDoOutput(true);
+            Future<Response> f = ProjectRetile.getInstance().getClient().prepareGet("https://mcapi.ca/name/uuid/" + uuid.toString() + "?" + System.currentTimeMillis())
+                    .addQueryParam("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion())
+                    .execute();
+            Response r = f.get();
 
-            JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
+            JsonObject obj = Json.parse(new InputStreamReader(r.getResponseBodyAsStream())).asObject();
             return obj.get("name").asString();
-        } catch (IOException ex) {
+        } catch (InterruptedException | ExecutionException | IOException ex) {
             ProjectRetile.getInstance().getLog().error("Could not connect to McAPI.ca for resolving the Name of '" + uuid.toString() + "'.", ex);
             return ProxyServer.getInstance().getPlayer(uuid).getName();
         }
@@ -71,17 +69,15 @@ public class McAPICanada implements Cache {
 
     public UUID resolve(String name) {
         try {
-            URL url = new URL("https://mcapi.ca/uuid/player/" + name + "?" + System.currentTimeMillis());
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
-            conn.setRequestMethod("GET");
-            conn.setUseCaches(true);
-            conn.setDoOutput(true);
+            Future<Response> f = ProjectRetile.getInstance().getClient().prepareGet("https://mcapi.ca/uuid/player/" + name + "?" + System.currentTimeMillis())
+                    .addQueryParam("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion())
+                    .execute();
+            Response r = f.get();
 
-            JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
+            JsonObject obj = Json.parse(new InputStreamReader(r.getResponseBodyAsStream())).asObject();
             addEntry(UUID.fromString(obj.get("uuid_formatted").asString()), name);
             return UUID.fromString(obj.get("uuid_formatted").asString());
-        } catch (IOException ex) {
+        } catch (InterruptedException | ExecutionException | IOException ex) {
             ProjectRetile.getInstance().getLog().error("Could not connect to McAPI.ca for resolving th UUID of '" + name + "'.", ex);
             return ProxyServer.getInstance().getPlayer(name).getUniqueId();
         }

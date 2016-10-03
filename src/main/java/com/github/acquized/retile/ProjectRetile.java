@@ -17,6 +17,7 @@ package com.github.acquized.retile;
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIProvider;
 import com.github.acquized.retile.cache.Cache;
+import com.github.acquized.retile.cache.impl.AsyncMcAPICanada;
 import com.github.acquized.retile.cache.impl.McAPICanada;
 import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.commands.RetileCommand;
@@ -37,6 +38,8 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +57,7 @@ public class ProjectRetile extends Plugin {
     public static String prefix = RED + "> " + GRAY;
     @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
+    @Getter private AsyncHttpClient client;
     @Getter private Database database;
     @Getter private DBConfig dbConfig;
     @Getter private RetileAPI api;
@@ -65,11 +69,15 @@ public class ProjectRetile extends Plugin {
         instance = this;
         loadConfigs();
         prefix = Utility.format(config.prefix);
+        client = new DefaultAsyncHttpClient();
         new I18n().load();
-        if(ProxyServer.getInstance().getConfig().isOnlineMode())
+        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (config.forceAsyncRequests)) {
+            cache = new AsyncMcAPICanada();
+        } else if(ProxyServer.getInstance().getConfig().isOnlineMode()) {
             cache = new McAPICanada();
-        else
+        } else {
             cache = new Offline();
+        }
         try {
             database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
             database.connect();
@@ -93,10 +101,6 @@ public class ProjectRetile extends Plugin {
         instance = null;
         log.info("ProjectRetile v{} has been disabled.", getDescription().getVersion());
     }
-
-    /* TODO: Async Requests
-     * - https://github.com/AsyncHttpClient/async-http-client
-     */
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void loadConfigs() {

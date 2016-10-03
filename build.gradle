@@ -52,6 +52,7 @@ dependencies {
     compile group: 'dev.wolveringer', name: 'BungeeUtil', version: '1.6.7.9'
     compile group: 'com.eclipsesource.minimal-json', name: 'minimal-json', version: '0.9.4'
     compile group: 'net.cubespace.yamler', name: 'Yamler-Bungee', version: '2.4.0'
+    compile group: 'org.asynchttpclient', name: 'async-http-client', version: '2.0.15'
 
     // Test
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -78,6 +79,8 @@ shadowJar {
     relocate 'org.json', 'com.github.acquized.retile.libs.json.central'
     relocate 'org.jsoup', 'com.github.acquized.retile.libs.json.jsoup'
     relocate 'net.cubespace.Yamler', 'com.github.acquized.retile.libs.yamler'
+    relocate 'org.asynchttpclient', 'com.github.acquized.retile.libs.asynchttpclient'
+    relocate 'io.netty', 'com.github.acquized.retile.libs.netty'
     dependencies {
         include(dependency('com.zaxxer:HikariCP:2.4.7'))
         include(dependency('org.slf4j:slf4j-simple:1.7.21'))
@@ -85,6 +88,7 @@ shadowJar {
         include(dependency('dev.wolveringer:BungeeUtil:1.6.7.9'))
         include(dependency('com.eclipsesource.minimal-json:minimal-json:0.9.4'))
         include(dependency('net.cubespace.yamler:Yamler-Bungee:2.4.0'))
+        include(dependency('org.asynchttpclient:async-http-client:2.0.15'))
     }
 }
 

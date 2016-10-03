@@ -20,10 +20,14 @@ import com.github.acquized.retile.ProjectRetile;
 
 import net.md_5.bungee.api.ProxyServer;
 
+import org.asynchttpclient.Response;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class Updater {
@@ -69,20 +73,34 @@ public class Updater {
         return null;
     }
 
-    // Async Requests - Wait for Beta Testers Response
     public static Version getNewestVersion() throws IllegalArgumentException {
-        try {
-            URL url = new URL(URL + PLUGIN + SUBURL + "?" + System.currentTimeMillis());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
-            connection.setUseCaches(true);
-            connection.setDoOutput(true);
+        if(ProjectRetile.getInstance().getConfig().forceAsyncRequests) {
+            try {
+                Future<Response> f = ProjectRetile.getInstance().getClient().prepareGet(URL + PLUGIN + SUBURL + "?" + System.currentTimeMillis())
+                        .addQueryParam("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion())
+                        .execute();
+                Response r = f.get();
 
-            JsonObject obj = Json.parse(new InputStreamReader(connection.getInputStream())).asObject();
-            return new Version(obj.get("name").asString());
-        } catch (IOException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not resolve latest Version. Please check your Internet Connection.", ex);
-            return new Version(ProjectRetile.getInstance().getDescription().getVersion() + "-OFFLINE");
+                JsonObject obj = Json.parse(new InputStreamReader(r.getResponseBodyAsStream())).asObject();
+                return new Version(obj.get("name").asString());
+            } catch (InterruptedException | ExecutionException | IOException ex) {
+                ProjectRetile.getInstance().getLog().error("Could not resolve latest Version. Please check your Internet Connection.", ex);
+                return new Version(ProjectRetile.getInstance().getDescription().getVersion() + "-OFFLINE");
+            }
+        } else {
+            try {
+                URL url = new URL(URL + PLUGIN + SUBURL + "?" + System.currentTimeMillis());
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
+                connection.setUseCaches(true);
+                connection.setDoOutput(true);
+
+                JsonObject obj = Json.parse(new InputStreamReader(connection.getInputStream())).asObject();
+                return new Version(obj.get("name").asString());
+            } catch (IOException ex) {
+                ProjectRetile.getInstance().getLog().error("Could not resolve latest Version. Please check your Internet Connection.", ex);
+                return new Version(ProjectRetile.getInstance().getDescription().getVersion() + "-OFFLINE");
+            }
         }
     }
 
