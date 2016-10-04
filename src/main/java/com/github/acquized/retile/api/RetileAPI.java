@@ -19,6 +19,8 @@ import com.github.acquized.retile.annotations.Documented;
 import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.reports.Report;
 
+import net.md_5.bungee.api.config.ServerInfo;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -113,7 +115,7 @@ public interface RetileAPI {
      * @return
      * @throws RetileAPIException
      */
-    String resolveServer(UUID uuid) throws RetileAPIException;
+    ServerInfo resolveServer(UUID uuid) throws RetileAPIException;
 
     /**
      *

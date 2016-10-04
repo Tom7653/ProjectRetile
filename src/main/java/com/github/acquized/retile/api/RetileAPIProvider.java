@@ -20,6 +20,7 @@ import com.github.acquized.retile.hub.Notifications;
 import com.github.acquized.retile.reports.Report;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.Connection;
@@ -118,7 +119,7 @@ public class RetileAPIProvider implements RetileAPI {
 
         if(staff.size() > 0) {
             for(ProxiedPlayer p : staff) {
-                p.sendMessage(tl("ProjectRetile.Notifications.Report.Staff", reporter, victim, report.getReason(), resolveServer(report.getVictim())));
+                p.sendMessage(tl("ProjectRetile.Notifications.Report.Staff", reporter, victim, report.getReason(), resolveServer(report.getVictim()).getName()));
             }
         } else {
             ProjectRetile.getInstance().getDatabase().update("INSERT INTO `queue` (token, reporter, victim, reason, reportdate) VALUES " +
@@ -190,8 +191,8 @@ public class RetileAPIProvider implements RetileAPI {
     }
 
     @Override
-    public String resolveServer(UUID uuid) throws RetileAPIException {
-        return ProxyServer.getInstance().getPlayer(uuid).getServer().getInfo().getName();
+    public ServerInfo resolveServer(UUID uuid) throws RetileAPIException {
+        return ProxyServer.getInstance().getPlayer(uuid).getServer().getInfo();
     }
 
     @Override

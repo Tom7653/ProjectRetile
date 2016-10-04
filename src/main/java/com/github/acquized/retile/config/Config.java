@@ -45,6 +45,14 @@ public class Config extends YamlConfig {
     @Path("ProjectRetile.Cooldown")
     public int cooldown = 60;
 
+    @Comments({
+            "How should the Time be formated?",
+            "This is using java.text.SimpleDateFormat's Date and Time Pattern",
+            "For a list of Patterns visit https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"
+    })
+    @Path("ProjectRetile.DateFormat")
+    public String dateFormat = "dd.MM.yyyy hh:mm:ss a";
+
     @Comment("Should the Updater be enabled? The Updater checks every Hour for a new Version.")
     @Path("ProjectRetile.Updater")
     public boolean updater = true;

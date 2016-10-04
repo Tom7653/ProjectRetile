@@ -20,6 +20,7 @@ import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.cache.impl.AsyncMcAPICanada;
 import com.github.acquized.retile.cache.impl.McAPICanada;
 import com.github.acquized.retile.cache.impl.Offline;
+import com.github.acquized.retile.commands.ReportCommand;
 import com.github.acquized.retile.commands.RetileCommand;
 import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
@@ -157,6 +158,7 @@ public class ProjectRetile extends Plugin {
     }
 
     private void registerCommands(PluginManager pm) {
+        pm.registerCommand(this, new ReportCommand());
         pm.registerCommand(this, new RetileCommand());
     }
 
