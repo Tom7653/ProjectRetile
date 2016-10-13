@@ -98,6 +98,12 @@ processResources {
     expand project.properties
 }
 
+javadoc {
+    source = "$buildDir/"
+    include("$projectDir/src/main/java/com/github/acquized/retile/api")
+    options.stylesheetFile = new File(projectDir, "stylesheet.css")
+}
+
 task delombok {
     description 'Delomboks the entire source code tree'
     def srcDelomboked = 'build/src-delomboked'
