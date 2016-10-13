@@ -15,7 +15,6 @@
 package com.github.acquized.retile.api;
 
 import com.github.acquized.retile.ProjectRetile;
-import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.hub.Notifications;
 import com.github.acquized.retile.reports.Report;
 
@@ -23,7 +22,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -193,18 +191,6 @@ public class RetileAPIProvider implements RetileAPI {
     @Override
     public ServerInfo resolveServer(UUID uuid) throws RetileAPIException {
         return ProxyServer.getInstance().getPlayer(uuid).getServer().getInfo();
-    }
-
-    @Override
-    @Deprecated
-    public Connection getSQLConnection() throws RetileAPIException, SQLException {
-        return ProjectRetile.getInstance().getDatabase().getConnection();
-    }
-
-    @Override
-    @Deprecated
-    public Cache getCache() throws RetileAPIException {
-        return ProjectRetile.getInstance().getCache();
     }
 
 }

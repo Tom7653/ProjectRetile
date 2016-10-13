@@ -16,126 +16,124 @@ package com.github.acquized.retile.api;
 
 import com.github.acquized.retile.annotations.Beta;
 import com.github.acquized.retile.annotations.Documented;
-import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.reports.Report;
 
 import net.md_5.bungee.api.config.ServerInfo;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.UUID;
 
 /**
- * TODO: JavaDocs
+ * Interface for implementation of the RetileAPI. This has
+ * been made a Interface for future API Versions that may
+ * use other Types of Databases and not SQL Databases.
+ *
+ * @version 1.0.0-SNAPSHOT
+ * @author Acquized
  */
 @Beta
 @Documented
 public interface RetileAPI {
 
     /**
+     * Gets the <code>amount</code> latest Reports that have been
+     * put into the <code>retile</code> Database Table. This excludes
+     * Waiting Queue Reports.
      *
-     * @author Acquized
-     * @return
-     * @throws RetileAPIException
+     * @return Array of Reports with the length of <code>amount</code>
+     * @param amount Integer
+     * @throws RetileAPIException If an error occurs
      */
     Report[] getLatestReports(int amount) throws RetileAPIException;
 
     /**
+     * Gets all Reports that have ever been submited and added
+     * into the <code>retile</code> Database Table. This includes
+     * Waiting Queue Reports.
      *
-     * @author Acquized
-     * @return
-     * @throws RetileAPIException
+     * @return Array of Reports
+     * @throws RetileAPIException If an error occurs
      */
     Report[] getAllReports() throws RetileAPIException;
 
     /**
+     * Gets all Reports that have been submited and added
+     * into the <code>queue</code> Database Table. This only
+     * includes Waiting Queue Reports.
      *
-     * @author Acquized
-     * @return
-     * @throws RetileAPIException
+     * @return Array of Reports
+     * @throws RetileAPIException If an error occurs
      */
     Report[] getWaitingReports() throws RetileAPIException;
 
     /**
+     * Gets all Reports that have been submited since <code>millis</code>
+     * from the <code>retile</code> Databe Table. This includes
+     * Waiting Queue Reports.
      *
-     * @author Acquized
-     * @param millis
-     * @return
-     * @throws RetileAPIException
+     * @param millis Long (Milliseconds since UNIX Epoch Time)
+     * @return Array of Reports
+     * @throws RetileAPIException If an error occurs
      */
     Report[] getReportsSince(long millis) throws RetileAPIException;
 
     /**
+     * Adds a Report into the <code>retile</code> Database Table and (if online)
+     * notifies Staff Members and the console about it. This method will be called
+     * when a player sends a Report using the Command or Gui. If no staff member is
+     * online, the Report will be also added to the <code>queue</code> Database Table.
      *
-     * @author Acquized
-     * @param report
-     * @throws RetileAPIException
+     * @param report Report
+     * @throws RetileAPIException If an error occurs
      */
     void addReport(Report report) throws RetileAPIException;
 
     /**
+     * Checks if a Report with the {@link com.github.acquized.retile.reports.Report#token} already
+     * exists in the <code>retile</code> Database. This excludes the Waiting Queue.
      *
-     * @author Acquized
-     * @param report
-     * @return
-     * @throws RetileAPIException
+     * @param report Report
+     * @return Boolean
+     * @throws RetileAPIException If an error occurs
      */
     boolean doesReportExist(Report report) throws RetileAPIException;
 
     /**
+     * Removes every Report with the {@link com.github.acquized.retile.reports.Report#token} from
+     * the <code>retile</code> and <code>queue</code> Database.
      *
-     * @author Acquized
-     * @param report
-     * @throws RetileAPIException
+     * @param report Report
+     * @throws RetileAPIException If an error occurs
      */
     void removeReport(Report report) throws RetileAPIException;
 
     /**
+     * Gets every Report submited by <code>uuid</code> from the <code>retile</code>
+     * and <code>queue</code> Table.
      *
-     * @author Acquized
-     * @param uuid
-     * @return
-     * @throws RetileAPIException
+     * @param uuid UUID
+     * @return Array of Reports
+     * @throws RetileAPIException If an error occurs
      */
     Report[] getReportsBy(UUID uuid) throws RetileAPIException;
 
     /**
+     * Gets every Report that have <code>uuid</code> as Victim from the <code>retile</code>
+     * and <code>queue</code> Table.
      *
-     * @author Acquized
-     * @param uuid
-     * @return
-     * @throws RetileAPIException
+     * @param uuid UUID
+     * @return Array of Reports
+     * @throws RetileAPIException If an error occurs
      */
     Report[] getReportsRegarding(UUID uuid) throws RetileAPIException;
 
     /**
+     * Resolves the Server of <code>uuid</code>. This is a shortcut for
+     * {@link net.md_5.bungee.api.ProxyServer#getServerInfo(String)}.
      *
-     * @author Acquized
-     * @param uuid
-     * @return
-     * @throws RetileAPIException
+     * @param uuid UUID
+     * @return ServerInfo
+     * @throws RetileAPIException If an error occurs
      */
     ServerInfo resolveServer(UUID uuid) throws RetileAPIException;
-
-    /**
-     *
-     * @author Acquized
-     * @return
-     * @throws RetileAPIException
-     * @throws SQLException
-     * @deprecated
-     */
-    @Deprecated
-    Connection getSQLConnection() throws RetileAPIException, SQLException;
-
-    /**
-     *
-     * @author Acquized
-     * @return
-     * @throws RetileAPIException
-     * @deprecated
-     */
-    @Deprecated
-    Cache getCache() throws RetileAPIException;
 
 }
