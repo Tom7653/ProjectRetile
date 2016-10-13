@@ -49,7 +49,8 @@ dependencies {
     // Compile using ShadowJar
     compile group: 'com.zaxxer', name: 'HikariCP-java7', version: '2.4.9'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
-    compile group: 'dev.wolveringer', name: 'BungeeUtil', version: '1.6.7.9'
+    //compile group: 'dev.wolveringer', name: 'BungeeUtil', version: '1.6.7.9'
+    compile group: 'dev.wolveringer', name: 'RetileBungeeUtil', version: '1.0.0-SNAPSHOT' // https://github.com/Acquized/RetileBungeeUtil
     compile group: 'com.eclipsesource.minimal-json', name: 'minimal-json', version: '0.9.4'
     compile group: 'net.cubespace.yamler', name: 'Yamler-Bungee', version: '2.4.0'
     compile group: 'org.asynchttpclient', name: 'async-http-client', version: '2.0.15'
@@ -85,7 +86,8 @@ shadowJar {
         include(dependency('com.zaxxer:HikariCP:2.4.7'))
         include(dependency('org.slf4j:slf4j-simple:1.7.21'))
         include(dependency('org.slf4j:slf4j-api:1.7.21'))
-        include(dependency('dev.wolveringer:BungeeUtil:1.6.7.9'))
+        //include(dependency('dev.wolveringer:BungeeUtil:1.6.7.9'))
+        include(dependency('dev.wolveringer:RetileBungeeUtil:1.0.0-SNAPSHOT'))
         include(dependency('com.eclipsesource.minimal-json:minimal-json:0.9.4'))
         include(dependency('net.cubespace.yamler:Yamler-Bungee:2.4.0'))
         include(dependency('org.asynchttpclient:async-http-client:2.0.15'))
