@@ -39,6 +39,14 @@ public class Config extends YamlConfig {
     public String locale = "en";
 
     @Comments({
+            "Should UUID's be resolved using BungeeCord?",
+            "Only enable this if you encounter Lags when reporting.",
+            "This may cause errors with wrong UUID on certain Networks"
+    })
+    @Path("ProjectRetile.ForceOfflineUUID")
+    public boolean forceOfflineUUID = false;
+
+    @Comments({
             "How long should the Cooldown be?",
             "The Cooldown is counted in seconds and only applies to /report."
     })
@@ -94,13 +102,6 @@ public class Config extends YamlConfig {
     })
     @Path("Aliases.ReportsCommand")
     public String[] reportsAliases = { "reports", "lr" };
-
-    @Comments({
-            "Which Aliases should the Latest Command have?",
-            "The default Command /latest will always stay."
-    })
-    @Path("Aliases.LatestCommand")
-    public String[] latestAliases = { "latestreports", "lr" };
 
     @Comments({
             "Which Aliases should the Toggle Command have?",

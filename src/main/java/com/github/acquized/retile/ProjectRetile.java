@@ -23,6 +23,7 @@ import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.commands.ListReportsCommand;
 import com.github.acquized.retile.commands.ReportCommand;
 import com.github.acquized.retile.commands.RetileCommand;
+import com.github.acquized.retile.commands.ToggleCommand;
 import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
 import com.github.acquized.retile.hub.Cooldown;
@@ -74,9 +75,9 @@ public class ProjectRetile extends Plugin {
         prefix = Utility.format(config.prefix);
         client = new DefaultAsyncHttpClient();
         new I18n().load();
-        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (config.forceAsyncRequests)) {
+        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (config.forceAsyncRequests) && (!config.forceOfflineUUID)) {
             cache = new AsyncMcAPICanada();
-        } else if(ProxyServer.getInstance().getConfig().isOnlineMode()) {
+        } else if(ProxyServer.getInstance().getConfig().isOnlineMode() && (!config.forceOfflineUUID)) {
             cache = new McAPICanada();
         } else {
             cache = new Offline();
@@ -162,6 +163,7 @@ public class ProjectRetile extends Plugin {
         pm.registerCommand(this, new ListReportsCommand());
         pm.registerCommand(this, new ReportCommand());
         pm.registerCommand(this, new RetileCommand());
+        pm.registerCommand(this, new ToggleCommand());
     }
 
 }
