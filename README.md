@@ -18,23 +18,18 @@ Precompiled binaries are avaible for the end user at our [Spigot Page]().
 ### Continous Integration
 ProjectRetile uses [Circle CI](https://circleci.com/) for Continous Integration. You can visit the Project [here](https://circleci.com/gh/Acquized/ProjectRetile).  
   
-### Maven
-```xml
-<repositories>
-    <repository>
-        <id>jitpack-central</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
+### Gradle
+```gradle
+repositories {
+    maven {
+        name 'jitpack-central'
+        url 'https://jitpack.io'
+    }
+}
 
-<dependencies>
-    <dependency>
-        <groupId>com.github.acquized</groupId>
-        <artifactId>ProjectRetile</artifactId>
-        <version>master-SNAPSHOT</version>
-        <scope>provided</scope>
-    </dependency>
-</dependencies>
+dependencies {
+    compile group: 'com.github.acquized', name: 'ProjectRetile', version: 'master-SNAPSHOT'
+}
 ```  
   
 ### License
