@@ -114,7 +114,7 @@ public interface RetileAPI {
      * @return Array of Reports
      * @throws RetileAPIException If an error occurs
      */
-    Report[] getReportsBy(UUID uuid) throws RetileAPIException;
+    Report[] getReportsUsingReporter(UUID uuid) throws RetileAPIException;
 
     /**
      * Gets every Report that have <code>uuid</code> as Victim from the <code>retile</code>
@@ -124,7 +124,17 @@ public interface RetileAPI {
      * @return Array of Reports
      * @throws RetileAPIException If an error occurs
      */
-    Report[] getReportsRegarding(UUID uuid) throws RetileAPIException;
+    Report[] getReportsUsingVictim(UUID uuid) throws RetileAPIException;
+
+    /**
+     * Gets every Report that have <code>token</code> as Unique Token from the <code>retile</code>
+     * and <code>queue</code> Table.
+     *
+     * @param token Unique Token Identifier
+     * @return Report
+     * @throws RetileAPIException If an error occurs
+     */
+    Report getReportsUsingToken(String token) throws RetileAPIException;
 
     /**
      * Resolves the Server of <code>uuid</code>. This is a shortcut for

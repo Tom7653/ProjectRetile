@@ -155,7 +155,7 @@ public class RetileAPIProvider implements RetileAPI {
     }
 
     @Override
-    public Report[] getReportsBy(UUID uuid) throws RetileAPIException {
+    public Report[] getReportsUsingReporter(UUID uuid) throws RetileAPIException {
         List<Report> reports = new ArrayList<>();
 
         ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile` WHERE reporter = '" + uuid.toString() + "'");
@@ -172,7 +172,7 @@ public class RetileAPIProvider implements RetileAPI {
     }
 
     @Override
-    public Report[] getReportsRegarding(UUID uuid) throws RetileAPIException {
+    public Report[] getReportsUsingVictim(UUID uuid) throws RetileAPIException {
         List<Report> reports = new ArrayList<>();
 
         ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile` WHERE victim = '" + uuid.toString() + "'");
@@ -186,6 +186,22 @@ public class RetileAPIProvider implements RetileAPI {
         }
 
         return reports.toArray(new Report[reports.size()]);
+    }
+
+    @Override
+    @SuppressWarnings("LoopStatementThatDoesntLoop")
+    public Report getReportsUsingToken(String token) throws RetileAPIException {
+        ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile` WHERE token = '" + token + "'");
+        try {
+            while(rs.next()) {
+                return new Report(rs.getString("token"), UUID.fromString(rs.getString("reporter")), UUID.fromString(rs.getString("victim")),
+                        rs.getString("reason"), rs.getDate("reportdate").getTime());
+            }
+        } catch (SQLException | NullPointerException ex) {
+            throw new RetileAPIException("Error while executing SQL Query", ex);
+        }
+
+        return null;
     }
 
     @Override
