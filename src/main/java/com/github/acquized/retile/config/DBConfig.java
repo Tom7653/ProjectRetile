@@ -27,16 +27,17 @@ public class DBConfig extends YamlConfig {
     @Comments({
             "Set here the URL of the Database to which should be connected",
             "Must be \"jdbc:<Database engine>:<connection parameter>\".",
-            "Template for MySQL: jdbc:mysql://<host>:<port>/<database>"
+            "Template for MySQL: 'jdbc:mysql://<host>:<port>/<database>'",
+            "Template for SQLite: 'jdbc:sqlite:{0}{1}<filename>.db' (WITH {0} AND {1}!)"
     })
     @Path("URL")
-    public String jdbcURL = "jdbc:mysql://127.0.0.1:3306/ProjectRetile";
+    public String jdbcURL = "jdbc:sqlite:{0}{1}database.db" /*"jdbc:mysql://127.0.0.1:3306/ProjectRetile"*/; // Using SQLite as default Database
 
-    @Comment("Set here the Username that should be used to authentificate with the Database")
+    @Comment("Set here the Username that should be used to authentificate with the Database. Ignore if you're using SQLite.")
     @Path("Username")
     public String username = "root";
 
-    @Comment("Set here the Password that should be used to authentificate with the Database")
+    @Comment("Set here the Password that should be used to authentificate with the Database. Ignore if you're using SQLite.")
     @Path("Password")
     public String password = "passw0rd";
 

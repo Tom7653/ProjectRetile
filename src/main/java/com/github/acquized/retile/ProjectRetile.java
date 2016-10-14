@@ -35,6 +35,7 @@ import com.github.acquized.retile.listeners.Disconnect;
 import com.github.acquized.retile.listeners.PostLogin;
 import com.github.acquized.retile.sql.Database;
 import com.github.acquized.retile.sql.impl.MySQL;
+import com.github.acquized.retile.sql.impl.SQLite;
 import com.github.acquized.retile.ui.Bridge;
 import com.github.acquized.retile.updater.Updater;
 import com.github.acquized.retile.utils.Utility;
@@ -85,11 +86,17 @@ public class ProjectRetile extends Plugin {
             cache = new Offline();
         }
         try {
-            database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
+            if(dbConfig.jdbcURL.contains("mysql")) {
+                database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
+                log.info("Using MySQL Connection...");
+            } else {
+                database = new SQLite(dbConfig.jdbcURL);
+                log.info("Using SQLite Connection...");
+            }
             database.connect();
             database.setup();
         } catch (SQLException ex) {
-            log.error("Could not connect to / setup MySQL Database! Did you enter the correct Details?", ex);
+            log.error("Could not connect to MySQL / SQLite Database! Did you enter the correct Details?", ex);
             return;
         }
         Cooldown.setInstance(new Cooldown());
