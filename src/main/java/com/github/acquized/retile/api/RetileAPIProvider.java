@@ -155,6 +155,12 @@ public class RetileAPIProvider implements RetileAPI {
     }
 
     @Override
+    public void clearWaitingQueue() throws RetileAPIException {
+        ProjectRetile.getInstance().getDatabase().update("DELETE FROM queue;");
+        ProjectRetile.getInstance().getDatabase().update("ALTER TABLE queue AUTO_INCREMENT = 1");
+    }
+
+    @Override
     public Report[] getReportsUsingReporter(UUID uuid) throws RetileAPIException {
         List<Report> reports = new ArrayList<>();
 

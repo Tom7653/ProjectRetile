@@ -22,6 +22,7 @@ import com.github.acquized.retile.cache.impl.McAPICanada;
 import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.commands.InfoCommand;
 import com.github.acquized.retile.commands.ListReportsCommand;
+import com.github.acquized.retile.commands.QueueCommand;
 import com.github.acquized.retile.commands.ReportCommand;
 import com.github.acquized.retile.commands.RetileCommand;
 import com.github.acquized.retile.commands.ToggleCommand;
@@ -163,6 +164,7 @@ public class ProjectRetile extends Plugin {
     private void registerCommands(PluginManager pm) {
         pm.registerCommand(this, new InfoCommand());
         pm.registerCommand(this, new ListReportsCommand());
+        pm.registerCommand(this, new QueueCommand());
         pm.registerCommand(this, new ReportCommand());
         pm.registerCommand(this, new RetileCommand());
         pm.registerCommand(this, new ToggleCommand());

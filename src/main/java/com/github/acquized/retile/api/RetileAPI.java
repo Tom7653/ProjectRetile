@@ -107,6 +107,13 @@ public interface RetileAPI {
     void removeReport(Report report) throws RetileAPIException;
 
     /**
+     * Removes every Report from the <code>queue</code> Database.
+     *
+     * @throws RetileAPIException If an error occurs
+     */
+    void clearWaitingQueue() throws RetileAPIException;
+
+    /**
      * Gets every Report submited by <code>uuid</code> from the <code>retile</code>
      * and <code>queue</code> Table.
      *
