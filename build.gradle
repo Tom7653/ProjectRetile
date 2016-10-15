@@ -101,8 +101,6 @@ processResources {
 }
 
 javadoc {
-    source = "$buildDir/"
-    include("$projectDir/src/main/java/com/github/acquized/retile/api")
     options.stylesheetFile = new File(projectDir, "stylesheet.css")
 }
 

@@ -26,6 +26,7 @@ import com.github.acquized.retile.commands.QueueCommand;
 import com.github.acquized.retile.commands.ReportCommand;
 import com.github.acquized.retile.commands.RetileCommand;
 import com.github.acquized.retile.commands.ToggleCommand;
+import com.github.acquized.retile.config.Blacklist;
 import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
 import com.github.acquized.retile.hub.Cooldown;
@@ -65,6 +66,7 @@ public class ProjectRetile extends Plugin {
     @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
     @Getter private AsyncHttpClient client;
+    @Getter private Blacklist blacklist;
     @Getter private Database database;
     @Getter private DBConfig dbConfig;
     @Getter private RetileAPI api;
@@ -137,6 +139,14 @@ public class ProjectRetile extends Plugin {
             dbConfig.init();
         } catch (InvalidConfigurationException ex) {
             log.error("Could not load database.yml File - Please check for Errors", ex);
+        }
+
+        // blacklist.yml
+        try {
+            blacklist = new Blacklist(new File(getDataFolder(), "blacklist.yml"));
+            blacklist.init();
+        } catch (InvalidConfigurationException ex) {
+            log.error("Could not load blacklist.yml File - Please check for Errors", ex);
         }
     }
 

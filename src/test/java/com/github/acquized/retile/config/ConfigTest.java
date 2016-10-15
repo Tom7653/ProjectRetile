@@ -26,4 +26,10 @@ public class ConfigTest {
         cfg.init();
     }
 
+    @Test
+    public void testBlacklistConfig() throws InvalidConfigurationException {
+        Blacklist cfg = new Blacklist(new File("build" + File.separator + "tmp" + File.separator + "config" + File.separator + "blacklist.yml"));
+        cfg.init();
+    }
+
 }

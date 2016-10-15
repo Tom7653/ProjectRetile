@@ -104,6 +104,13 @@ public class RetileAPIProvider implements RetileAPI {
 
     @Override
     public void addReport(Report report) throws RetileAPIException {
+        for(String s : ProjectRetile.getInstance().getBlacklist().list) {
+            if((report.getReason().contains(s)) && (!ProxyServer.getInstance().getPlayer(report.getReporter()).hasPermission("projectretile.blacklist.bypass"))) {
+                ProxyServer.getInstance().getPlayer(report.getReporter()).sendMessage(tl("ProjectRetile.Commands.Report.Blacklist"));
+                return;
+            }
+        }
+
         List<ProxiedPlayer> staff = new ArrayList<>();
 
         String reporter = ProjectRetile.getInstance().getCache().username(report.getReporter());
