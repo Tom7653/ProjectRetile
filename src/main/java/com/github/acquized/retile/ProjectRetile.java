@@ -36,7 +36,6 @@ import com.github.acquized.retile.listeners.PostLogin;
 import com.github.acquized.retile.sql.Database;
 import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.sql.impl.SQLite;
-import com.github.acquized.retile.ui.Bridge;
 import com.github.acquized.retile.updater.Updater;
 import com.github.acquized.retile.utils.Utility;
 
@@ -51,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.sql.SQLException;
 
-import dev.wolveringer.BungeeUtil.BungeeUtil;
 import lombok.Getter;
 
 import static com.github.acquized.retile.utils.Utility.GRAY;
@@ -97,7 +95,10 @@ public class ProjectRetile extends Plugin {
         Cooldown.setInstance(new Cooldown());
         Notifications.setInstance(new Notifications());
         api = new RetileAPIProvider();
-        setupBungeeUtil();
+        if(!isBungeeUtilInstalled()) {
+            log.error("Could not load BungeeUtil. Please install it and start the Proxy Server again.");
+            return;
+        }
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
@@ -148,27 +149,13 @@ public class ProjectRetile extends Plugin {
         }
     }
 
-    private void setupBungeeUtil() {
-        boolean bungeeUtilInstalled = false;
+    private boolean isBungeeUtilInstalled() {
         for(Plugin p : ProxyServer.getInstance().getPluginManager().getPlugins()) {
-            if(p.getDescription().getName().equalsIgnoreCase("BungeeUtil")) {
-                bungeeUtilInstalled = true;
-                break;
+            if(p.getDescription().getName().equals("BungeeUtil")) {
+                return true;
             }
         }
-
-        if(!bungeeUtilInstalled) {
-            if (BungeeUtil.getInstance() == null)
-                BungeeUtil.createInstance(this);
-            if (!BungeeUtil.getInstance().isInjected()) {
-                if (BungeeUtil.getInstance().inject() == 1) {
-                    log.error("Could not inject BungeeUtil! Please restart the Proxy.");
-                    return;
-                }
-            }
-            BungeeUtil.getInstance().load();
-        }
-        Bridge.injectBridge();
+        return false;
     }
 
     private void registerListeners(PluginManager pm) {
