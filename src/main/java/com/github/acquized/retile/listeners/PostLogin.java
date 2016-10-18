@@ -15,24 +15,36 @@
 package com.github.acquized.retile.listeners;
 
 import com.github.acquized.retile.ProjectRetile;
-import com.github.acquized.retile.hub.Notifications;
+import com.github.acquized.retile.api.RetileAPIException;
+import com.github.acquized.retile.reports.Report;
 
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import static com.github.acquized.retile.i18n.I18n.tl;
 
 public class PostLogin implements Listener {
 
     @EventHandler
     public void onPost(PostLoginEvent e) {
-        ProxiedPlayer p = e.getPlayer();
-        UUID uuid = ProjectRetile.getInstance().getCache().uuid(p.getName());
-        if((p.hasPermission("projectretile.report.receive")) && (!Notifications.getInstance().isStaff(uuid))) {
-            Notifications.getInstance().addStaff(uuid);
-        }
+        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> {
+            if(e.getPlayer().hasPermission("")) {
+                Report[] reports;
+                try {
+                    reports = ProjectRetile.getInstance().getApi().getWaitingReports();
+                } catch (RetileAPIException ex) {
+                    ProjectRetile.getInstance().getLog().error("Could not get Waiting Queue Reports.", ex);
+                    return;
+                }
+                if(reports.length != 0) {
+                    e.getPlayer().sendMessage(tl("ProjectRetile.Notifications.Report.Offline.Info"));
+                }
+            }
+        }, 2, TimeUnit.SECONDS); // Delayed because of UUID Delays
     }
 
 }

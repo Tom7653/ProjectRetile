@@ -55,7 +55,9 @@ public class ReportCommand extends Command {
                                     try {
                                         ProjectRetile.getInstance().getApi().addReport(report);
                                     } catch (RetileAPIException ex) {
-                                        p.sendMessage(tl("ProjectRetile.Commands.Report.Failure"));
+                                        if(!ex.getMessage().contains("Blacklist")) {
+                                            p.sendMessage(tl("ProjectRetile.Commands.Report.Failure"));
+                                        }
                                         return;
                                     }
                                     p.sendMessage(tl("ProjectRetile.Commands.Report.Success", target.getName(), report.getToken()));

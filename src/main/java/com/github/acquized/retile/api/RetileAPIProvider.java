@@ -17,6 +17,7 @@ package com.github.acquized.retile.api;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.hub.Notifications;
 import com.github.acquized.retile.reports.Report;
+import com.github.acquized.retile.sql.impl.SQLite;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -107,7 +108,7 @@ public class RetileAPIProvider implements RetileAPI {
         for(String s : ProjectRetile.getInstance().getBlacklist().list) {
             if((report.getReason().contains(s)) && (!ProxyServer.getInstance().getPlayer(report.getReporter()).hasPermission("projectretile.blacklist.bypass"))) {
                 ProxyServer.getInstance().getPlayer(report.getReporter()).sendMessage(tl("ProjectRetile.Commands.Report.Blacklist"));
-                return;
+                throw new RetileAPIException("Blacklist");
             }
         }
 
@@ -118,20 +119,22 @@ public class RetileAPIProvider implements RetileAPI {
 
         staff.addAll(ProxyServer.getInstance().getPlayers().stream().filter(p -> Notifications.getInstance().isReceiving(ProjectRetile.getInstance().getCache().uuid(p.getName()))).collect(java.util.stream.Collectors.toList()));
 
+        String now = ProjectRetile.getInstance().getDatabase() instanceof SQLite ? "now" : "NOW()";
+
         if(staff.size() > 0) {
             for(ProxiedPlayer p : staff) {
                 p.sendMessage(tl("ProjectRetile.Notifications.Report.Staff", reporter, victim, report.getReason(), resolveServer(report.getVictim()).getName()));
             }
         } else {
             ProjectRetile.getInstance().getDatabase().update("INSERT INTO `queue` (token, reporter, victim, reason, reportdate) VALUES " +
-                    "('" + report.getToken() + "', '" + report.getReporter().toString() + "', '" + report.getVictim().toString() + "', '" + report.getReason() + "', NOW());");
+                    "('" + report.getToken() + "', '" + report.getReporter().toString() + "', '" + report.getVictim().toString() + "', '" + report.getReason() + "', " + now + ");");
         }
 
         ProxyServer.getInstance().getConsole().sendMessage(tl("ProjectRetile.Notifications.Report.Console",
-                reporter, victim, report.getReason(), resolveServer(report.getVictim()), report.getToken()));
+                reporter, victim, report.getReason(), resolveServer(report.getVictim()).getName(), report.getToken()));
 
         ProjectRetile.getInstance().getDatabase().update("INSERT INTO `retile` (token, reporter, victim, reason, reportdate) VALUES " +
-                "('" + report.getToken() + "', '" + report.getReporter().toString() + "', '" + report.getVictim().toString() + "', '" + report.getReason() + "', NOW());");
+                "('" + report.getToken() + "', '" + report.getReporter().toString() + "', '" + report.getVictim().toString() + "', '" + report.getReason() + "', " + now + ");");
     }
 
     @Override

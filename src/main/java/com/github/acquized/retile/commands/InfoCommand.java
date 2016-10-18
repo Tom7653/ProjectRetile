@@ -54,6 +54,7 @@ public class InfoCommand extends Command {
                             report.getReason(),
                             DATE_FORMAT.format(new Date(report.getTimestamp()))));
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
+                    return;
                 } else {
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Unknown"));
                     return;
@@ -61,6 +62,7 @@ public class InfoCommand extends Command {
             }
         } else {
             sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
+            return;
         }
         sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Syntax"));
     }

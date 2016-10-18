@@ -46,9 +46,11 @@ public class ToggleCommand extends Command {
                 }
             } else {
                 p.sendMessage(tl("ProjectRetile.General.NoPermission"));
+                return;
             }
         } else {
             sender.sendMessage(tl("ProjectRetile.General.PlayersPermitted"));
+            return;
         }
         sender.sendMessage(tl("ProjectRetile.Commands.Toggle.Syntax"));
     }

@@ -27,6 +27,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 public class I18n {
 
@@ -64,11 +65,31 @@ public class I18n {
     // Shortcuts for Static Imports
 
     public static BaseComponent[] tl(String key) {
-        return TextComponent.fromLegacyText(getMessage(key));
+        String msg = getMessage(key);
+        if(msg.contains("\\n")) {
+            String[] split = msg.split(Pattern.quote("\\n"));
+            BaseComponent[] array = new BaseComponent[split.length];
+            for(int i = 0; i < split.length; i++) {
+                array[i] = new TextComponent(TextComponent.fromLegacyText(split[i]));
+            }
+            return array;
+        } else {
+            return TextComponent.fromLegacyText(msg);
+        }
     }
 
     public static BaseComponent[] tl(String key, Object... obj) {
-        return TextComponent.fromLegacyText(getMessage(key, obj));
+        String msg = getMessage(key, obj);
+        if(msg.contains("\\n")) {
+            String[] split = msg.split(Pattern.quote("\\n"));
+            BaseComponent[] array = new BaseComponent[split.length];
+            for(int i = 0; i < split.length; i++) {
+                array[i] = new TextComponent(TextComponent.fromLegacyText(split[i]));
+            }
+            return array;
+        } else {
+            return TextComponent.fromLegacyText(msg);
+        }
     }
 
     public void load() {
