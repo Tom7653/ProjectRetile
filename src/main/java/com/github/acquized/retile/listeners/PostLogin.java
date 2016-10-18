@@ -32,7 +32,7 @@ public class PostLogin implements Listener {
     @EventHandler
     public void onPost(PostLoginEvent e) {
         ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> {
-            if(e.getPlayer().hasPermission("")) {
+            if(e.getPlayer().hasPermission("projectretile.report.receive.offline")) {
                 Report[] reports;
                 try {
                     reports = ProjectRetile.getInstance().getApi().getWaitingReports();

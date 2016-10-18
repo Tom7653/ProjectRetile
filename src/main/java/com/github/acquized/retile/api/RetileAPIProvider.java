@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 
@@ -117,7 +118,7 @@ public class RetileAPIProvider implements RetileAPI {
         String reporter = ProjectRetile.getInstance().getCache().username(report.getReporter());
         String victim = ProjectRetile.getInstance().getCache().username(report.getVictim());
 
-        staff.addAll(ProxyServer.getInstance().getPlayers().stream().filter(p -> Notifications.getInstance().isReceiving(ProjectRetile.getInstance().getCache().uuid(p.getName()))).collect(java.util.stream.Collectors.toList()));
+        staff.addAll(ProxyServer.getInstance().getPlayers().stream().filter(p -> (p.hasPermission("projectretile.report.receive")) && (Notifications.getInstance().isReceiving(ProjectRetile.getInstance().getCache().uuid(p.getName())))).collect(Collectors.toList()));
 
         String now = ProjectRetile.getInstance().getDatabase() instanceof SQLite ? "now" : "NOW()";
 
