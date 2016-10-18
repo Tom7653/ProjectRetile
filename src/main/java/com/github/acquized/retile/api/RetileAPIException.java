@@ -14,11 +14,10 @@
  */
 package com.github.acquized.retile.api;
 
-public class RetileAPIException extends Exception {
+import lombok.AllArgsConstructor;
 
-    public RetileAPIException() {
-        super();
-    }
+@AllArgsConstructor
+public class RetileAPIException extends Exception {
 
     public RetileAPIException(String message) {
         super(message);

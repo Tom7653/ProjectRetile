@@ -12,7 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.acquized.api;
+package com.github.acquized.retile.test;
 
-public class APIExample {
-}
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public class TestFailException extends Exception {}

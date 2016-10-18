@@ -26,12 +26,12 @@ import com.github.acquized.retile.cache.Cache;
 
 import net.md_5.bungee.api.ProxyServer;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -48,43 +48,39 @@ public class McAPICanada implements Cache {
             .build(new CacheLoader<UUID, String>() {
                 @Override
                 public String load(UUID key) throws Exception {
-                    return resolve(key);
+                    return resolve(key).get();
                 }
             });
 
-    public String resolve(UUID uuid) {
-        try {
+    @SuppressWarnings("deprecation") // Executor Service isn't actually deprecated, just not recommendend. TODO: Maybe use Schedulers
+    public Future<String> resolve(UUID uuid) {
+        return ProjectRetile.getInstance().getExecutorService().submit(() -> {
             URL url = new URL("https://mcapi.ca/name/uuid/" + uuid.toString() + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
             conn.setRequestMethod("GET");
-            conn.setUseCaches(true);
+            conn.setUseCaches(false);
             conn.setDoOutput(true);
 
             JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
             return obj.get("name").asString();
-        } catch (IOException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not connect to McAPI.ca for resolving the Name of '" + uuid.toString() + "'.", ex);
-            return ProxyServer.getInstance().getPlayer(uuid).getName();
-        }
+        });
     }
 
-    public UUID resolve(String name) {
-        try {
+    @SuppressWarnings("deprecation") // Executor Service isn't actually deprecated, just not recommendend. TODO: Maybe use Schedulers
+    public Future<UUID> resolve(String name) {
+        return ProjectRetile.getInstance().getExecutorService().submit(() -> {
             URL url = new URL("https://mcapi.ca/uuid/player/" + name + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
             conn.setRequestMethod("GET");
-            conn.setUseCaches(true);
+            conn.setUseCaches(false);
             conn.setDoOutput(true);
 
             JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
             addEntry(UUID.fromString(obj.get("uuid_formatted").asString()), name);
             return UUID.fromString(obj.get("uuid_formatted").asString());
-        } catch (IOException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not connect to McAPI.ca for resolving th UUID of '" + name + "'.", ex);
-            return ProxyServer.getInstance().getPlayer(name).getUniqueId();
-        }
+        });
     }
 
     @Override
@@ -104,7 +100,11 @@ public class McAPICanada implements Cache {
                 return entry.getKey();
             }
         }
-        return resolve(name);
+        try {
+            return resolve(name).get();
+        } catch (InterruptedException | ExecutionException e) {
+            return ProxyServer.getInstance().getPlayer(name).getUniqueId();
+        }
     }
 
     @Override

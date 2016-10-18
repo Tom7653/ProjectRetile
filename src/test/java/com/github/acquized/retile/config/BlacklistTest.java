@@ -9,10 +9,10 @@ import org.junit.Test;
 
 import java.io.File;
 
-public class ConfigTest {
+public class BlacklistTest {
 
     public static final File DIRECTORY = new File("build" + File.separator + "test-output" + File.separator + "config");
-    public Config file;
+    public Blacklist file;
 
     @Before
     public void createDir() throws TestFailException {
@@ -25,7 +25,7 @@ public class ConfigTest {
 
     @Test
     public void testCreation() throws InvalidConfigurationException {
-        file = new Config(new File(DIRECTORY, "config.yml"));
+        file = new Blacklist(new File(DIRECTORY, "blacklist.yml"));
         file.init();
     }
 

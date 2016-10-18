@@ -34,16 +34,7 @@ public class Cooldown {
     public Map<UUID, Stopwatch> cooldown = new HashMap<>();
 
     public Cooldown() {
-        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for(Map.Entry<UUID, Stopwatch> entry : cooldown.entrySet()) {
-                    if(entry.getValue().elapsed(TimeUnit.SECONDS) == ProjectRetile.getInstance().getConfig().cooldown) {
-                        cooldown.remove(entry.getKey());
-                    }
-                }
-            }
-        }, 1, TimeUnit.SECONDS);
+        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> cooldown.entrySet().stream().filter(entry -> entry.getValue().elapsed(TimeUnit.SECONDS) == ProjectRetile.getInstance().getConfig().cooldown).forEach(entry -> cooldown.remove(entry.getKey())), 1, TimeUnit.SECONDS);
     }
 
     public boolean in(UUID uuid) {

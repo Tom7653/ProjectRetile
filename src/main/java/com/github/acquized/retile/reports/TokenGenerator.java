@@ -40,7 +40,7 @@ public class TokenGenerator {
     public static String generate() {
         byte[] array = new byte[9];
         random.nextBytes(array);
-        return BaseEncoding.base64().omitPadding().encode(array).replace('/', '-');
+        return BaseEncoding.base64().omitPadding().encode(array).replace('/', '-').substring(0, 12); /* Just for safety */
     }
 
 }

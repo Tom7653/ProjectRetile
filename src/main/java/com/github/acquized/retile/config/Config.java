@@ -69,24 +69,6 @@ public class Config extends YamlConfig {
     @Path("ProjectRetile.Version")
     public String version = "1.0.0-SNAPSHOT";
 
-    // v  Connections  v
-
-    @Comments({
-            "Should UUID and SQL Requests be sent async?",
-            "This eliminates Server lag but may cause delay between the Plugin's Actions.",
-            "When using MySQL this is automaticly forced when the Connection Pools is set to true."
-    })
-    @Path("Connections.AsyncRequests")
-    public boolean forceAsyncRequests = true;
-
-    @Comments({
-            "Is Connection Pooling allowed?",
-            "This eliminates SQL <-> Server Delay but may need cause high Bandwidth",
-            "Disable if noticeable Ping Lags occur while proceeding Reports. Recommended to keep on true."
-    })
-    @Path("Connections.AllowPools")
-    public boolean allowConnectionPools = true;
-
     // v  Aliases  v
 
     @Comments({

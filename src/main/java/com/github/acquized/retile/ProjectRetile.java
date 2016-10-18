@@ -17,7 +17,6 @@ package com.github.acquized.retile;
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIProvider;
 import com.github.acquized.retile.cache.Cache;
-import com.github.acquized.retile.cache.impl.AsyncMcAPICanada;
 import com.github.acquized.retile.cache.impl.McAPICanada;
 import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.commands.InfoCommand;
@@ -46,8 +45,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +62,6 @@ public class ProjectRetile extends Plugin {
     public static String prefix = RED + "> " + GRAY;
     @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
-    @Getter private AsyncHttpClient client;
     @Getter private Blacklist blacklist;
     @Getter private Database database;
     @Getter private DBConfig dbConfig;
@@ -78,11 +74,8 @@ public class ProjectRetile extends Plugin {
         instance = this;
         loadConfigs();
         prefix = Utility.format(config.prefix);
-        client = new DefaultAsyncHttpClient();
         new I18n().load();
-        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (config.forceAsyncRequests) && (!config.forceOfflineUUID)) {
-            cache = new AsyncMcAPICanada();
-        } else if(ProxyServer.getInstance().getConfig().isOnlineMode() && (!config.forceOfflineUUID)) {
+        if(ProxyServer.getInstance().getConfig().isOnlineMode() && (!config.forceOfflineUUID)) {
             cache = new McAPICanada();
         } else {
             cache = new Offline();
@@ -114,6 +107,11 @@ public class ProjectRetile extends Plugin {
 
     @Override
     public void onDisable() {
+        try {
+            database.disconnect();
+        } catch (SQLException ex) {
+            log.error("Could not disconnect from the MySQL / SQLite Database! Please force end the Java Process.", ex);
+        }
         instance = null;
         log.info("ProjectRetile v{} has been disabled.", getDescription().getVersion());
     }

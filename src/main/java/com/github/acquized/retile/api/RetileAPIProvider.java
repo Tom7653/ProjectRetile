@@ -116,11 +116,7 @@ public class RetileAPIProvider implements RetileAPI {
         String reporter = ProjectRetile.getInstance().getCache().username(report.getReporter());
         String victim = ProjectRetile.getInstance().getCache().username(report.getVictim());
 
-        for(ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-            if(Notifications.getInstance().isReceiving(ProjectRetile.getInstance().getCache().uuid(p.getName()))) {
-                staff.add(p);
-            }
-        }
+        staff.addAll(ProxyServer.getInstance().getPlayers().stream().filter(p -> Notifications.getInstance().isReceiving(ProjectRetile.getInstance().getCache().uuid(p.getName()))).collect(java.util.stream.Collectors.toList()));
 
         if(staff.size() > 0) {
             for(ProxiedPlayer p : staff) {
