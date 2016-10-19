@@ -40,7 +40,7 @@ public class Updater {
             if(updateMsg != null) {
                 ProjectRetile.getInstance().getLog().info(updateMsg);
             }
-        }), 1, TimeUnit.HOURS);
+        }), 0, 1, TimeUnit.HOURS);
     }
 
     public static String getUpdateMessage() {

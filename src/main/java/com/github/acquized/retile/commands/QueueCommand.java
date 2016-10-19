@@ -81,6 +81,7 @@ public class QueueCommand extends Command {
                                 GRAY + "Reason: " + DARK_AQUA + r.getReason(),
                                 GRAY + "Time: " + DARK_AQUA + DATE_FORMAT.format(new Date(r.getTimestamp()))));
                         inv.setItem(slot, item);
+                        slot++;
                     }
                     try {
                         ProjectRetile.getInstance().getApi().clearWaitingQueue();
