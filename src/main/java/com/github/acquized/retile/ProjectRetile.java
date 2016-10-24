@@ -78,7 +78,7 @@ public class ProjectRetile extends Plugin {
         prefix = Utility.format(config.prefix);
         i18n = new I18n();
         i18n.load();
-        if(ProxyServer.getInstance().getConfig().isOnlineMode() && (!config.forceOfflineUUID)) {
+        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.forceOfflineUUID)) {
             cache = new McAPICanada();
         } else {
             cache = new Offline();

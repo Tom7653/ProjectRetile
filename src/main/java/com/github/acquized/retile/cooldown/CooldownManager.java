@@ -36,7 +36,7 @@ public class CooldownManager {
     private List<Cooldown> cooldowns = new ArrayList<>();
 
     public CooldownManager() {
-        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> cooldowns.stream().filter(c -> c.getWatch().elapsed(TimeUnit.SECONDS) == ProjectRetile.getInstance().getConfig().cooldown).forEach(c -> cooldowns.remove(c)), 1, TimeUnit.SECONDS);
+        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> cooldowns.stream().filter(c -> c.getWatch().elapsed(TimeUnit.SECONDS) >= ProjectRetile.getInstance().getConfig().cooldown).forEach(c -> removeCooldown(c.getPlayer())), 1, TimeUnit.SECONDS);
     }
 
     public boolean isInCooldown(ProxiedPlayer p) {
@@ -69,7 +69,7 @@ public class CooldownManager {
         for(Cooldown c : cooldowns) {
             UUID cUUID = ProjectRetile.getInstance().getCache().uuid(c.getPlayer().getName());
             if(uuid == cUUID) {
-                return c.getWatch().elapsed(unit);
+                return ProjectRetile.getInstance().getConfig().cooldown - c.getWatch().elapsed(unit);
             }
         }
         return -1;
