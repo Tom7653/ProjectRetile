@@ -16,7 +16,7 @@ package com.github.acquized.retile.commands;
 
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.api.RetileAPIException;
-import com.github.acquized.retile.hub.Cooldown;
+import com.github.acquized.retile.cooldown.CooldownManager;
 import com.github.acquized.retile.reports.Report;
 
 import net.md_5.bungee.api.CommandSender;
@@ -25,6 +25,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 
@@ -45,7 +46,7 @@ public class ReportCommand extends Command {
                     if(target != null) {
                         UUID targetUUID = ProjectRetile.getInstance().getCache().uuid(target.getName());
                         if(!pUUID.toString().equals(targetUUID.toString())) {
-                            if(!Cooldown.getInstance().in(pUUID)) {
+                            if(!CooldownManager.getInstance().isInCooldown(p)) {
                                 if(!target.hasPermission("projectretile.report.bypass")) {
                                     StringBuilder builder = new StringBuilder(args[1]);
                                     for(int i = 2; i < args.length; i++) {
@@ -62,14 +63,15 @@ public class ReportCommand extends Command {
                                     }
                                     p.sendMessage(tl("ProjectRetile.Commands.Report.Success", target.getName(), report.getToken()));
                                     if(!p.hasPermission("projectretile.cooldown.bypass")) {
-                                        Cooldown.getInstance().start(pUUID);
+                                        CooldownManager.getInstance().addCooldown(p);
                                     }
                                     return;
                                 } else {
                                     p.sendMessage(tl("ProjectRetile.Commands.Report.Bypass"));
+                                    return;
                                 }
                             } else {
-                                p.sendMessage(tl("ProjectRetile.Commands.Report.Cooldown", ProjectRetile.getInstance().getConfig().cooldown));
+                                p.sendMessage(tl("ProjectRetile.Commands.Report.Cooldown", CooldownManager.getInstance().getRemaining(p, TimeUnit.SECONDS)));
                                 return;
                             }
                         } else {

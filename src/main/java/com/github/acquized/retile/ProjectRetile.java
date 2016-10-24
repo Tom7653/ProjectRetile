@@ -28,7 +28,7 @@ import com.github.acquized.retile.commands.ToggleCommand;
 import com.github.acquized.retile.config.Blacklist;
 import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
-import com.github.acquized.retile.hub.Cooldown;
+import com.github.acquized.retile.cooldown.CooldownManager;
 import com.github.acquized.retile.hub.Notifications;
 import com.github.acquized.retile.i18n.I18n;
 import com.github.acquized.retile.listeners.Disconnect;
@@ -92,7 +92,7 @@ public class ProjectRetile extends Plugin {
             log.error("Could not connect to MySQL / SQLite Database! Did you enter the correct Details?", ex);
             return;
         }
-        Cooldown.setInstance(new Cooldown());
+        CooldownManager.setInstance(new CooldownManager());
         Notifications.setInstance(new Notifications());
         api = new RetileAPIProvider();
         if(!isBungeeUtilInstalled()) {
@@ -108,6 +108,7 @@ public class ProjectRetile extends Plugin {
 
     @Override
     public void onDisable() {
+        ProxyServer.getInstance().getScheduler().cancel(this);
         try {
             database.disconnect();
         } catch (SQLException ex) {
