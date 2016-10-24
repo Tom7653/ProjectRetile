@@ -15,10 +15,15 @@
 package com.github.acquized.retile.commands;
 
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.sql.impl.MySQL;
+import com.github.acquized.retile.sql.impl.SQLite;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+
+import java.sql.SQLException;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 import static com.github.acquized.retile.utils.Utility.DARK_AQUA;
@@ -54,18 +59,41 @@ public class RetileCommand extends Command {
                 }
                 if(args[0].equalsIgnoreCase("reload")) {
                     if(sender.hasPermission("projectretile.general.reload")) {
+                        // Players can only reload Config, Messages & Blacklist - console can reload Database
                         try {
                             ProjectRetile.getInstance().getConfig().reload();
                         } catch (InvalidConfigurationException ex) {
-                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A error occured. Please check the Console."));
-                            ProjectRetile.getInstance().getLog().error("Could not reload Config. Please check for Errors.", ex);
+                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload config.yml File. Please check for errors."));
                             return;
                         }
-                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "The Config has been successfully reloaded."));
-
+                        try {
+                            ProjectRetile.getInstance().getBlacklist().reload();
+                        } catch (InvalidConfigurationException ex) {
+                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload blacklist.yml File. Please check for errors."));
+                            return;
+                        }
                         ProjectRetile.getInstance().getI18n().load();
-                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "The Message File has been successfully reloaded."));
-                        return;
+                        if(!(sender instanceof ProxiedPlayer)) {
+                            try {
+                                ProjectRetile.getInstance().getDatabase().disconnect();
+                                ProjectRetile.getInstance().getDbConfig().reload();
+                                if(ProjectRetile.getInstance().getDbConfig().jdbcURL.contains("mysql")) {
+                                    ProjectRetile.getInstance().setDatabase(new MySQL(ProjectRetile.getInstance().getDbConfig().jdbcURL, ProjectRetile.getInstance().getDbConfig().username, ProjectRetile.getInstance().getDbConfig().password.toCharArray()));
+                                    ProjectRetile.getInstance().getLog().info("Using MySQL Connection...");
+                                } else {
+                                    ProjectRetile.getInstance().setDatabase(new SQLite(ProjectRetile.getInstance().getDbConfig().jdbcURL));
+                                    ProjectRetile.getInstance().getLog().info("Using SQLite Connection...");
+                                }
+                                ProjectRetile.getInstance().getDatabase().connect();
+                                ProjectRetile.getInstance().getDatabase().setup();
+                            } catch (SQLException | InvalidConfigurationException ex) {
+                                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload Database. Please force end the Java Process."));
+                                return;
+                            }
+                        } else {
+                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "If you wish to reload the Database, execute this command using the console."));
+                        }
+                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Successfully reloaded."));
                     } else {
                         sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
                         return;

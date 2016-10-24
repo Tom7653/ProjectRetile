@@ -52,6 +52,7 @@ import java.io.File;
 import java.sql.SQLException;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import static com.github.acquized.retile.utils.Utility.GRAY;
 import static com.github.acquized.retile.utils.Utility.RED;
@@ -61,8 +62,8 @@ public class ProjectRetile extends Plugin {
     public static String prefix = RED + "> " + GRAY;
     @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
+    @Getter @Setter private Database database;
     @Getter private Blacklist blacklist;
-    @Getter private Database database;
     @Getter private DBConfig dbConfig;
     @Getter private RetileAPI api;
     @Getter private Config config;
