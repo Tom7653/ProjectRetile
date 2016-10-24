@@ -67,7 +67,7 @@ public class Config extends YamlConfig {
 
     @Comment("Don't change this value unless you want to reset the Config")
     @Path("ProjectRetile.Version")
-    public String version = "1.0.0-PRERELEASEc";
+    public String version = "1.0.0-PRERELEASEd";
 
     // v  Aliases  v
 
