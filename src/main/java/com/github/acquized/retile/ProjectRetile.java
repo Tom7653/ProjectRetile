@@ -30,6 +30,7 @@ import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
 import com.github.acquized.retile.cooldown.CooldownManager;
 import com.github.acquized.retile.i18n.I18n;
+import com.github.acquized.retile.inject.Protection;
 import com.github.acquized.retile.listeners.Disconnect;
 import com.github.acquized.retile.listeners.PostLogin;
 import com.github.acquized.retile.notifications.Notifications;
@@ -71,6 +72,7 @@ public class ProjectRetile extends Plugin {
     @Override
     public void onEnable() {
         instance = this;
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new Protection()); // High priority for causing no errors with BungeeUtil
         loadConfigs();
         prefix = Utility.format(config.prefix);
         i18n = new I18n();
