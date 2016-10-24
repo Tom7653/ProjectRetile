@@ -33,7 +33,7 @@ public class Version implements Comparable<Version> {
 
         parts[0] = Integer.parseInt(matcher.group("a"));
         parts[1] = Integer.parseInt(matcher.group("b"));
-        parts[3] = Integer.parseInt(matcher.group("c"));
+        parts[2] = Integer.parseInt(matcher.group("c"));
 
         tag = matcher.group("tag") != null ? matcher.group("tag") : "";
     }
