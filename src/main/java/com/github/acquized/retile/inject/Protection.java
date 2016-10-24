@@ -26,7 +26,7 @@ public class Protection implements Listener {
 
     @EventHandler
     public void onPreLogin(PreLoginEvent e) {
-        while(!BungeeUtil.getInstance().isInjected()) {
+        if(!BungeeUtil.getInstance().isInjected()) {
             e.setCancelReason(RED + "Please wait until the Network has fully started.");
             e.setCancelled(true);
         }
