@@ -66,13 +66,15 @@ public class ProjectRetile extends Plugin {
     @Getter private RetileAPI api;
     @Getter private Config config;
     @Getter private Cache cache;
+    @Getter private I18n i18n;
 
     @Override
     public void onEnable() {
         instance = this;
         loadConfigs();
         prefix = Utility.format(config.prefix);
-        new I18n().load();
+        i18n = new I18n();
+        i18n.load();
         if(ProxyServer.getInstance().getConfig().isOnlineMode() && (!config.forceOfflineUUID)) {
             cache = new McAPICanada();
         } else {

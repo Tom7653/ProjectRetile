@@ -62,6 +62,9 @@ public class RetileCommand extends Command {
                             return;
                         }
                         sender.sendMessage(formatLegacy(RED + "> " + GRAY + "The Config has been successfully reloaded."));
+
+                        ProjectRetile.getInstance().getI18n().load();
+                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "The Message File has been successfully reloaded."));
                         return;
                     } else {
                         sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
