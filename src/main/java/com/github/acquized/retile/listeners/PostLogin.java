@@ -44,9 +44,9 @@ public class PostLogin implements Listener {
                 if(reports.length != 0) {
                     e.getPlayer().sendMessage(tl("ProjectRetile.Notifications.Report.Offline.Info"));
                 }
-                if(e.getPlayer().hasPermission("projectretile.report.receive")) {
-                    Notifications.getInstance().setReceiving(e.getPlayer());
-                }
+            }
+            if(e.getPlayer().hasPermission("projectretile.report.receive")) {
+                Notifications.getInstance().setReceiving(e.getPlayer());
             }
         }, 2, TimeUnit.SECONDS); // Delayed because of UUID Delays
     }
