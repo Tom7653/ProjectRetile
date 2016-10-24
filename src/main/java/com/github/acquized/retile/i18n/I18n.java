@@ -53,11 +53,11 @@ public class I18n {
     }
 
     public static String getMessage(String key) {
-        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key));
+        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key).replace("\\n", "\n"));
     }
 
     public static String getMessage(String key, Object... obj) {
-        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key), obj);
+        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key).replace("\\n", "\n"), obj);
     }
 
 

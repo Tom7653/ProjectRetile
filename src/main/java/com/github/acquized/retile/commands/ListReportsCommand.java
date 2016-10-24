@@ -82,7 +82,7 @@ public class ListReportsCommand extends Command {
                                 try {
                                     if(click.getMode() == PacketPlayInWindowClick.Mode.NORMAL_LEFT_CLICK) {
                                         click.getPlayer().connect(ProjectRetile.getInstance().getApi().resolveServer(r.getVictim()));
-                                    } else {
+                                    } else if(click.getMode() == PacketPlayInWindowClick.Mode.NORMAL_RIGHT_CLICK) {
                                         ProjectRetile.getInstance().getApi().removeReport(r);
                                         click.getPlayer().sendMessage(formatLegacy(RED + "> " + GRAY + "Report " + DARK_AQUA + r.getToken() + GRAY + " deleted."));
                                     }
