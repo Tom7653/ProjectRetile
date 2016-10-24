@@ -16,6 +16,7 @@ package com.github.acquized.retile.listeners;
 
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.api.RetileAPIException;
+import com.github.acquized.retile.notifications.Notifications;
 import com.github.acquized.retile.reports.Report;
 
 import net.md_5.bungee.api.ProxyServer;
@@ -45,6 +46,10 @@ public class PostLogin implements Listener {
                 }
             }
         }, 2, TimeUnit.SECONDS); // Delayed because of UUID Delays
+
+        if(e.getPlayer().hasPermission("projectretile.report.receive")) {
+            Notifications.getInstance().setReceiving(e.getPlayer());
+        }
     }
 
 }

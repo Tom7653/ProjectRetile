@@ -15,7 +15,7 @@
 package com.github.acquized.retile.listeners;
 
 import com.github.acquized.retile.ProjectRetile;
-import com.github.acquized.retile.hub.Notifications;
+import com.github.acquized.retile.notifications.Notifications;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -30,8 +30,8 @@ public class Disconnect implements Listener {
     public void onDisconnect(PlayerDisconnectEvent e) {
         ProxiedPlayer p = e.getPlayer();
         UUID uuid = ProjectRetile.getInstance().getCache().uuid(p.getName());
-        if(Notifications.getInstance().isStaff(uuid)) {
-            Notifications.getInstance().removeStaff(uuid);
+        if(Notifications.getInstance().isReceiving(e.getPlayer())) {
+            Notifications.getInstance().unsetReceiving(e.getPlayer());
         }
     }
 

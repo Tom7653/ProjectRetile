@@ -12,10 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.acquized.retile.hub;
+package com.github.acquized.retile.notifications;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.github.acquized.retile.ProjectRetile;
+
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.Getter;
@@ -24,22 +28,19 @@ import lombok.Setter;
 public class Notifications {
 
     @Getter @Setter private static Notifications instance;
-    public Map<UUID, Boolean> staff = new HashMap<>();
 
-    public void addStaff(UUID uuid) {
-        staff.put(uuid, true);
+    private List<UUID> receiving = new ArrayList<>();
+
+    public boolean isReceiving(ProxiedPlayer p) {
+        return receiving.contains(ProjectRetile.getInstance().getCache().uuid(p.getName()));
     }
 
-    public void removeStaff(UUID uuid) {
-        staff.remove(uuid);
+    public void setReceiving(ProxiedPlayer p) {
+        receiving.add(ProjectRetile.getInstance().getCache().uuid(p.getName()));
     }
 
-    public boolean isStaff(UUID uuid) {
-        return staff.containsKey(uuid);
-    }
-
-    public boolean isReceiving(UUID uuid) {
-        return (isStaff(uuid)) && (staff.get(uuid));
+    public void unsetReceiving(ProxiedPlayer p) {
+        receiving.remove(ProjectRetile.getInstance().getCache().uuid(p.getName()));
     }
 
 }

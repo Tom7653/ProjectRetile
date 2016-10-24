@@ -15,7 +15,7 @@
 package com.github.acquized.retile.api;
 
 import com.github.acquized.retile.ProjectRetile;
-import com.github.acquized.retile.hub.Notifications;
+import com.github.acquized.retile.notifications.Notifications;
 import com.github.acquized.retile.reports.Report;
 import com.github.acquized.retile.sql.impl.SQLite;
 
@@ -118,7 +118,7 @@ public class RetileAPIProvider implements RetileAPI {
         String reporter = ProjectRetile.getInstance().getCache().username(report.getReporter());
         String victim = ProjectRetile.getInstance().getCache().username(report.getVictim());
 
-        staff.addAll(ProxyServer.getInstance().getPlayers().stream().filter(p -> (p.hasPermission("projectretile.report.receive")) && (Notifications.getInstance().isReceiving(ProjectRetile.getInstance().getCache().uuid(p.getName())))).collect(Collectors.toList()));
+        staff.addAll(ProxyServer.getInstance().getPlayers().stream().filter(p -> (p.hasPermission("projectretile.report.receive")) && (Notifications.getInstance().isReceiving(p))).collect(Collectors.toList()));
 
         String now = ProjectRetile.getInstance().getDatabase() instanceof SQLite ? "now" : "NOW()";
 

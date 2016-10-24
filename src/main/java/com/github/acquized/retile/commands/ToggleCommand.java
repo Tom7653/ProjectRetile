@@ -15,7 +15,7 @@
 package com.github.acquized.retile.commands;
 
 import com.github.acquized.retile.ProjectRetile;
-import com.github.acquized.retile.hub.Notifications;
+import com.github.acquized.retile.notifications.Notifications;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -33,13 +33,13 @@ public class ToggleCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         if(sender instanceof ProxiedPlayer) {
             ProxiedPlayer p = (ProxiedPlayer) sender;
-            if(p.hasPermission("projectretile.commands.togglereports")) {
+            if((p.hasPermission("projectretile.commands.togglereports")) && (p.hasPermission("projectretile.report.receive"))) {
                 if(args.length == 0) {
-                    if(Notifications.getInstance().isStaff(ProjectRetile.getInstance().getCache().uuid(p.getName()))) {
-                        Notifications.getInstance().removeStaff(ProjectRetile.getInstance().getCache().uuid(p.getName()));
+                    if(Notifications.getInstance().isReceiving(p)) {
+                        Notifications.getInstance().unsetReceiving(p);
                         p.sendMessage(tl("ProjectRetile.Commands.Toggle.On"));
                     } else {
-                        Notifications.getInstance().addStaff(ProjectRetile.getInstance().getCache().uuid(p.getName()));
+                        Notifications.getInstance().setReceiving(p);
                         p.sendMessage(tl("ProjectRetile.Commands.Toggle.Off"));
                     }
                     return;
