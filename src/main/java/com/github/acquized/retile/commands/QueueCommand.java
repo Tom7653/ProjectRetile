@@ -35,6 +35,9 @@ import dev.wolveringer.api.inventory.Inventory;
 import static com.github.acquized.retile.i18n.I18n.tl;
 import static com.github.acquized.retile.utils.Utility.DARK_AQUA;
 import static com.github.acquized.retile.utils.Utility.GRAY;
+import static com.github.acquized.retile.utils.Utility.GREEN;
+import static com.github.acquized.retile.utils.Utility.RED;
+import static com.github.acquized.retile.utils.Utility.formatLegacy;
 
 public class QueueCommand extends Command {
 
@@ -67,7 +70,12 @@ public class QueueCommand extends Command {
                             @Override
                             public void click(Click click) {
                                 try {
-                                    click.getPlayer().connect(ProjectRetile.getInstance().getApi().resolveServer(r.getVictim()));
+                                    if(click.getMode() == 0) { // I think its left click, its no where documented so idk
+                                        click.getPlayer().connect(ProjectRetile.getInstance().getApi().resolveServer(r.getVictim()));
+                                    } else {
+                                        ProjectRetile.getInstance().getApi().removeReport(r);
+                                        click.getPlayer().sendMessage(formatLegacy(RED + "> " + GRAY + "Report " + DARK_AQUA + r.getToken() + GRAY + " deleted."));
+                                    }
                                 } catch (RetileAPIException ex) {
                                     ProjectRetile.getInstance().getLog().error("Could not resolve Server of " + victim, ex);
                                 }
@@ -79,7 +87,10 @@ public class QueueCommand extends Command {
                         meta.setLore(Arrays.asList(GRAY + "ID: " + DARK_AQUA + r.getToken(),
                                 GRAY + "Reported by: " + DARK_AQUA + reporter,
                                 GRAY + "Reason: " + DARK_AQUA + r.getReason(),
-                                GRAY + "Time: " + DARK_AQUA + DATE_FORMAT.format(new Date(r.getTimestamp()))));
+                                GRAY + "Time: " + DARK_AQUA + DATE_FORMAT.format(new Date(r.getTimestamp())),
+                                GRAY + " ",
+                                GREEN + "Left click to connect",
+                                RED + "Right click to delete"));
                         inv.setItem(slot, item);
                         slot++;
                     }
