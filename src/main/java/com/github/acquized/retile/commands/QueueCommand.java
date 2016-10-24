@@ -30,6 +30,7 @@ import dev.wolveringer.BungeeUtil.Material;
 import dev.wolveringer.BungeeUtil.Player;
 import dev.wolveringer.BungeeUtil.item.ItemStack;
 import dev.wolveringer.BungeeUtil.item.itemmeta.SkullMeta;
+import dev.wolveringer.BungeeUtil.packets.PacketPlayInWindowClick;
 import dev.wolveringer.api.inventory.Inventory;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
@@ -70,7 +71,7 @@ public class QueueCommand extends Command {
                             @Override
                             public void click(Click click) {
                                 try {
-                                    if(click.getMode() == 0) { // I think its left click, its no where documented so idk
+                                    if(click.getMode() == PacketPlayInWindowClick.Mode.NORMAL_LEFT_CLICK) {
                                         click.getPlayer().connect(ProjectRetile.getInstance().getApi().resolveServer(r.getVictim()));
                                     } else {
                                         ProjectRetile.getInstance().getApi().removeReport(r);
