@@ -75,7 +75,7 @@ public class ListReportsCommand extends Command {
                     for(final Report r : reports) {
                         String reporter = ProjectRetile.getInstance().getCache().username(r.getReporter());
                         final String victim = ProjectRetile.getInstance().getCache().username(r.getVictim());
-                        ItemStack item = new ItemStack(Material.SKULL_ITEM) {
+                        ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3) {
                             @Override
                             public void click(Click click) {
                                 try {
