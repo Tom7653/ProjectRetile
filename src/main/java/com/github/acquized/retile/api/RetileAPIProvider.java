@@ -31,11 +31,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RetileAPIProvider implements RetileAPI {
 
     @Override
     public Report[] getLatestReports(int amount) throws RetileAPIException {
+        checkArgument(amount <= 0, "Amount is negative");
+
         List<Report> reports = new ArrayList<>();
 
         ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile` LIMIT " + amount);
@@ -106,6 +110,8 @@ public class RetileAPIProvider implements RetileAPI {
 
     @Override
     public void addReport(Report report) throws RetileAPIException {
+        checkNotNull(report, "Report is null");
+
         for(String s : ProjectRetile.getInstance().getBlacklist().list) {
             if((report.getReason().contains(s)) && (!ProxyServer.getInstance().getPlayer(report.getReporter()).hasPermission("projectretile.blacklist.bypass"))) {
                 ProxyServer.getInstance().getPlayer(report.getReporter()).sendMessage(tl("ProjectRetile.Commands.Report.Blacklist"));
@@ -141,6 +147,8 @@ public class RetileAPIProvider implements RetileAPI {
     @Override
     @SuppressWarnings("LoopStatementThatDoesntLoop")
     public boolean doesReportExist(Report report) throws RetileAPIException {
+        checkNotNull(report, "Report is null");
+
         ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile` WHERE token = '" + report.getToken() + "'");
 
         try {
@@ -156,6 +164,8 @@ public class RetileAPIProvider implements RetileAPI {
 
     @Override
     public void removeReport(Report report) throws RetileAPIException {
+        checkNotNull(report, "Report is null");
+
         if(doesReportExist(report)) {
             ProjectRetile.getInstance().getDatabase().update("DELETE FROM `retile` WHERE token = '" + report.getToken() + "'");
         }
@@ -169,6 +179,8 @@ public class RetileAPIProvider implements RetileAPI {
 
     @Override
     public Report[] getReportsUsingReporter(UUID uuid) throws RetileAPIException {
+        checkNotNull(uuid, "UUID is null");
+
         List<Report> reports = new ArrayList<>();
 
         ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile` WHERE reporter = '" + uuid.toString() + "'");
@@ -186,6 +198,8 @@ public class RetileAPIProvider implements RetileAPI {
 
     @Override
     public Report[] getReportsUsingVictim(UUID uuid) throws RetileAPIException {
+        checkNotNull(uuid, "UUID is null");
+
         List<Report> reports = new ArrayList<>();
 
         ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile` WHERE victim = '" + uuid.toString() + "'");
@@ -204,6 +218,8 @@ public class RetileAPIProvider implements RetileAPI {
     @Override
     @SuppressWarnings("LoopStatementThatDoesntLoop")
     public Report getReportsUsingToken(String token) throws RetileAPIException {
+        checkNotNull(token, "Token is null");
+
         ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile` WHERE token = '" + token + "'");
         try {
             while(rs.next()) {
@@ -219,6 +235,8 @@ public class RetileAPIProvider implements RetileAPI {
 
     @Override
     public ServerInfo resolveServer(UUID uuid) throws RetileAPIException {
+        checkNotNull(uuid, "UUID is null");
+
         return ProxyServer.getInstance().getPlayer(uuid).getServer().getInfo();
     }
 
