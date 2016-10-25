@@ -14,20 +14,45 @@
  */
 package com.github.acquized.retile.cooldown;
 
-import com.google.common.base.Stopwatch;
+import com.github.acquized.retile.ProjectRetile;
 
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
-@Getter
-@AllArgsConstructor
 public class Cooldown {
 
-    private ProxiedPlayer player;
-    private Stopwatch watch;
+    private Map<UUID, Long> watches = new HashMap<>();
+    @Getter @Setter private static Cooldown instance;
+
+    public void start(UUID uuid) {
+        watches.put(uuid, System.currentTimeMillis());
+    }
+
+    public boolean inCooldown(UUID uuid) {
+        if((watches.containsKey(uuid)) && (TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) < ProjectRetile.getInstance().getConfig().cooldown)) {
+            return true;
+        } else if(TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) >= ProjectRetile.getInstance().getConfig().cooldown) {
+            stop(uuid);
+            return false;
+        }
+        return false;
+    }
+
+    public long getRemaining(UUID uuid, TimeUnit timeUnit) {
+        if(watches.get(uuid) != null) {
+            return timeUnit.convert(watches.get(uuid), TimeUnit.MILLISECONDS);
+        }
+        return -1;
+    }
+
+    public void stop(UUID uuid) {
+        watches.remove(uuid);
+    }
+
 
 }
