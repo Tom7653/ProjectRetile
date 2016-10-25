@@ -36,6 +36,8 @@ public class Cooldown {
     public boolean inCooldown(UUID uuid) {
         if((watches.containsKey(uuid)) && (TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) < ProjectRetile.getInstance().getConfig().cooldown)) {
             return true;
+        } else if(!watches.containsKey(uuid)) {
+            return false;
         } else if(TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) >= ProjectRetile.getInstance().getConfig().cooldown) {
             stop(uuid);
             return false;
