@@ -29,7 +29,7 @@ import lombok.NonNull;
  * been made a Interface for future API Versions that may
  * use other Types of Databases and not SQL Databases.
  *
- * @version 1.0.0-PRERELEASEd
+ * @version 1.0.0-PRERELEASEe
  * @author Acquized
  */
 @Beta

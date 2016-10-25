@@ -17,7 +17,7 @@ println """
 """
 
 group 'com.github.acquized'
-version '1.0.0-PRERELEASEd' // <- A commit changing this String must be Signed using a valid GPG Key
+version '1.0.0-PRERELEASEe' // <- A commit changing this String must be Signed using a valid GPG Key
 sourceCompatibility = 1.8
 
 repositories {
