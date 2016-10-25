@@ -85,6 +85,7 @@ public class ListReportsCommand extends Command {
                                     } else if(click.getMode() == PacketPlayInWindowClick.Mode.NORMAL_RIGHT_CLICK) {
                                         ProjectRetile.getInstance().getApi().removeReport(r);
                                         click.getPlayer().sendMessage(formatLegacy(RED + "> " + GRAY + "Report " + DARK_AQUA + r.getToken() + GRAY + " deleted."));
+                                        click.getPlayer().closeInventory();
                                     }
                                 } catch (RetileAPIException ex) {
                                     ProjectRetile.getInstance().getLog().error("Could not resolve Server of " + victim, ex);
