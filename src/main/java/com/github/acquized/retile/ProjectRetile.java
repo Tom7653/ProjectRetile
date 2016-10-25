@@ -30,8 +30,8 @@ import com.github.acquized.retile.config.Config;
 import com.github.acquized.retile.config.DBConfig;
 import com.github.acquized.retile.cooldown.Cooldown;
 import com.github.acquized.retile.i18n.I18n;
-import com.github.acquized.retile.inject.Protection;
 import com.github.acquized.retile.listeners.Disconnect;
+import com.github.acquized.retile.listeners.JoinProtection;
 import com.github.acquized.retile.listeners.PostLogin;
 import com.github.acquized.retile.notifications.Notifications;
 import com.github.acquized.retile.sql.Database;
@@ -52,6 +52,7 @@ import java.io.File;
 import java.sql.SQLException;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import static com.github.acquized.retile.utils.Utility.GRAY;
@@ -62,7 +63,7 @@ public class ProjectRetile extends Plugin {
     public static String prefix = RED + "> " + GRAY;
     @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
-    @Getter @Setter private Database database;
+    @Getter @Setter(onParam = @__(@NonNull)) private Database database;
     @Getter private Blacklist blacklist;
     @Getter private DBConfig dbConfig;
     @Getter private RetileAPI api;
@@ -73,7 +74,7 @@ public class ProjectRetile extends Plugin {
     @Override
     public void onEnable() {
         instance = this;
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new Protection()); // High priority for causing no errors with BungeeUtil
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinProtection()); // High priority for causing no errors with BungeeUtil
         loadConfigs();
         prefix = Utility.format(config.prefix);
         i18n = new I18n();

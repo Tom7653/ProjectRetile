@@ -17,8 +17,10 @@ package com.github.acquized.retile.updater;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@EqualsAndHashCode
 public class Version implements Comparable<Version> {
 
     public final Pattern SEMVER = Pattern.compile("(?<a>0|[1-9]\\d*)\\.(?<b>0|[1-9]\\d*)(?:\\.(?<c>0|[1-9]\\d*))?(?:-(?<tag>[A-z0-9.-]*))?");
@@ -56,22 +58,12 @@ public class Version implements Comparable<Version> {
             return 1;
         if (verA.tag.length() > 0 && verB.tag.length() == 0)
             return -1;
-
         return 0;
-    }
-
-    public static boolean equals(Version verA, Version verB) {
-        return verA == verB || verA != null && verB != null && compare(verA, verB) == 0;
     }
 
     @Override
     public int compareTo(Version ver) {
         return compare(this, ver);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Version && equals(this, (Version)obj);
     }
 
     @Override

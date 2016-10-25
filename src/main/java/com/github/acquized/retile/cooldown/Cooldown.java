@@ -54,5 +54,4 @@ public class Cooldown {
         watches.remove(uuid);
     }
 
-
 }

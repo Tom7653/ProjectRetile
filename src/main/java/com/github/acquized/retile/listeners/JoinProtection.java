@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.acquized.retile.inject;
+package com.github.acquized.retile.listeners;
 
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -22,7 +22,7 @@ import dev.wolveringer.BungeeUtil.BungeeUtil;
 
 import static com.github.acquized.retile.utils.Utility.RED;
 
-public class Protection implements Listener {
+public class JoinProtection implements Listener {
 
     @EventHandler
     public void onPreLogin(PreLoginEvent e) {

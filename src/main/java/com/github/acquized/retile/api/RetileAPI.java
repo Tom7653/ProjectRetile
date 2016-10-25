@@ -22,6 +22,8 @@ import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.UUID;
 
+import lombok.NonNull;
+
 /**
  * Interface for implementation of the RetileAPI. This has
  * been made a Interface for future API Versions that may
@@ -85,7 +87,7 @@ public interface RetileAPI {
      * @param report Report
      * @throws RetileAPIException If an error occurs
      */
-    void addReport(Report report) throws RetileAPIException;
+    void addReport(@NonNull Report report) throws RetileAPIException;
 
     /**
      * Checks if a Report with the {@link com.github.acquized.retile.reports.Report#token} already
@@ -95,7 +97,7 @@ public interface RetileAPI {
      * @return Boolean
      * @throws RetileAPIException If an error occurs
      */
-    boolean doesReportExist(Report report) throws RetileAPIException;
+    boolean doesReportExist(@NonNull Report report) throws RetileAPIException;
 
     /**
      * Removes every Report with the {@link com.github.acquized.retile.reports.Report#token} from
@@ -104,7 +106,7 @@ public interface RetileAPI {
      * @param report Report
      * @throws RetileAPIException If an error occurs
      */
-    void removeReport(Report report) throws RetileAPIException;
+    void removeReport(@NonNull Report report) throws RetileAPIException;
 
     /**
      * Removes every Report from the <code>queue</code> Database.
@@ -121,7 +123,7 @@ public interface RetileAPI {
      * @return Array of Reports
      * @throws RetileAPIException If an error occurs
      */
-    Report[] getReportsUsingReporter(UUID uuid) throws RetileAPIException;
+    Report[] getReportsUsingReporter(@NonNull UUID uuid) throws RetileAPIException;
 
     /**
      * Gets every Report that have <code>uuid</code> as Victim from the <code>retile</code>
@@ -131,7 +133,7 @@ public interface RetileAPI {
      * @return Array of Reports
      * @throws RetileAPIException If an error occurs
      */
-    Report[] getReportsUsingVictim(UUID uuid) throws RetileAPIException;
+    Report[] getReportsUsingVictim(@NonNull UUID uuid) throws RetileAPIException;
 
     /**
      * Gets every Report that have <code>token</code> as Unique Token from the <code>retile</code>
@@ -141,7 +143,7 @@ public interface RetileAPI {
      * @return Report
      * @throws RetileAPIException If an error occurs
      */
-    Report getReportsUsingToken(String token) throws RetileAPIException;
+    Report getReportsUsingToken(@NonNull String token) throws RetileAPIException;
 
     /**
      * Resolves the Server of <code>uuid</code>. This is a shortcut for
@@ -151,6 +153,6 @@ public interface RetileAPI {
      * @return ServerInfo
      * @throws RetileAPIException If an error occurs
      */
-    ServerInfo resolveServer(UUID uuid) throws RetileAPIException;
+    ServerInfo resolveServer(@NonNull UUID uuid) throws RetileAPIException;
 
 }

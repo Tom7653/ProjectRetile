@@ -19,8 +19,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Map;
 
 import lombok.experimental.UtilityClass;
 
@@ -64,58 +62,6 @@ public class Utility {
 
     public static BaseComponent[] formatLegacy(String msg, Object... args) {
         return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', MessageFormat.format(msg, args)));
-    }
-
-    public static boolean isTrue(boolean b) {
-        return b;
-    }
-
-    public static boolean isFalse(boolean b) {
-        return !b;
-    }
-
-    public static boolean notNull(Object obj) {
-        return obj != null;
-    }
-
-    public static boolean isNull(Object obj) {
-        return obj == null;
-    }
-
-    public static boolean isPositive(Number number) {
-        return number.intValue() > 0;
-    }
-
-    public static boolean isNegative(Number number) {
-        return number.intValue() < 0;
-    }
-
-    public static boolean isNeutral(Number number) {
-        return number.intValue() == 0;
-    }
-
-    public static boolean notEmpty(Object[] array) {
-        return array.length > 0;
-    }
-
-    public static boolean isEmpty(Object[] array) {
-        return array.length <= 0;
-    }
-
-    public static boolean notEmpty(Map map) {
-        return map.size() > 0;
-    }
-
-    public static boolean isEmpty(Map map) {
-        return map.size() <= 0;
-    }
-
-    public static boolean notEmpty(Collection collection) {
-        return collection.size() > 0;
-    }
-
-    public static boolean isEmpty(Collection collection) {
-        return collection.size() <= 0;
     }
 
 }

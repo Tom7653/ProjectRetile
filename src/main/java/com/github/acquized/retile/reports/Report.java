@@ -19,9 +19,8 @@ import com.github.acquized.retile.annotations.Documented;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * Represents a unique Report made by a User regarding
@@ -39,11 +38,10 @@ import lombok.Setter;
  *
  * @author Acquized
  */
-@AllArgsConstructor
+@Data
+@Builder
 @Documented
-@Getter
-@Setter
-@EqualsAndHashCode
+@AllArgsConstructor
 public class Report {
 
     private String token;
