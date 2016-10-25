@@ -27,7 +27,6 @@ import java.lang.annotation.Target;
  * implies nothing about the quality or performance of the API in question,
  * only the fact that its not "API-frozen".
  *
- * @origin Guava
  * @author Acquized
  */
 @Retention(RetentionPolicy.CLASS)

@@ -17,7 +17,6 @@ package com.github.acquized.retile.api;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.notifications.Notifications;
 import com.github.acquized.retile.reports.Report;
-import com.github.acquized.retile.sql.impl.SQLite;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -47,7 +46,7 @@ public class RetileAPIProvider implements RetileAPI {
         try {
             while(rs.next()) {
                 reports.add(new Report(rs.getString("token"), UUID.fromString(rs.getString("reporter")), UUID.fromString(rs.getString("victim")),
-                        rs.getString("reason"), rs.getDate("reportdate").getTime()));
+                        rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
             throw new RetileAPIException("Error while executing SQL Query", ex);
@@ -64,7 +63,7 @@ public class RetileAPIProvider implements RetileAPI {
         try {
             while(rs.next()) {
                 reports.add(new Report(rs.getString("token"), UUID.fromString(rs.getString("reporter")), UUID.fromString(rs.getString("victim")),
-                        rs.getString("reason"), rs.getDate("reportdate").getTime()));
+                        rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
             throw new RetileAPIException("Error while executing SQL Query", ex);
@@ -81,7 +80,7 @@ public class RetileAPIProvider implements RetileAPI {
         try {
             while(rs.next()) {
                 reports.add(new Report(rs.getString("token"), UUID.fromString(rs.getString("reporter")), UUID.fromString(rs.getString("victim")),
-                        rs.getString("reason"), rs.getDate("reportdate").getTime()));
+                        rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
             throw new RetileAPIException("Error while executing SQL Query", ex);
@@ -97,9 +96,9 @@ public class RetileAPIProvider implements RetileAPI {
         ResultSet rs = ProjectRetile.getInstance().getDatabase().query("SELECT * FROM `retile`");
         try {
             while(rs.next()) {
-                if(rs.getDate("reportdate").getTime() >= millis) {
+                if(rs.getLong("reportdate") >= millis) {
                     reports.add(new Report(rs.getString("token"), UUID.fromString(rs.getString("reporter")), UUID.fromString(rs.getString("victim")),
-                            rs.getString("reason"), rs.getDate("reportdate").getTime()));
+                            rs.getString("reason"), rs.getLong("reportdate")));
                 }
             }
         } catch (SQLException ex) {
@@ -126,22 +125,20 @@ public class RetileAPIProvider implements RetileAPI {
 
         staff.addAll(ProxyServer.getInstance().getPlayers().stream().filter(p -> (p.hasPermission("projectretile.report.receive")) && (Notifications.getInstance().isReceiving(p))).collect(Collectors.toList()));
 
-        String now = ProjectRetile.getInstance().getDatabase() instanceof SQLite ? "now" : "NOW()";
-
         if(staff.size() > 0) {
             for(ProxiedPlayer p : staff) {
                 p.sendMessage(tl("ProjectRetile.Notifications.Report.Staff", reporter, victim, report.getReason(), resolveServer(report.getVictim()).getName()));
             }
         } else {
             ProjectRetile.getInstance().getDatabase().update("INSERT INTO `queue` (token, reporter, victim, reason, reportdate) VALUES " +
-                    "('" + report.getToken() + "', '" + report.getReporter().toString() + "', '" + report.getVictim().toString() + "', '" + report.getReason() + "', " + now + ");");
+                    "('" + report.getToken() + "', '" + report.getReporter().toString() + "', '" + report.getVictim().toString() + "', '" + report.getReason() + "', " + System.currentTimeMillis() + ");");
         }
 
         ProxyServer.getInstance().getConsole().sendMessage(tl("ProjectRetile.Notifications.Report.Console",
                 reporter, victim, report.getReason(), resolveServer(report.getVictim()).getName(), report.getToken()));
 
         ProjectRetile.getInstance().getDatabase().update("INSERT INTO `retile` (token, reporter, victim, reason, reportdate) VALUES " +
-                "('" + report.getToken() + "', '" + report.getReporter().toString() + "', '" + report.getVictim().toString() + "', '" + report.getReason() + "', " + now + ");");
+                "('" + report.getToken() + "', '" + report.getReporter().toString() + "', '" + report.getVictim().toString() + "', '" + report.getReason() + "', " + System.currentTimeMillis() + ");");
     }
 
     @Override
@@ -181,7 +178,7 @@ public class RetileAPIProvider implements RetileAPI {
         try {
             while(rs.next()) {
                 reports.add(new Report(rs.getString("token"), UUID.fromString(rs.getString("reporter")), UUID.fromString(rs.getString("victim")),
-                        rs.getString("reason"), rs.getDate("reportdate").getTime()));
+                        rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
             throw new RetileAPIException("Error while executing SQL Query", ex);
@@ -198,7 +195,7 @@ public class RetileAPIProvider implements RetileAPI {
         try {
             while(rs.next()) {
                 reports.add(new Report(rs.getString("token"), UUID.fromString(rs.getString("reporter")), UUID.fromString(rs.getString("victim")),
-                        rs.getString("reason"), rs.getDate("reportdate").getTime()));
+                        rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
             throw new RetileAPIException("Error while executing SQL Query", ex);
@@ -214,7 +211,7 @@ public class RetileAPIProvider implements RetileAPI {
         try {
             while(rs.next()) {
                 return new Report(rs.getString("token"), UUID.fromString(rs.getString("reporter")), UUID.fromString(rs.getString("victim")),
-                        rs.getString("reason"), rs.getDate("reportdate").getTime());
+                        rs.getString("reason"), rs.getLong("reportdate"));
             }
         } catch (SQLException | NullPointerException ex) {
             throw new RetileAPIException("Error while executing SQL Query", ex);
