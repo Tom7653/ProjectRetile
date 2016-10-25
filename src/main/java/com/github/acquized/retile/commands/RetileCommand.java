@@ -94,6 +94,7 @@ public class RetileCommand extends Command {
                             sender.sendMessage(formatLegacy(RED + "> " + GRAY + "If you wish to reload the Database, execute this command using the console."));
                         }
                         sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Successfully reloaded."));
+                        return;
                     } else {
                         sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
                         return;
