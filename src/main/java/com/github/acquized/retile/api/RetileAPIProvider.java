@@ -19,6 +19,8 @@ import com.github.acquized.retile.notifications.Notifications;
 import com.github.acquized.retile.reports.Report;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -126,8 +128,15 @@ public class RetileAPIProvider implements RetileAPI {
         staff.addAll(ProxyServer.getInstance().getPlayers().stream().filter(p -> (p.hasPermission("projectretile.report.receive")) && (Notifications.getInstance().isReceiving(p))).collect(Collectors.toList()));
 
         if(staff.size() > 0) {
+            BaseComponent[] components = tl("ProjectRetile.Notifications.Report.Staff", reporter, victim, report.getReason(), resolveServer(report.getVictim()).getName());
+            if(ProjectRetile.getInstance().getConfig().clickableMsgs) {
+                for(BaseComponent c : components) {
+                    c.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/server " + resolveServer(report.getVictim()).getName()));
+                }
+            }
+
             for(ProxiedPlayer p : staff) {
-                p.sendMessage(tl("ProjectRetile.Notifications.Report.Staff", reporter, victim, report.getReason(), resolveServer(report.getVictim()).getName()));
+                p.sendMessage(components);
             }
         } else {
             ProjectRetile.getInstance().getDatabase().update("INSERT INTO `queue` (token, reporter, victim, reason, reportdate) VALUES " +

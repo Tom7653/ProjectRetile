@@ -34,9 +34,6 @@ public class MySQL implements Database {
     private final String url;
     private final String username;
     private final char[] password;
-    private final int miniumIdle;
-    private final int maximumSize;
-    private final long poolTimeout;
 
     @Override
     public void connect() throws SQLException {
@@ -45,9 +42,9 @@ public class MySQL implements Database {
         cfg.setJdbcUrl(url);
         cfg.setUsername(username);
         cfg.setPassword(new String(password));
-        cfg.setMinimumIdle(miniumIdle);
-        cfg.setMaximumPoolSize(maximumSize);
-        cfg.setConnectionTimeout(poolTimeout);
+        cfg.setMinimumIdle(ProjectRetile.getInstance().getConfig().minPoolIdle);
+        cfg.setMaximumPoolSize(ProjectRetile.getInstance().getConfig().maxPoolSize);
+        cfg.setConnectionTimeout(ProjectRetile.getInstance().getConfig().poolTimeout);
         dataSource = new HikariDataSource(cfg);
     }
 

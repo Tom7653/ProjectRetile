@@ -53,6 +53,10 @@ public class Config extends YamlConfig {
     @Path("ProjectRetile.Cooldown")
     public int cooldown = 60;
 
+    @Comment("Should report messages be clickable?")
+    @Path("ProjectRetile.ClickableMessages")
+    public boolean clickableMsgs = true;
+
     @Comments({
             "How should the Time be formated?",
             "This is using java.text.SimpleDateFormat's Date and Time Pattern",
