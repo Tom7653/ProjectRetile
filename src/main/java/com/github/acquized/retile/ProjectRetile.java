@@ -74,6 +74,10 @@ public class ProjectRetile extends Plugin {
     @Override
     public void onEnable() {
         instance = this;
+        if(!isBungeeUtilInstalled()) {
+            log.error("Could not load BungeeUtil. Please install it and start the Proxy Server again.");
+            return;
+        }
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinProtection()); // High priority for causing no errors with BungeeUtil
         loadConfigs();
         prefix = Utility.format(config.prefix);
@@ -101,10 +105,6 @@ public class ProjectRetile extends Plugin {
         Cooldown.setInstance(new Cooldown());
         Notifications.setInstance(new Notifications());
         api = new RetileAPIProvider();
-        if(!isBungeeUtilInstalled()) {
-            log.error("Could not load BungeeUtil. Please install it and start the Proxy Server again.");
-            return;
-        }
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
