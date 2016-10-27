@@ -23,7 +23,8 @@ public interface Database {
     void connect() throws SQLException;
     void disconnect() throws SQLException;
 
-    boolean isConnected();
+    boolean isConnected() throws SQLException;
+    boolean doesTableExist(String name) throws SQLException;
 
     void setup() throws SQLException;
 
