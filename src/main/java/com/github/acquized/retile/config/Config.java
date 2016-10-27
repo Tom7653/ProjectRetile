@@ -69,6 +69,23 @@ public class Config extends YamlConfig {
     @Path("ProjectRetile.Version")
     public String version = "1.0.0-PRERELEASEe";
 
+    // v  Connection Pooling  v
+
+    @Comment("How many connections should be keept alive when idling?")
+    @Path("Pools.MinimumPoolIdleSize")
+    public int minPoolIdle = 5;
+
+    @Comment("How many connection should be max. used?")
+    @Path("Pools.MaximalPoolSize")
+    public int maxPoolSize = 20;
+
+    @Comments({
+            "How long should we try to keep a connection alive until we mark it as timed out?",
+            "Set higher if your database server is hosted somewhere completly else"
+    })
+    @Path("Pools.PoolTimeOut")
+    public long poolTimeout = 3000;
+
     // v  Aliases  v
 
     @Comments({

@@ -33,4 +33,15 @@ public interface Database {
 
     Connection getConnection() throws SQLException;
 
+    /* TODO list for databases
+     * - [✔] MySQL
+     * - [✔] SQLite
+     * - [✘] MariaDB
+     * - [✘] H2 (may need restructuring)
+     * - [?] Hive (may need restructuring)
+     * - [✘] Redis (may need restructuring)
+     *
+     * Maybe I should download all drivers at runtime and load them dynamically (decreases file size)
+     */
+
 }

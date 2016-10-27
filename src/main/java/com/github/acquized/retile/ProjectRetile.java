@@ -86,7 +86,7 @@ public class ProjectRetile extends Plugin {
         }
         try {
             if(dbConfig.jdbcURL.contains("mysql")) {
-                database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
+                database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray(), config.minPoolIdle, config.maxPoolSize, config.poolTimeout);
                 log.info("Using MySQL Connection...");
             } else {
                 database = new SQLite(dbConfig.jdbcURL);
