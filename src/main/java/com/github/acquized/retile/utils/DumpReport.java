@@ -14,28 +14,32 @@
  */
 package com.github.acquized.retile.utils;
 
+import com.google.common.base.Joiner;
+import com.google.common.hash.Hashing;
+import com.google.common.io.Files;
+
 import com.eclipsesource.json.JsonObject;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.cache.impl.McAPICanada;
 import com.github.acquized.retile.cache.impl.Offline;
-import com.github.acquized.retile.database.impl.MySQL;
+import com.github.acquized.retile.sql.impl.MySQL;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.plugin.Plugin;
 
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
 public class DumpReport {
 
-    public static JsonObject create() throws IllegalAccessException, SQLException {
+    public static JsonObject create() throws IllegalAccessException, SQLException, IOException {
         JsonObject retilePlugin = new JsonObject().add("name", ProjectRetile.getInstance().getDescription().getName())
                 .add("version", ProjectRetile.getInstance().getDescription().getVersion())
                 .add("author", ProjectRetile.getInstance().getDescription().getAuthor())
-                .add("main", ProjectRetile.getInstance().getDescription().getMain());
+                .add("main", ProjectRetile.getInstance().getDescription().getMain())
+                .add("hash", Files.hash(ProjectRetile.getInstance().getDescription().getFile(), Hashing.md5()).toString());
 
         JsonObject server = new JsonObject().add("name", ProxyServer.getInstance().getName())
                 .add("version", ProxyServer.getInstance().getVersion());
@@ -58,25 +62,23 @@ public class DumpReport {
                 .add("minPoolIdle", ProjectRetile.getInstance().getConfig().minPoolIdle)
                 .add("maxPoolSize", ProjectRetile.getInstance().getConfig().maxPoolSize)
                 .add("poolTimeout", ProjectRetile.getInstance().getConfig().poolTimeout)
-                .add("reportAliases", Arrays.toString(ProjectRetile.getInstance().getConfig().reportAliases))
-                .add("reportsAliases", Arrays.toString(ProjectRetile.getInstance().getConfig().reportsAliases))
-                .add("toggleAliases", Arrays.toString(ProjectRetile.getInstance().getConfig().toggleAliases))
-                .add("infoAliases", Arrays.toString(ProjectRetile.getInstance().getConfig().infoAliases))
-                .add("queueAliases", Arrays.toString(ProjectRetile.getInstance().getConfig().queueAliases));
+                .add("reportAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().reportAliases))
+                .add("reportsAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().reportsAliases))
+                .add("toggleAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().toggleAliases))
+                .add("infoAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().infoAliases))
+                .add("queueAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().queueAliases));
 
         JsonObject dbConfig = new JsonObject().add("jdbcURL", ProjectRetile.getInstance().getDbConfig().jdbcURL)
                 .add("username", ProjectRetile.getInstance().getDbConfig().username)
                 .add("password", ProjectRetile.getInstance().getDbConfig().password);
 
-        JsonObject blacklist = new JsonObject().add("blacklist", Arrays.toString(ProjectRetile.getInstance().getBlacklist().list.toArray()));
+        JsonObject blacklist = new JsonObject().add("blacklist", Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().list.toArray()));
 
         JsonObject plugins = new JsonObject();
-        for(Plugin p : ProxyServer.getInstance().getPluginManager().getPlugins()) {
-            plugins.add(p.getDescription().getName(), new JsonObject()
+        ProxyServer.getInstance().getPluginManager().getPlugins().stream().filter(p -> !p.getDescription().getAuthor().equals("SpigotMC")).forEach(p -> plugins.add(p.getDescription().getName(), new JsonObject()
                 .add("version", p.getDescription().getVersion())
                 .add("main", p.getDescription().getMain())
-                .add("author", p.getDescription().getAuthor()));
-        }
+                .add("author", p.getDescription().getAuthor())));
 
         JsonObject database = new JsonObject().add("conntected", ProjectRetile.getInstance().getDatabase().isConnected())
                 .add("type", ProjectRetile.getInstance().getDatabase() instanceof MySQL ? "MySQL" : "SQLite")
@@ -105,7 +107,7 @@ public class DumpReport {
                 .add("blacklist", blacklist)
                 .add("plugins", plugins)
                 .add("database", database)
-                .add("cache", cache); // This (may!) exceed the 1MB Limit
+                .add("cache", cache);
     }
 
 }
