@@ -14,15 +14,23 @@
  */
 package com.github.acquized.retile.commands;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.WriterConfig;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.sql.impl.SQLite;
+import com.github.acquized.retile.utils.DumpReport;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.SQLException;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
@@ -38,6 +46,7 @@ public class RetileCommand extends Command {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void execute(CommandSender sender, String[] args) {
         if(sender.hasPermission("projectretile.general")) {
             if(args.length == 0) {
@@ -94,6 +103,34 @@ public class RetileCommand extends Command {
                             sender.sendMessage(formatLegacy(RED + "> " + GRAY + "If you wish to reload the Database, execute this command using the console."));
                         }
                         sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Successfully reloaded."));
+                        return;
+                    } else {
+                        sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
+                        return;
+                    }
+                }
+                if(args[0].equalsIgnoreCase("dump")) {
+                    if(sender.hasPermission("projectretile.general.dump")) {
+                        ProjectRetile.getInstance().getExecutorService().submit(() -> {
+                            try {
+                                URL url = new URL("http://hastebin.com/documents");
+                                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                                conn.setRequestProperty("Content-Type", "text/plain");
+                                conn.setRequestMethod("POST");
+                                conn.setUseCaches(false);
+                                conn.setDoOutput(true);
+
+                                OutputStream out = conn.getOutputStream();
+                                out.write(DumpReport.create().toString(WriterConfig.PRETTY_PRINT).getBytes("UTF-8"));
+                                out.close();
+
+                                JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
+                                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A dump has been successfully created. View it at " + DARK_AQUA + "http://hastebin.com/{0}.json" + GRAY + ".", obj.get("key").asString()));
+                            } catch (Exception ex) {
+                                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A error occured. Please checkout the console."));
+                                ProjectRetile.getInstance().getLog().error("An error occured while contacting Hastebin.", ex);
+                            }
+                        });
                         return;
                     } else {
                         sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
