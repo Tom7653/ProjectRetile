@@ -75,10 +75,15 @@ public class DumpReport {
         JsonObject blacklist = new JsonObject().add("blacklist", Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().list.toArray()));
 
         JsonObject plugins = new JsonObject();
-        ProxyServer.getInstance().getPluginManager().getPlugins().stream().filter(p -> !p.getDescription().getAuthor().equals("SpigotMC")).forEach(p -> plugins.add(p.getDescription().getName(), new JsonObject()
-                .add("version", p.getDescription().getVersion())
-                .add("main", p.getDescription().getMain())
-                .add("author", p.getDescription().getAuthor())));
+        ProxyServer.getInstance().getPluginManager().getPlugins().stream().filter(p -> !p.getDescription().getAuthor().equals("SpigotMC")).forEach(p -> {
+            try {
+                plugins.add(p.getDescription().getName(), new JsonObject()
+                        .add("version", p.getDescription().getVersion())
+                        .add("main", p.getDescription().getMain())
+                        .add("author", p.getDescription().getAuthor())
+                        .add("hash", Files.hash(p.getDescription().getFile(), Hashing.md5()).toString()));
+            } catch (IOException ignored) {}
+        });
 
         JsonObject database = new JsonObject().add("conntected", ProjectRetile.getInstance().getDatabase().isConnected())
                 .add("type", ProjectRetile.getInstance().getDatabase() instanceof MySQL ? "MySQL" : "SQLite")

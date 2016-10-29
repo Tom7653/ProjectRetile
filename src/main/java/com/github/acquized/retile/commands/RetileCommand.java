@@ -125,7 +125,7 @@ public class RetileCommand extends Command {
                                 out.close();
 
                                 JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
-                                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A dump has been successfully created. View it at " + DARK_AQUA + "http://hastebin.com/{0}.json" + GRAY + ".", obj.get("key").asString()));
+                                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A dump has been successfully created. View it at " + DARK_AQUA + "http://hastebin.com/{0}", obj.get("key").asString()));
                             } catch (Exception ex) {
                                 sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A error occured. Please checkout the console."));
                                 ProjectRetile.getInstance().getLog().error("An error occured while contacting Hastebin.", ex);
