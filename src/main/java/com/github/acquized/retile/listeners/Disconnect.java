@@ -14,7 +14,6 @@
  */
 package com.github.acquized.retile.listeners;
 
-import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.notifications.Notifications;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -22,14 +21,11 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.UUID;
-
 public class Disconnect implements Listener {
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent e) {
         ProxiedPlayer p = e.getPlayer();
-        UUID uuid = ProjectRetile.getInstance().getCache().uuid(p.getName());
         if(Notifications.getInstance().isReceiving(e.getPlayer())) {
             Notifications.getInstance().unsetReceiving(e.getPlayer());
         }

@@ -1,7 +1,5 @@
 package com.github.acquized.retile.reports;
 
-import com.github.acquized.retile.test.TestFailException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +12,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.Assert.fail;
+
 public class TokenGeneratorTest {
 
     public static final File DIRECTORY = new File("build" + File.separator + "test-output");
@@ -21,11 +21,9 @@ public class TokenGeneratorTest {
     public String[] array = new String[1337];
 
     @Before
-    public void createDir() throws TestFailException {
+    public void createDir() {
         if((!DIRECTORY.exists()) && (!DIRECTORY.mkdirs())) {
-            System.err.println("< TEST FAILED! >");
-            System.err.println("Couldn't create Test Output Directory. Are you running this Test in the Main Repository Tree?");
-            throw new TestFailException();
+            fail("Could not create Directory");
         }
         System.out.println("< TESTING GENERATOR... >");
         System.out.println("Testing random UniqueID Generation with Size " + array.length + " (" + Arrays.hashCode(array) + ")");
@@ -40,14 +38,11 @@ public class TokenGeneratorTest {
     }
 
     @Test
-    public void testDuplicates() throws TestFailException {
+    public void testDuplicates() {
         Set<String> set = new HashSet<>();
         for(String s : array) {
             if(set.contains(s)) {
-                System.err.println("< TEST FAILED! >");
-                System.err.println("The generated random UniqueID Array contains DUPLICATES");
-                System.err.println("Duplicate ID: " + s + " (" + s.hashCode() + ")");
-                throw new TestFailException();
+                fail("Duplicate UniqueID found: " + s + " (" + s.hashCode() + ")");
             } else {
                 set.add(s);
             }
@@ -58,11 +53,9 @@ public class TokenGeneratorTest {
     }
 
     @After
-    public void createFile() throws IOException, TestFailException {
+    public void createFile() throws IOException {
         if((!FILE.exists()) && (!FILE.createNewFile())) {
-            System.err.println("< TEST FAILED! >");
-            System.err.println("Couldn't create Unique ID's File");
-            throw new TestFailException();
+            fail("Could not create File");
         }
     }
 

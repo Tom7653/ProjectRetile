@@ -54,7 +54,7 @@ public class Updater {
             if((current.getTag().toUpperCase().startsWith("DEV")) || (current.getTag().toUpperCase().startsWith("SNAPSHOT")) ||
                (current.getTag().toUpperCase().startsWith("PRE")) || (current.getTag().toUpperCase().startsWith("PRERELEASE"))) {
                 return "You are running a developement Version of ProjectRetile! Please report any Bugs to our GitHub Page.";
-            } else if(current.getTag().toUpperCase().equals("OFFLINE")) {
+            } else if(current.getTag().equalsIgnoreCase("OFFLINE")) {
                 return "Could not check for Updates. Please check your Internet Connection.";
             } else {
                 return "You are running a newer Version than released!";
