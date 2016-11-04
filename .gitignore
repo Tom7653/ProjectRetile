@@ -34,5 +34,3 @@ gradle-app.setting
 *.iml
 out
 gen
-
-stylesheet.css

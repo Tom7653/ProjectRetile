@@ -45,7 +45,7 @@ dependencies {
     // Provided at Runtime
     compile group: 'net.md-5', name: 'bungeecord-api', version: '1.10-SNAPSHOT'
     compile group: 'org.projectlombok', name: 'lombok', version: '1.16.10'
-    compile group: 'dev.wolveringer', name: 'BungeeUtil', version: '1.6.7.15'
+    compile group: 'dev.wolveringer', name: 'BungeeUtil', version: '1.6.8.2'
 
     // Compile using ShadowJar
     compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
@@ -90,10 +90,6 @@ shadowJar {
 
 processResources {
     expand project.properties
-}
-
-javadoc {
-    options.stylesheetFile = new File(projectDir, "stylesheet.css")
 }
 
 task delombok {
