@@ -45,10 +45,12 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 
+import org.mcstats.Metrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import lombok.Getter;
@@ -110,6 +112,13 @@ public class ProjectRetile extends Plugin {
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
+        try {
+            Metrics metrics = new Metrics(this); // Maybe use alternative as soon as available: https://www.spigotmc.org/threads/beta-bstats-a-modern-alternative-to-mcstats.187881/
+            addCustomGraphs(metrics);
+            metrics.start();
+        } catch (IOException ex) {
+            log.warn("Could not submit statistics about the plugin to McStats.org", ex);
+        }
         if(config.updater)
             Updater.start();
     }
@@ -179,6 +188,48 @@ public class ProjectRetile extends Plugin {
         pm.registerCommand(this, new ReportCommand());
         pm.registerCommand(this, new RetileCommand());
         pm.registerCommand(this, new ToggleCommand());
+    }
+
+    private void addCustomGraphs(Metrics metrics) {
+        Metrics.Graph databaseGraph = metrics.createGraph("Database Type");
+        databaseGraph.addPlotter(new Metrics.Plotter("MySQL") {
+            @Override
+            public int getValue() {
+                if(database instanceof MySQL) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        databaseGraph.addPlotter(new Metrics.Plotter("SQLite") {
+            @Override
+            public int getValue() {
+                if(database instanceof SQLite) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+
+        Metrics.Graph cacheGraph = metrics.createGraph("Cache Resolver");
+        cacheGraph.addPlotter(new Metrics.Plotter("BungeeCord (Offline)") {
+            @Override
+            public int getValue() {
+                if(cache instanceof Offline) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        cacheGraph.addPlotter(new Metrics.Plotter("McAPI.ca") {
+            @Override
+            public int getValue() {
+                if(cache instanceof McAPICanada) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
     }
 
 }
