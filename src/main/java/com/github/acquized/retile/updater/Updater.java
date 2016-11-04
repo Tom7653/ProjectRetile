@@ -36,12 +36,12 @@ public class Updater {
     private static final String SUBURL = "/versions/latest";
 
     public static void start() {
-        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), () -> {
+        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> {
             String updateMsg = getUpdateMessage();
             if(updateMsg != null) {
                 ProjectRetile.getInstance().getLog().info(updateMsg);
             }
-        }), 0, 1, TimeUnit.HOURS);
+        }, 0, 1, TimeUnit.HOURS);
     }
 
     public static String getUpdateMessage() {
