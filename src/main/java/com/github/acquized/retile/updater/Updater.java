@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -64,9 +65,8 @@ public class Updater {
         return null;
     }
 
-    @SuppressWarnings("deprecation") // Executor Service isn't actually deprecated, just not recommendend. TODO: Maybe use Schedulers
     public static Future<Version> getNewestVersion() throws IllegalArgumentException {
-        return ProjectRetile.getInstance().getExecutorService().submit(() -> {
+        FutureTask<Version> task = new FutureTask<>(() -> {
             URL url = new URL(URL + PLUGIN + SUBURL + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
@@ -77,6 +77,8 @@ public class Updater {
             JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
             return new Version(obj.get("name").asString());
         });
+        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), task);
+        return task;
     }
 
 }

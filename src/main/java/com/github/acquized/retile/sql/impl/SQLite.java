@@ -16,6 +16,7 @@ package com.github.acquized.retile.sql.impl;
 
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.sql.Database;
+import com.github.acquized.retile.utils.Utility;
 
 import java.io.File;
 import java.sql.Connection;
@@ -40,6 +41,7 @@ public class SQLite implements Database {
             Class.forName("org.sqlite.JDBC").newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             ProjectRetile.getInstance().getLog().error("Could not load SQLite Driver. Please download Driver and put in 'lib' Folder.", ex);
+            Utility.disablePlugin(ProjectRetile.getInstance());
             return;
         }
         connection = DriverManager.getConnection(MessageFormat.format(url,

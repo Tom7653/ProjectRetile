@@ -76,6 +76,7 @@ public class ProjectRetile extends Plugin {
         instance = this;
         if(!isBungeeUtilInstalled()) {
             log.error("Could not load BungeeUtil. Please install it and start the Proxy Server again.");
+            Utility.disablePlugin(this);
             return;
         }
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinProtection()); // High priority for causing no errors with BungeeUtil
@@ -100,6 +101,7 @@ public class ProjectRetile extends Plugin {
             database.setup();
         } catch (SQLException ex) {
             log.error("Could not connect to MySQL / SQLite Database! Did you enter the correct Details?", ex);
+            Utility.disablePlugin(this);
             return;
         }
         Cooldown.setInstance(new Cooldown());

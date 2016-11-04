@@ -24,6 +24,7 @@ import com.github.acquized.retile.utils.DumpReport;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -46,7 +47,6 @@ public class RetileCommand extends Command {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void execute(CommandSender sender, String[] args) {
         if(sender.hasPermission("projectretile.general")) {
             if(args.length == 0) {
@@ -111,7 +111,7 @@ public class RetileCommand extends Command {
                 }
                 if(args[0].equalsIgnoreCase("dump")) {
                     if(sender.hasPermission("projectretile.general.dump")) {
-                        ProjectRetile.getInstance().getExecutorService().submit(() -> {
+                        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), () -> {
                             try {
                                 URL url = new URL("http://hastebin.com/documents");
                                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();

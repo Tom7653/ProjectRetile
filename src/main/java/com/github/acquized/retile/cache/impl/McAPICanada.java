@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -52,9 +53,8 @@ public class McAPICanada implements Cache {
                 }
             });
 
-    @SuppressWarnings("deprecation") // Executor Service isn't actually deprecated, just not recommendend. TODO: Maybe use Schedulers
     public Future<String> resolve(UUID uuid) {
-        return ProjectRetile.getInstance().getExecutorService().submit(() -> {
+        FutureTask<String> task = new FutureTask<>(() -> {
             URL url = new URL("https://mcapi.ca/name/uuid/" + uuid.toString() + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
@@ -65,11 +65,12 @@ public class McAPICanada implements Cache {
             JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
             return obj.get("name").asString();
         });
+        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), task);
+        return task;
     }
 
-    @SuppressWarnings("deprecation") // Executor Service isn't actually deprecated, just not recommendend. TODO: Maybe use Schedulers
     public Future<UUID> resolve(String name) {
-        return ProjectRetile.getInstance().getExecutorService().submit(() -> {
+        FutureTask<UUID> task = new FutureTask<>(() -> {
             URL url = new URL("https://mcapi.ca/uuid/player/" + name + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
@@ -81,6 +82,8 @@ public class McAPICanada implements Cache {
             addEntry(UUID.fromString(obj.get("uuid_formatted").asString()), name);
             return UUID.fromString(obj.get("uuid_formatted").asString());
         });
+        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), task);
+        return task;
     }
 
     @Override

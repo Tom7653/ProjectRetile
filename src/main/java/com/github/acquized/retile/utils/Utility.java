@@ -14,16 +14,21 @@
  */
 package com.github.acquized.retile.utils;
 
+import com.github.acquized.retile.ProjectRetile;
+
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.plugin.Plugin;
 
 import java.text.MessageFormat;
+import java.util.logging.Handler;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class Utility {
+public final class Utility {
 
     public static final ChatColor BLACK = ChatColor.BLACK;
     public static final ChatColor DARK_BLUE = ChatColor.DARK_BLUE;
@@ -62,6 +67,26 @@ public class Utility {
 
     public static BaseComponent[] formatLegacy(String msg, Object... args) {
         return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', MessageFormat.format(msg, args)));
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void disablePlugin(Plugin p) {
+        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), () -> {
+            try {
+                p.onDisable();
+                for(Handler h : p.getLogger().getHandlers()) {
+                    h.close();
+                }
+                ProxyServer.getInstance().getScheduler().cancel(p);
+                p.getExecutorService().shutdownNow();
+            } catch (Exception ex) {
+                ProjectRetile.getInstance().getLog().error("A exception occured while disabling " + p.getDescription().getName() + ".", ex);
+            }
+        });
+    }
+
+    public static void disablePlugin(String name) {
+        disablePlugin(ProxyServer.getInstance().getPluginManager().getPlugin(name));
     }
 
 }
