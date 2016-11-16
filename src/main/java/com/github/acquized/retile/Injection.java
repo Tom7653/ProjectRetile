@@ -15,10 +15,16 @@
 package com.github.acquized.retile;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Inject;
 
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIProvider;
+import com.github.acquized.retile.cache.Cache;
+import com.github.acquized.retile.cache.impl.McAPICanada;
+import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.i18n.I18n;
+
+import net.md_5.bungee.api.ProxyServer;
 
 public class Injection extends AbstractModule {
 
@@ -27,6 +33,26 @@ public class Injection extends AbstractModule {
         bind(ProjectRetile.class);
         bind(RetileAPI.class).to(RetileAPIProvider.class);
         bind(I18n.class);
+    }
+
+    public static class CacheInjection extends AbstractModule {
+
+        private ProjectRetile retile;
+
+        @Inject
+        public CacheInjection(ProjectRetile retile) {
+            this.retile = retile;
+        }
+
+        @Override
+        protected void configure() {
+            if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!retile.getConfig().forceOfflineUUID)) {
+                bind(Cache.class).to(McAPICanada.class);
+            } else {
+                bind(Cache.class).to(Offline.class);
+            }
+        }
+
     }
 
 }

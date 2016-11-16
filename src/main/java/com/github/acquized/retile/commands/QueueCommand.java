@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIException;
+import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.reports.Report;
 
 import net.md_5.bungee.api.CommandSender;
@@ -49,12 +50,14 @@ public class QueueCommand extends Command {
     
     private ProjectRetile retile;
     private RetileAPI api;
+    private Cache cache;
 
     @Inject
-    public QueueCommand(ProjectRetile retile, RetileAPI api) {
+    public QueueCommand(ProjectRetile retile, RetileAPI api, Cache cache) {
         super("waitingqueue", null, retile.getConfig().queueAliases);
         this.retile = retile;
         this.api = api;
+        this.cache = cache;
         this.format = new SimpleDateFormat(retile.getConfig().dateFormat);
     }
 
@@ -75,8 +78,8 @@ public class QueueCommand extends Command {
                     Player player = (Player) p;
                     int slot = 0;
                     for(final Report r : reports) {
-                        String reporter = retile.getCache().username(r.getReporter());
-                        final String victim = retile.getCache().username(r.getVictim());
+                        String reporter = cache.username(r.getReporter());
+                        final String victim = cache.username(r.getVictim());
                         ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3) {
                             @Override
                             public void click(Click click) {

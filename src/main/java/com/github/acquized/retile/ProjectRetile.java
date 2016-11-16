@@ -19,8 +19,6 @@ import com.google.inject.Injector;
 
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.cache.Cache;
-import com.github.acquized.retile.cache.impl.McAPICanada;
-import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.commands.InfoCommand;
 import com.github.acquized.retile.commands.ListReportsCommand;
 import com.github.acquized.retile.commands.QueueCommand;
@@ -71,7 +69,6 @@ public class ProjectRetile extends Plugin {
     @Getter private Blacklist blacklist;
     @Getter private DBConfig dbConfig;
     @Getter private Config config;
-    @Getter private Cache cache;
 
     @Override
     public void onEnable() {
@@ -85,11 +82,7 @@ public class ProjectRetile extends Plugin {
         loadConfigs();
         prefix = Utility.format(config.prefix);
         injector.getInstance(I18n.class).load();
-        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.forceOfflineUUID)) {
-            cache = new McAPICanada(injector.getInstance(ProjectRetile.class));
-        } else {
-            cache = new Offline();
-        }
+        Guice.createInjector(new Injection.CacheInjection(injector.getInstance(ProjectRetile.class)));
         try {
             if(dbConfig.jdbcURL.contains("mysql")) {
                 database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray(), injector.getInstance(ProjectRetile.class));
@@ -106,7 +99,7 @@ public class ProjectRetile extends Plugin {
             return;
         }
         Cooldown.setInstance(new Cooldown(injector.getInstance(ProjectRetile.class)));
-        Notifications.setInstance(new Notifications(injector.getInstance(ProjectRetile.class)));
+        Notifications.setInstance(new Notifications(injector.getInstance(ProjectRetile.class), injector.getInstance(Cache.class)));
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
@@ -179,11 +172,11 @@ public class ProjectRetile extends Plugin {
     }
 
     private void registerCommands(PluginManager pm) {
-        pm.registerCommand(this, new InfoCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
-        pm.registerCommand(this, new ListReportsCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
-        pm.registerCommand(this, new QueueCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
-        pm.registerCommand(this, new ReportCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
-        pm.registerCommand(this, new RetileCommand(injector.getInstance(ProjectRetile.class)));
+        pm.registerCommand(this, new InfoCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), injector.getInstance(Cache.class)));
+        pm.registerCommand(this, new ListReportsCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), injector.getInstance(Cache.class)));
+        pm.registerCommand(this, new QueueCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), injector.getInstance(Cache.class)));
+        pm.registerCommand(this, new ReportCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), injector.getInstance(Cache.class)));
+        pm.registerCommand(this, new RetileCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(I18n.class)));
         pm.registerCommand(this, new ToggleCommand(injector.getInstance(ProjectRetile.class)));
     }
 
@@ -202,26 +195,6 @@ public class ProjectRetile extends Plugin {
             @Override
             public int getValue() {
                 if(database instanceof SQLite) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-
-        Metrics.Graph cacheGraph = metrics.createGraph("Cache Resolver");
-        cacheGraph.addPlotter(new Metrics.Plotter("BungeeCord (Offline)") {
-            @Override
-            public int getValue() {
-                if(cache instanceof Offline) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-        cacheGraph.addPlotter(new Metrics.Plotter("McAPI.ca") {
-            @Override
-            public int getValue() {
-                if(cache instanceof McAPICanada) {
                     return 1;
                 }
                 return 0;

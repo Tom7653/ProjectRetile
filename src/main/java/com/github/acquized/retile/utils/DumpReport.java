@@ -20,6 +20,7 @@ import com.google.common.io.Files;
 
 import com.eclipsesource.json.JsonObject;
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.cache.impl.McAPICanada;
 import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.sql.impl.MySQL;
@@ -92,13 +93,13 @@ public class DumpReport {
                 .add("tableVersion", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDatabase().doesTableExist("version"));
 
         JsonObject cache = new JsonObject();
-        if(ProjectRetile.getInjector().getInstance(ProjectRetile.class).getCache() instanceof Offline) {
+        if(ProjectRetile.getInjector().getInstance(Cache.class) instanceof Offline) {
             cache.add("resolver", "BungeeCord");
             cache.add("values", "empty");
         } else {
             cache.add("resolver", "mcapi.ca");
             JsonObject values = new JsonObject();
-            for(Map.Entry<UUID, String> entry : ((McAPICanada) ProjectRetile.getInjector().getInstance(ProjectRetile.class).getCache()).cache.asMap().entrySet()) {
+            for(Map.Entry<UUID, String> entry : ((McAPICanada) ProjectRetile.getInjector().getInstance(Cache.class)).cache.asMap().entrySet()) {
                 values.add(entry.getKey().toString(), entry.getValue());
             }
             cache.add("values", values);

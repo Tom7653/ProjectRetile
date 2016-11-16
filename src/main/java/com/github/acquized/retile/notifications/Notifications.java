@@ -17,6 +17,7 @@ package com.github.acquized.retile.notifications;
 import com.google.inject.Inject;
 
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.cache.Cache;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -31,23 +32,25 @@ public class Notifications {
 
     @Getter @Setter private static Notifications instance;
     private ProjectRetile retile;
+    private Cache cache;
     private List<UUID> receiving = new ArrayList<>();
     
     @Inject
-    public Notifications(ProjectRetile retile) {
+    public Notifications(ProjectRetile retile, Cache cache) {
         this.retile = retile;
+        this.cache = cache;
     }
 
     public boolean isReceiving(ProxiedPlayer p) {
-        return receiving.contains(retile.getCache().uuid(p.getName()));
+        return receiving.contains(cache.uuid(p.getName()));
     }
 
     public void setReceiving(ProxiedPlayer p) {
-        receiving.add(retile.getCache().uuid(p.getName()));
+        receiving.add(cache.uuid(p.getName()));
     }
 
     public void unsetReceiving(ProxiedPlayer p) {
-        receiving.remove(retile.getCache().uuid(p.getName()));
+        receiving.remove(cache.uuid(p.getName()));
     }
 
 }

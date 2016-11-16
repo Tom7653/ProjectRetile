@@ -17,6 +17,7 @@ package com.github.acquized.retile.api;
 import com.google.inject.Inject;
 
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.notifications.Notifications;
 import com.github.acquized.retile.reports.Report;
 
@@ -41,10 +42,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class RetileAPIProvider implements RetileAPI {
     
     private ProjectRetile retile;
+    private Cache cache;
     
     @Inject
-    public RetileAPIProvider(ProjectRetile retile) {
+    public RetileAPIProvider(ProjectRetile retile, Cache cache) {
         this.retile = retile;
+        this.cache = cache;
     }
 
     @Override
@@ -131,8 +134,8 @@ public class RetileAPIProvider implements RetileAPI {
 
         List<ProxiedPlayer> staff = new ArrayList<>();
 
-        String reporter = retile.getCache().username(report.getReporter());
-        String victim = retile.getCache().username(report.getVictim());
+        String reporter = cache.username(report.getReporter());
+        String victim = cache.username(report.getVictim());
 
         staff.addAll(ProxyServer.getInstance().getPlayers().stream().filter(p -> (p.hasPermission("projectretile.report.receive")) && (Notifications.getInstance().isReceiving(p))).collect(Collectors.toList()));
 

@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIException;
+import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.reports.Report;
 
 import net.md_5.bungee.api.CommandSender;
@@ -35,12 +36,14 @@ public class InfoCommand extends Command {
     
     private ProjectRetile retile;
     private RetileAPI api;
+    private Cache cache;
 
     @Inject
-    public InfoCommand(ProjectRetile retile, RetileAPI api) {
+    public InfoCommand(ProjectRetile retile, RetileAPI api, Cache cache) {
         super("reportinfo", null, retile.getConfig().infoAliases);
         this.retile = retile;
         this.api = api;
+        this.cache = cache;
         this.format = new SimpleDateFormat(retile.getConfig().dateFormat);
     }
 
@@ -59,8 +62,8 @@ public class InfoCommand extends Command {
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Format",
                             report.getToken(),
-                            retile.getCache().username(report.getReporter()),
-                            retile.getCache().username(report.getVictim()),
+                            cache.username(report.getReporter()),
+                            cache.username(report.getVictim()),
                             report.getReason(),
                             format.format(new Date(report.getTimestamp()))));
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
