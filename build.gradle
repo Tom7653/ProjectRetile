@@ -54,6 +54,7 @@ dependencies {
     compile group: 'net.cubespace.yamler', name: 'Yamler-Bungee', version: '2.4.0'
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.14.2.1'
     compile group: 'org.mcstats.bungee', name: 'metrics', version: 'R8-SNAPSHOT'
+    compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
 
     // Test
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -85,6 +86,9 @@ shadowJar {
         include(dependency('org.slf4j::1.7.21'))
         include(dependency('org.xerial:sqlite-jdbc:3.14.2.1')) // Relocating not suggest as its SQLite Driver.
         include(dependency('org.mcstats.bungee:metrics:R8-SNAPSHOT'))
+        include(dependency('com.google.inject:guice:4.1.0'))
+        include(dependency('aopalliance:aopalliance:1.0'))
+        include(dependency('javax.inject:javax.inject:1'))
     }
 }
 
