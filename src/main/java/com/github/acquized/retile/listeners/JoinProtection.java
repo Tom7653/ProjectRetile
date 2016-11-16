@@ -18,7 +18,7 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import dev.wolveringer.BungeeUtil.BungeeUtil;
+import dev.wolveringer.bungeeutil.BungeeUtil;
 
 import static com.github.acquized.retile.utils.Utility.RED;
 
