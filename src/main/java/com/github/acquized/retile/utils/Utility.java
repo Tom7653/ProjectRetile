@@ -71,7 +71,7 @@ public final class Utility {
 
     @SuppressWarnings("deprecation")
     public static void disablePlugin(Plugin p) {
-        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInjector().getInstance(ProjectRetile.class), () -> {
             try {
                 p.onDisable();
                 for(Handler h : p.getLogger().getHandlers()) {
@@ -80,7 +80,7 @@ public final class Utility {
                 ProxyServer.getInstance().getScheduler().cancel(p);
                 p.getExecutorService().shutdownNow();
             } catch (Exception ex) {
-                ProjectRetile.getInstance().getLog().error("A exception occured while disabling " + p.getDescription().getName() + ".", ex);
+                ProjectRetile.getInjector().getInstance(ProjectRetile.class).getLog().error("A exception occured while disabling " + p.getDescription().getName() + ".", ex);
             }
         });
     }

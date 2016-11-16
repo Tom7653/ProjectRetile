@@ -14,6 +14,8 @@
  */
 package com.github.acquized.retile.cooldown;
 
+import com.google.inject.Inject;
+
 import com.github.acquized.retile.ProjectRetile;
 
 import java.util.HashMap;
@@ -28,17 +30,23 @@ public class Cooldown {
 
     private Map<UUID, Long> watches = new HashMap<>();
     @Getter @Setter private static Cooldown instance;
+    private ProjectRetile retile;
+
+    @Inject
+    public Cooldown(ProjectRetile retile) {
+        this.retile = retile;
+    }
 
     public void start(UUID uuid) {
         watches.put(uuid, System.currentTimeMillis());
     }
 
     public boolean inCooldown(UUID uuid) {
-        if((watches.containsKey(uuid)) && (TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) < ProjectRetile.getInstance().getConfig().cooldown)) {
+        if((watches.containsKey(uuid)) && (TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) < retile.getConfig().cooldown)) {
             return true;
         } else if(!watches.containsKey(uuid)) {
             return false;
-        } else if(TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) >= ProjectRetile.getInstance().getConfig().cooldown) {
+        } else if(TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) >= retile.getConfig().cooldown) {
             stop(uuid);
             return false;
         }

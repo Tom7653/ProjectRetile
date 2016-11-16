@@ -17,6 +17,7 @@ package com.github.acquized.retile.cache.impl;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.inject.Inject;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
@@ -52,12 +53,19 @@ public class McAPICanada implements Cache {
                     return resolve(key).get();
                 }
             });
+    
+    private ProjectRetile retile;
+    
+    @Inject
+    public McAPICanada(ProjectRetile retile) {
+        this.retile = retile;
+    }
 
     public Future<String> resolve(UUID uuid) {
         FutureTask<String> task = new FutureTask<>(() -> {
             URL url = new URL("https://mcapi.ca/name/uuid/" + uuid.toString() + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
+            conn.addRequestProperty("User-Agent", "ProjectRetile v" + retile.getDescription().getVersion());
             conn.setRequestMethod("GET");
             conn.setUseCaches(false);
             conn.setDoOutput(true);
@@ -65,7 +73,7 @@ public class McAPICanada implements Cache {
             JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
             return obj.get("name").asString();
         });
-        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), task);
+        ProxyServer.getInstance().getScheduler().runAsync(retile, task);
         return task;
     }
 
@@ -73,7 +81,7 @@ public class McAPICanada implements Cache {
         FutureTask<UUID> task = new FutureTask<>(() -> {
             URL url = new URL("https://mcapi.ca/uuid/player/" + name + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
+            conn.addRequestProperty("User-Agent", "ProjectRetile v" + retile.getDescription().getVersion());
             conn.setRequestMethod("GET");
             conn.setUseCaches(false);
             conn.setDoOutput(true);
@@ -82,7 +90,7 @@ public class McAPICanada implements Cache {
             addEntry(UUID.fromString(obj.get("uuid_formatted").asString()), name);
             return UUID.fromString(obj.get("uuid_formatted").asString());
         });
-        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), task);
+        ProxyServer.getInstance().getScheduler().runAsync(retile, task);
         return task;
     }
 
@@ -91,7 +99,7 @@ public class McAPICanada implements Cache {
         try {
             return cache.get(uuid);
         } catch (ExecutionException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not connect to local Cache regaring Username Resolving of '" + uuid.toString() + "'.", ex);
+            retile.getLog().error("Could not connect to local Cache regaring Username Resolving of '" + uuid.toString() + "'.", ex);
             return "Cache Failed @ " + uuid.hashCode();
         }
     }

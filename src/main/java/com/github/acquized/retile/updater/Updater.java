@@ -36,17 +36,17 @@ public class Updater {
     private static final String SUBURL = "/versions/latest";
 
     public static void start() {
-        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> {
+        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInjector().getInstance(ProjectRetile.class), () -> {
             String updateMsg = getUpdateMessage();
             if(updateMsg != null) {
-                ProjectRetile.getInstance().getLog().info(updateMsg);
+                ProjectRetile.getInjector().getInstance(ProjectRetile.class).getLog().info(updateMsg);
             }
         }, 0, 1, TimeUnit.HOURS);
     }
 
     public static String getUpdateMessage() {
-        Version current = new Version(ProjectRetile.getInstance().getDescription().getVersion());
-        Version newest = new Version(ProjectRetile.getInstance().getDescription().getVersion() + "-OFFLINE");
+        Version current = new Version(ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDescription().getVersion());
+        Version newest = new Version(ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDescription().getVersion() + "-OFFLINE");
         try { newest = getNewestVersion().get(); } catch (InterruptedException | ExecutionException ignored) {}
 
         if(current.compareTo(newest) < 0) {
@@ -69,7 +69,7 @@ public class Updater {
         FutureTask<Version> task = new FutureTask<>(() -> {
             URL url = new URL(URL + PLUGIN + SUBURL + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
+            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDescription().getVersion());
             conn.setRequestMethod("GET");
             conn.setUseCaches(true);
             conn.setDoOutput(true);
@@ -77,7 +77,7 @@ public class Updater {
             JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
             return new Version(obj.get("name").asString());
         });
-        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), task);
+        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInjector().getInstance(ProjectRetile.class), task);
         return task;
     }
 

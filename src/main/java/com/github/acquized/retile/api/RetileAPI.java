@@ -14,6 +14,8 @@
  */
 package com.github.acquized.retile.api;
 
+import com.google.inject.ImplementedBy;
+
 import com.github.acquized.retile.annotations.Beta;
 import com.github.acquized.retile.annotations.Documented;
 import com.github.acquized.retile.reports.Report;
@@ -34,6 +36,7 @@ import lombok.NonNull;
  */
 @Beta
 @Documented
+@ImplementedBy(RetileAPIProvider.class)
 public interface RetileAPI {
 
     /**

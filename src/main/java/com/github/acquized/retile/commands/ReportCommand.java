@@ -14,7 +14,10 @@
  */
 package com.github.acquized.retile.commands;
 
+import com.google.inject.Inject;
+
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIException;
 import com.github.acquized.retile.cooldown.Cooldown;
 import com.github.acquized.retile.reports.Report;
@@ -31,20 +34,26 @@ import static com.github.acquized.retile.i18n.I18n.tl;
 
 public class ReportCommand extends Command {
 
-    public ReportCommand() {
-        super("report", null, ProjectRetile.getInstance().getConfig().reportAliases);
+    private ProjectRetile retile;
+    private RetileAPI api;
+    
+    @Inject
+    public ReportCommand(ProjectRetile retile, RetileAPI api) {
+        super("report", null, retile.getConfig().reportAliases);
+        this.retile = retile;
+        this.api = api;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if(sender instanceof ProxiedPlayer) {
             ProxiedPlayer p = (ProxiedPlayer) sender;
-            UUID pUUID = ProjectRetile.getInstance().getCache().uuid(p.getName());
+            UUID pUUID = retile.getCache().uuid(p.getName());
             if(p.hasPermission("projectretile.commands.report")) {
                 if(args.length >= 1) {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
                     if(target != null) {
-                        UUID targetUUID = ProjectRetile.getInstance().getCache().uuid(target.getName());
+                        UUID targetUUID = retile.getCache().uuid(target.getName());
                         if(!pUUID.toString().equals(targetUUID.toString())) {
                             if(!Cooldown.getInstance().inCooldown(pUUID)) {
                                 if(!target.hasPermission("projectretile.report.bypass")) {
@@ -54,7 +63,7 @@ public class ReportCommand extends Command {
                                     }
                                     Report report = new Report(pUUID, targetUUID, builder.toString(), System.currentTimeMillis());
                                     try {
-                                        ProjectRetile.getInstance().getApi().addReport(report);
+                                        api.addReport(report);
                                     } catch (RetileAPIException ex) {
                                         if(!ex.getMessage().contains("Blacklist")) {
                                             p.sendMessage(tl("ProjectRetile.Commands.Report.Failure"));

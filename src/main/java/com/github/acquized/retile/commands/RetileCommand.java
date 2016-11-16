@@ -14,6 +14,8 @@
  */
 package com.github.acquized.retile.commands;
 
+import com.google.inject.Inject;
+
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.WriterConfig;
@@ -42,15 +44,19 @@ import static com.github.acquized.retile.utils.Utility.formatLegacy;
 
 public class RetileCommand extends Command {
 
-    public RetileCommand() {
+    private ProjectRetile retile;
+    
+    @Inject
+    public RetileCommand(ProjectRetile retile) {
         super("projectretile", null, "retile");
+        this.retile = retile;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if(sender.hasPermission("projectretile.general")) {
             if(args.length == 0) {
-                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion()));
+                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "ProjectRetile v" + retile.getDescription().getVersion()));
                 sender.sendMessage(formatLegacy(RED + "> " + GRAY + "GitHub: " + DARK_AQUA + "https://github.com/Acquized/ProjectRetile"));
                 return;
             }
@@ -70,31 +76,31 @@ public class RetileCommand extends Command {
                     if(sender.hasPermission("projectretile.general.reload")) {
                         // Players can only reload Config, Messages & Blacklist - console can reload Database
                         try {
-                            ProjectRetile.getInstance().getConfig().reload();
+                            retile.getConfig().reload();
                         } catch (InvalidConfigurationException ex) {
                             sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload config.yml File. Please check for errors."));
                             return;
                         }
                         try {
-                            ProjectRetile.getInstance().getBlacklist().reload();
+                            retile.getBlacklist().reload();
                         } catch (InvalidConfigurationException ex) {
                             sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload blacklist.yml File. Please check for errors."));
                             return;
                         }
-                        ProjectRetile.getInstance().getI18n().load();
+                        retile.getI18n().load();
                         if(!(sender instanceof ProxiedPlayer)) {
                             try {
-                                ProjectRetile.getInstance().getDatabase().disconnect();
-                                ProjectRetile.getInstance().getDbConfig().reload();
-                                if(ProjectRetile.getInstance().getDbConfig().jdbcURL.contains("mysql")) {
-                                    ProjectRetile.getInstance().setDatabase(new MySQL(ProjectRetile.getInstance().getDbConfig().jdbcURL, ProjectRetile.getInstance().getDbConfig().username, ProjectRetile.getInstance().getDbConfig().password.toCharArray()));
-                                    ProjectRetile.getInstance().getLog().info("Using MySQL Connection...");
+                                retile.getDatabase().disconnect();
+                                retile.getDbConfig().reload();
+                                if(retile.getDbConfig().jdbcURL.contains("mysql")) {
+                                    retile.setDatabase(new MySQL(retile.getDbConfig().jdbcURL, retile.getDbConfig().username, retile.getDbConfig().password.toCharArray()));
+                                    retile.getLog().info("Using MySQL Connection...");
                                 } else {
-                                    ProjectRetile.getInstance().setDatabase(new SQLite(ProjectRetile.getInstance().getDbConfig().jdbcURL));
-                                    ProjectRetile.getInstance().getLog().info("Using SQLite Connection...");
+                                    retile.setDatabase(new SQLite(retile.getDbConfig().jdbcURL));
+                                    retile.getLog().info("Using SQLite Connection...");
                                 }
-                                ProjectRetile.getInstance().getDatabase().connect();
-                                ProjectRetile.getInstance().getDatabase().setup();
+                                retile.getDatabase().connect();
+                                retile.getDatabase().setup();
                             } catch (SQLException | InvalidConfigurationException ex) {
                                 sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload Database. Please force end the Java Process."));
                                 return;
@@ -111,7 +117,7 @@ public class RetileCommand extends Command {
                 }
                 if(args[0].equalsIgnoreCase("dump")) {
                     if(sender.hasPermission("projectretile.general.dump")) {
-                        ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), () -> {
+                        ProxyServer.getInstance().getScheduler().runAsync(retile, () -> {
                             try {
                                 URL url = new URL("http://hastebin.com/documents");
                                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -128,7 +134,7 @@ public class RetileCommand extends Command {
                                 sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A dump has been successfully created. View it at " + DARK_AQUA + "http://hastebin.com/{0}", obj.get("key").asString()));
                             } catch (Exception ex) {
                                 sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A error occured. Please checkout the console."));
-                                ProjectRetile.getInstance().getLog().error("An error occured while contacting Hastebin.", ex);
+                                retile.getLog().error("An error occured while contacting Hastebin.", ex);
                             }
                         });
                         return;

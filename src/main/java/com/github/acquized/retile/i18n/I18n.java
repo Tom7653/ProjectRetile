@@ -14,6 +14,8 @@
  */
 package com.github.acquized.retile.i18n;
 
+import com.google.inject.Inject;
+
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.utils.Utility;
 
@@ -30,13 +32,16 @@ import java.util.ResourceBundle;
 
 public class I18n {
 
-    public static final String[] SUPPORTED_LOCALES = { "en", /*"de", "nl", "es", "fr" These Locales are outdated. */ };
-    public static final File DIRECTORY = new File(ProjectRetile.getInstance().getDataFolder() + File.separator + "locale");
-
+    public final String[] SUPPORTED_LOCALES = { "en", /*"de", "nl", "es", "fr" These Locales are outdated. */ };
+    public final File DIRECTORY;
+    private ProjectRetile retile;
     public static ResourceBundle bundle;
 
+    @Inject
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public I18n() {
+    public I18n(ProjectRetile retile) {
+        this.retile = retile;
+        DIRECTORY = new File(retile.getDataFolder() + File.separator + "locale");
         try {
             if (!DIRECTORY.isDirectory()) {
                 DIRECTORY.mkdirs();
@@ -44,20 +49,20 @@ public class I18n {
             for (String l : SUPPORTED_LOCALES) {
                 File f = new File(DIRECTORY, "messages_" + l + ".properties");
                 if (!f.exists()) {
-                    Files.copy(ProjectRetile.getInstance().getResourceAsStream(f.getName()), f.toPath());
+                    Files.copy(retile.getResourceAsStream(f.getName()), f.toPath());
                 }
             }
         } catch (IOException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not create Messages Files.", ex);
+            retile.getLog().error("Could not create Messages Files.", ex);
         }
     }
 
     public static String getMessage(String key) {
-        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key).replace("\\n", "\n"));
+        return Utility.format(ProjectRetile.prefix + bundle.getString(key).replace("\\n", "\n"));
     }
 
     public static String getMessage(String key, Object... obj) {
-        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key).replace("\\n", "\n"), obj);
+        return Utility.format(ProjectRetile.prefix + bundle.getString(key).replace("\\n", "\n"), obj);
     }
 
 
@@ -74,9 +79,9 @@ public class I18n {
     public void load() {
         try {
             ClassLoader loader = new URLClassLoader(new URL[]{DIRECTORY.toURI().toURL()});
-            bundle = ResourceBundle.getBundle("messages", new Locale(ProjectRetile.getInstance().getConfig().locale), loader);
+            bundle = ResourceBundle.getBundle("messages", new Locale(retile.getConfig().locale), loader);
         } catch (IOException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not load messages_" + ProjectRetile.getInstance().getConfig().locale + ".properties File. " +
+            retile.getLog().error("Could not load messages_" + retile.getConfig().locale + ".properties File. " +
                     "Please check for Errors.", ex);
         }
     }

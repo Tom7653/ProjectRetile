@@ -14,8 +14,10 @@
  */
 package com.github.acquized.retile;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import com.github.acquized.retile.api.RetileAPI;
-import com.github.acquized.retile.api.RetileAPIProvider;
 import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.cache.impl.McAPICanada;
 import com.github.acquized.retile.cache.impl.Offline;
@@ -63,19 +65,18 @@ import static com.github.acquized.retile.utils.Utility.RED;
 public class ProjectRetile extends Plugin {
 
     public static String prefix = RED + "> " + GRAY;
-    @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
+    @Getter private static Injector injector;
     @Getter @Setter(onParam = @__(@NonNull)) private Database database;
     @Getter private Blacklist blacklist;
     @Getter private DBConfig dbConfig;
-    @Getter private RetileAPI api;
     @Getter private Config config;
     @Getter private Cache cache;
     @Getter private I18n i18n;
 
     @Override
     public void onEnable() {
-        instance = this;
+        injector = Guice.createInjector(new Injection());
         if(!isBungeeUtilInstalled()) {
             log.error("Could not load BungeeUtil. Please install it and start the Proxy Server again.");
             Utility.disablePlugin(this);
@@ -84,19 +85,19 @@ public class ProjectRetile extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinProtection()); // High priority for causing no errors with BungeeUtil
         loadConfigs();
         prefix = Utility.format(config.prefix);
-        i18n = new I18n();
+        i18n = new I18n(injector.getInstance(ProjectRetile.class));
         i18n.load();
         if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.forceOfflineUUID)) {
-            cache = new McAPICanada();
+            cache = new McAPICanada(injector.getInstance(ProjectRetile.class));
         } else {
             cache = new Offline();
         }
         try {
             if(dbConfig.jdbcURL.contains("mysql")) {
-                database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
+                database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray(), injector.getInstance(ProjectRetile.class));
                 log.info("Using MySQL Connection...");
             } else {
-                database = new SQLite(dbConfig.jdbcURL);
+                database = new SQLite(injector.getInstance(ProjectRetile.class), dbConfig.jdbcURL);
                 log.info("Using SQLite Connection...");
             }
             database.connect();
@@ -106,9 +107,8 @@ public class ProjectRetile extends Plugin {
             Utility.disablePlugin(this);
             return;
         }
-        Cooldown.setInstance(new Cooldown());
-        Notifications.setInstance(new Notifications());
-        api = new RetileAPIProvider();
+        Cooldown.setInstance(new Cooldown(injector.getInstance(ProjectRetile.class)));
+        Notifications.setInstance(new Notifications(injector.getInstance(ProjectRetile.class)));
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
@@ -131,7 +131,6 @@ public class ProjectRetile extends Plugin {
         } catch (SQLException ex) {
             log.error("Could not disconnect from the MySQL / SQLite Database! Please force end the Java Process.", ex);
         }
-        instance = null;
         log.info("ProjectRetile v{} has been disabled.", getDescription().getVersion());
     }
 
@@ -178,16 +177,16 @@ public class ProjectRetile extends Plugin {
 
     private void registerListeners(PluginManager pm) {
         pm.registerListener(this, new Disconnect());
-        pm.registerListener(this, new PostLogin());
+        pm.registerListener(this, new PostLogin(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
     }
 
     private void registerCommands(PluginManager pm) {
-        pm.registerCommand(this, new InfoCommand());
-        pm.registerCommand(this, new ListReportsCommand());
-        pm.registerCommand(this, new QueueCommand());
-        pm.registerCommand(this, new ReportCommand());
-        pm.registerCommand(this, new RetileCommand());
-        pm.registerCommand(this, new ToggleCommand());
+        pm.registerCommand(this, new InfoCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
+        pm.registerCommand(this, new ListReportsCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
+        pm.registerCommand(this, new QueueCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
+        pm.registerCommand(this, new ReportCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
+        pm.registerCommand(this, new RetileCommand(injector.getInstance(ProjectRetile.class)));
+        pm.registerCommand(this, new ToggleCommand(injector.getInstance(ProjectRetile.class)));
     }
 
     private void addCustomGraphs(Metrics metrics) {

@@ -14,7 +14,10 @@
  */
 package com.github.acquized.retile.commands;
 
+import com.google.inject.Inject;
+
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIException;
 import com.github.acquized.retile.reports.Report;
 
@@ -42,10 +45,17 @@ import static com.github.acquized.retile.utils.Utility.formatLegacy;
 
 public class ListReportsCommand extends Command {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(ProjectRetile.getInstance().getConfig().dateFormat);
+    private final SimpleDateFormat format;
 
-    public ListReportsCommand() {
-        super("listreports", null, ProjectRetile.getInstance().getConfig().reportsAliases);
+    private ProjectRetile retile;
+    private RetileAPI api;
+    
+    @Inject
+    public ListReportsCommand(ProjectRetile retile, RetileAPI api) {
+        super("listreports", null, retile.getConfig().reportsAliases);
+        this.retile = retile;
+        this.api = api;
+        this.format = new SimpleDateFormat(retile.getConfig().dateFormat);
     }
 
     @Override
@@ -65,7 +75,7 @@ public class ListReportsCommand extends Command {
                 if(args.length <= 1) {
                     Report[] reports;
                     try {
-                        reports = (amount != -1 ? ProjectRetile.getInstance().getApi().getLatestReports(amount) : ProjectRetile.getInstance().getApi().getAllReports());
+                        reports = (amount != -1 ? api.getLatestReports(amount) : api.getAllReports());
                     } catch (RetileAPIException ex) {
                         p.sendMessage(tl("ProjectRetile.Commands.ListReports.Failed"));
                         return;
@@ -74,21 +84,21 @@ public class ListReportsCommand extends Command {
                     Player player = (Player) p;
                     int slot = 0;
                     for(final Report r : reports) {
-                        String reporter = ProjectRetile.getInstance().getCache().username(r.getReporter());
-                        final String victim = ProjectRetile.getInstance().getCache().username(r.getVictim());
+                        String reporter = retile.getCache().username(r.getReporter());
+                        final String victim = retile.getCache().username(r.getVictim());
                         ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3) {
                             @Override
                             public void click(Click click) {
                                 try {
                                     if(click.getMode() == PacketPlayInWindowClick.Mode.NORMAL_LEFT_CLICK) {
-                                        click.getPlayer().connect(ProjectRetile.getInstance().getApi().resolveServer(r.getVictim()));
+                                        click.getPlayer().connect(api.resolveServer(r.getVictim()));
                                     } else if(click.getMode() == PacketPlayInWindowClick.Mode.NORMAL_RIGHT_CLICK) {
-                                        ProjectRetile.getInstance().getApi().removeReport(r);
+                                        api.removeReport(r);
                                         click.getPlayer().sendMessage(formatLegacy(RED + "> " + GRAY + "Report " + DARK_AQUA + r.getToken() + GRAY + " deleted."));
                                         click.getPlayer().closeInventory();
                                     }
                                 } catch (RetileAPIException ex) {
-                                    ProjectRetile.getInstance().getLog().error("Could not resolve Server of " + victim, ex);
+                                    retile.getLog().error("Could not resolve Server of " + victim, ex);
                                 }
                             }
                         };
@@ -98,7 +108,7 @@ public class ListReportsCommand extends Command {
                         meta.setLore(Arrays.asList(GRAY + "ID: " + DARK_AQUA + r.getToken(),
                                 GRAY + "Reported by: " + DARK_AQUA + reporter,
                                 GRAY + "Reason: " + DARK_AQUA + r.getReason(),
-                                GRAY + "Time: " + DARK_AQUA + DATE_FORMAT.format(new Date(r.getTimestamp())),
+                                GRAY + "Time: " + DARK_AQUA + format.format(new Date(r.getTimestamp())),
                                 GRAY + " ",
                                 GREEN + "Left click to connect",
                                 RED + "Right click to delete"));

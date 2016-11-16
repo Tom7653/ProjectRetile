@@ -14,6 +14,8 @@
  */
 package com.github.acquized.retile.commands;
 
+import com.google.inject.Inject;
+
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.notifications.Notifications;
 
@@ -25,8 +27,9 @@ import static com.github.acquized.retile.i18n.I18n.tl;
 
 public class ToggleCommand extends Command {
 
-    public ToggleCommand() {
-        super("togglereports", null, ProjectRetile.getInstance().getConfig().toggleAliases);
+    @Inject
+    public ToggleCommand(ProjectRetile retile) {
+        super("togglereports", null, retile.getConfig().toggleAliases);
     }
 
     @Override
