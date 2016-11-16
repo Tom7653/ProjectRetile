@@ -20,6 +20,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.WriterConfig;
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.i18n.I18n;
 import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.sql.impl.SQLite;
 import com.github.acquized.retile.utils.DumpReport;
@@ -45,11 +46,13 @@ import static com.github.acquized.retile.utils.Utility.formatLegacy;
 public class RetileCommand extends Command {
 
     private ProjectRetile retile;
+    private I18n i18n;
     
     @Inject
-    public RetileCommand(ProjectRetile retile) {
+    public RetileCommand(ProjectRetile retile, I18n i18n) {
         super("projectretile", null, "retile");
         this.retile = retile;
+        this.i18n = i18n;
     }
 
     @Override
@@ -87,16 +90,16 @@ public class RetileCommand extends Command {
                             sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload blacklist.yml File. Please check for errors."));
                             return;
                         }
-                        retile.getI18n().load();
+                        i18n.load();
                         if(!(sender instanceof ProxiedPlayer)) {
                             try {
                                 retile.getDatabase().disconnect();
                                 retile.getDbConfig().reload();
                                 if(retile.getDbConfig().jdbcURL.contains("mysql")) {
-                                    retile.setDatabase(new MySQL(retile.getDbConfig().jdbcURL, retile.getDbConfig().username, retile.getDbConfig().password.toCharArray()));
+                                    retile.setDatabase(new MySQL(retile.getDbConfig().jdbcURL, retile.getDbConfig().username, retile.getDbConfig().password.toCharArray(), retile));
                                     retile.getLog().info("Using MySQL Connection...");
                                 } else {
-                                    retile.setDatabase(new SQLite(retile.getDbConfig().jdbcURL));
+                                    retile.setDatabase(new SQLite(retile, retile.getDbConfig().jdbcURL));
                                     retile.getLog().info("Using SQLite Connection...");
                                 }
                                 retile.getDatabase().connect();

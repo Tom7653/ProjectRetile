@@ -18,6 +18,7 @@ import com.google.inject.AbstractModule;
 
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIProvider;
+import com.github.acquized.retile.i18n.I18n;
 
 public class Injection extends AbstractModule {
 
@@ -25,6 +26,7 @@ public class Injection extends AbstractModule {
     protected void configure() {
         bind(ProjectRetile.class);
         bind(RetileAPI.class).to(RetileAPIProvider.class);
+        bind(I18n.class);
     }
 
 }

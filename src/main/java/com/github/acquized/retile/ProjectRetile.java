@@ -72,7 +72,6 @@ public class ProjectRetile extends Plugin {
     @Getter private DBConfig dbConfig;
     @Getter private Config config;
     @Getter private Cache cache;
-    @Getter private I18n i18n;
 
     @Override
     public void onEnable() {
@@ -85,8 +84,7 @@ public class ProjectRetile extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinProtection()); // High priority for causing no errors with BungeeUtil
         loadConfigs();
         prefix = Utility.format(config.prefix);
-        i18n = new I18n(injector.getInstance(ProjectRetile.class));
-        i18n.load();
+        injector.getInstance(I18n.class).load();
         if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.forceOfflineUUID)) {
             cache = new McAPICanada(injector.getInstance(ProjectRetile.class));
         } else {
