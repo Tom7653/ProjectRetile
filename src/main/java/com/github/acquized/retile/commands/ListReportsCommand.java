@@ -14,8 +14,12 @@
  */
 package com.github.acquized.retile.commands;
 
+import com.google.inject.Inject;
+
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIException;
+import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.reports.Report;
 
 import net.md_5.bungee.api.CommandSender;
@@ -26,12 +30,12 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import dev.wolveringer.BungeeUtil.Material;
-import dev.wolveringer.BungeeUtil.Player;
-import dev.wolveringer.BungeeUtil.item.ItemStack;
-import dev.wolveringer.BungeeUtil.item.itemmeta.SkullMeta;
-import dev.wolveringer.BungeeUtil.packets.PacketPlayInWindowClick;
-import dev.wolveringer.api.inventory.Inventory;
+import dev.wolveringer.bungeeutil.inventory.Inventory;
+import dev.wolveringer.bungeeutil.item.ItemStack;
+import dev.wolveringer.bungeeutil.item.Material;
+import dev.wolveringer.bungeeutil.item.meta.SkullMeta;
+import dev.wolveringer.bungeeutil.packets.PacketPlayInWindowClick;
+import dev.wolveringer.bungeeutil.player.Player;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 import static com.github.acquized.retile.utils.Utility.DARK_AQUA;
@@ -42,10 +46,19 @@ import static com.github.acquized.retile.utils.Utility.formatLegacy;
 
 public class ListReportsCommand extends Command {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(ProjectRetile.getInstance().getConfig().dateFormat);
+    private final SimpleDateFormat format;
 
-    public ListReportsCommand() {
-        super("listreports", null, ProjectRetile.getInstance().getConfig().reportsAliases);
+    private ProjectRetile retile;
+    private RetileAPI api;
+    private Cache cache;
+    
+    @Inject
+    public ListReportsCommand(ProjectRetile retile, RetileAPI api, Cache cache) {
+        super("listreports", null, retile.config.reportsAliases);
+        this.retile = retile;
+        this.api = api;
+        this.cache = cache;
+        this.format = new SimpleDateFormat(retile.config.dateFormat);
     }
 
     @Override
@@ -65,7 +78,7 @@ public class ListReportsCommand extends Command {
                 if(args.length <= 1) {
                     Report[] reports;
                     try {
-                        reports = (amount != -1 ? ProjectRetile.getInstance().getApi().getLatestReports(amount) : ProjectRetile.getInstance().getApi().getAllReports());
+                        reports = (amount != -1 ? api.getLatestReports(amount) : api.getAllReports());
                     } catch (RetileAPIException ex) {
                         p.sendMessage(tl("ProjectRetile.Commands.ListReports.Failed"));
                         return;
@@ -74,21 +87,21 @@ public class ListReportsCommand extends Command {
                     Player player = (Player) p;
                     int slot = 0;
                     for(final Report r : reports) {
-                        String reporter = ProjectRetile.getInstance().getCache().username(r.getReporter());
-                        final String victim = ProjectRetile.getInstance().getCache().username(r.getVictim());
+                        String reporter = cache.username(r.getReporter());
+                        final String victim = cache.username(r.getVictim());
                         ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3) {
                             @Override
-                            public void click(Click click) {
+                            public void click(ItemStack.Click click) {
                                 try {
                                     if(click.getMode() == PacketPlayInWindowClick.Mode.NORMAL_LEFT_CLICK) {
-                                        click.getPlayer().connect(ProjectRetile.getInstance().getApi().resolveServer(r.getVictim()));
+                                        click.getPlayer().connect(api.resolveServer(r.getVictim()));
                                     } else if(click.getMode() == PacketPlayInWindowClick.Mode.NORMAL_RIGHT_CLICK) {
-                                        ProjectRetile.getInstance().getApi().removeReport(r);
+                                        api.removeReport(r);
                                         click.getPlayer().sendMessage(formatLegacy(RED + "> " + GRAY + "Report " + DARK_AQUA + r.getToken() + GRAY + " deleted."));
                                         click.getPlayer().closeInventory();
                                     }
                                 } catch (RetileAPIException ex) {
-                                    ProjectRetile.getInstance().getLog().error("Could not resolve Server of " + victim, ex);
+                                    retile.getLog().error("Could not resolve Server of " + victim, ex);
                                 }
                             }
                         };
@@ -98,7 +111,7 @@ public class ListReportsCommand extends Command {
                         meta.setLore(Arrays.asList(GRAY + "ID: " + DARK_AQUA + r.getToken(),
                                 GRAY + "Reported by: " + DARK_AQUA + reporter,
                                 GRAY + "Reason: " + DARK_AQUA + r.getReason(),
-                                GRAY + "Time: " + DARK_AQUA + DATE_FORMAT.format(new Date(r.getTimestamp())),
+                                GRAY + "Time: " + DARK_AQUA + format.format(new Date(r.getTimestamp())),
                                 GRAY + " ",
                                 GREEN + "Left click to connect",
                                 RED + "Right click to delete"));

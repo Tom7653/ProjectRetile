@@ -20,6 +20,7 @@ import com.google.common.io.Files;
 
 import com.eclipsesource.json.JsonObject;
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.cache.impl.McAPICanada;
 import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.sql.impl.MySQL;
@@ -35,11 +36,11 @@ import java.util.UUID;
 public class DumpReport {
 
     public static JsonObject create() throws IllegalAccessException, SQLException, IOException {
-        JsonObject retilePlugin = new JsonObject().add("name", ProjectRetile.getInstance().getDescription().getName())
-                .add("version", ProjectRetile.getInstance().getDescription().getVersion())
-                .add("author", ProjectRetile.getInstance().getDescription().getAuthor())
-                .add("main", ProjectRetile.getInstance().getDescription().getMain())
-                .add("hash", Files.hash(ProjectRetile.getInstance().getDescription().getFile(), Hashing.md5()).toString());
+        JsonObject retilePlugin = new JsonObject().add("name", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDescription().getName())
+                .add("version", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDescription().getVersion())
+                .add("author", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDescription().getAuthor())
+                .add("main", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDescription().getMain())
+                .add("hash", Files.hash(ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDescription().getFile(), Hashing.md5()).toString());
 
         JsonObject server = new JsonObject().add("name", ProxyServer.getInstance().getName())
                 .add("version", ProxyServer.getInstance().getVersion());
@@ -52,27 +53,27 @@ public class DumpReport {
         JsonObject machine = new JsonObject().add("java", System.getProperty("java.version"))
                 .add("system", System.getProperty("os.name"));
 
-        JsonObject config = new JsonObject().add("prefix", ProjectRetile.getInstance().getConfig().prefix)
-                .add("locale", ProjectRetile.getInstance().getConfig().locale)
-                .add("forceOfflineUUID", ProjectRetile.getInstance().getConfig().forceOfflineUUID)
-                .add("cooldown", ProjectRetile.getInstance().getConfig().cooldown)
-                .add("clickableMsgs", ProjectRetile.getInstance().getConfig().clickableMsgs)
-                .add("dateFormat", ProjectRetile.getInstance().getConfig().dateFormat)
-                .add("version", ProjectRetile.getInstance().getConfig().version)
-                .add("minPoolIdle", ProjectRetile.getInstance().getConfig().minPoolIdle)
-                .add("maxPoolSize", ProjectRetile.getInstance().getConfig().maxPoolSize)
-                .add("poolTimeout", ProjectRetile.getInstance().getConfig().poolTimeout)
-                .add("reportAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().reportAliases))
-                .add("reportsAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().reportsAliases))
-                .add("toggleAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().toggleAliases))
-                .add("infoAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().infoAliases))
-                .add("queueAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().queueAliases));
+        JsonObject config = new JsonObject().add("prefix", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.prefix)
+                .add("locale", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.locale)
+                .add("forceOfflineUUID", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.forceOfflineUUID)
+                .add("cooldown", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.cooldown)
+                .add("clickableMsgs", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.clickableMsgs)
+                .add("dateFormat", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.dateFormat)
+                .add("version", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.version)
+                .add("minPoolIdle", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.minPoolIdle)
+                .add("maxPoolSize", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.maxPoolSize)
+                .add("poolTimeout", ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.poolTimeout)
+                .add("reportAliases", Joiner.on(", ").join(ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.reportAliases))
+                .add("reportsAliases", Joiner.on(", ").join(ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.reportsAliases))
+                .add("toggleAliases", Joiner.on(", ").join(ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.toggleAliases))
+                .add("infoAliases", Joiner.on(", ").join(ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.infoAliases))
+                .add("queueAliases", Joiner.on(", ").join(ProjectRetile.getInjector().getInstance(ProjectRetile.class).config.queueAliases));
 
-        JsonObject dbConfig = new JsonObject().add("jdbcURL", ProjectRetile.getInstance().getDbConfig().jdbcURL)
-                .add("username", ProjectRetile.getInstance().getDbConfig().username)
-                .add("password", ProjectRetile.getInstance().getDbConfig().password);
+        JsonObject dbConfig = new JsonObject().add("jdbcURL", ProjectRetile.getInjector().getInstance(ProjectRetile.class).dbConfig.jdbcURL)
+                .add("username", ProjectRetile.getInjector().getInstance(ProjectRetile.class).dbConfig.username)
+                .add("password", ProjectRetile.getInjector().getInstance(ProjectRetile.class).dbConfig.password);
 
-        JsonObject blacklist = new JsonObject().add("blacklist", Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().list.toArray()));
+        JsonObject blacklist = new JsonObject().add("blacklist", Joiner.on(", ").join(ProjectRetile.getInjector().getInstance(ProjectRetile.class).blacklist.list.toArray()));
 
         JsonObject plugins = new JsonObject();
         ProxyServer.getInstance().getPluginManager().getPlugins().stream().filter(p -> !p.getDescription().getAuthor().equals("SpigotMC")).forEach(p -> {
@@ -85,20 +86,20 @@ public class DumpReport {
             } catch (IOException ignored) {}
         });
 
-        JsonObject database = new JsonObject().add("conntected", ProjectRetile.getInstance().getDatabase().isConnected())
-                .add("type", ProjectRetile.getInstance().getDatabase() instanceof MySQL ? "MySQL" : "SQLite")
-                .add("tableRetile", ProjectRetile.getInstance().getDatabase().doesTableExist("retile"))
-                .add("tableQueue", ProjectRetile.getInstance().getDatabase().doesTableExist("queue"))
-                .add("tableVersion", ProjectRetile.getInstance().getDatabase().doesTableExist("version"));
+        JsonObject database = new JsonObject().add("conntected", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDatabase().isConnected())
+                .add("type", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDatabase() instanceof MySQL ? "MySQL" : "SQLite")
+                .add("tableRetile", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDatabase().doesTableExist("retile"))
+                .add("tableQueue", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDatabase().doesTableExist("queue"))
+                .add("tableVersion", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDatabase().doesTableExist("version"));
 
         JsonObject cache = new JsonObject();
-        if(ProjectRetile.getInstance().getCache() instanceof Offline) {
+        if(ProjectRetile.getCacheInjector().getInstance(Cache.class) instanceof Offline) {
             cache.add("resolver", "BungeeCord");
             cache.add("values", "empty");
         } else {
             cache.add("resolver", "mcapi.ca");
             JsonObject values = new JsonObject();
-            for(Map.Entry<UUID, String> entry : ((McAPICanada) ProjectRetile.getInstance().getCache()).cache.asMap().entrySet()) {
+            for(Map.Entry<UUID, String> entry : ((McAPICanada) ProjectRetile.getCacheInjector().getInstance(Cache.class)).cache.asMap().entrySet()) {
                 values.add(entry.getKey().toString(), entry.getValue());
             }
             cache.add("values", values);

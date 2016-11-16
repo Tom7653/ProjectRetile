@@ -14,7 +14,10 @@
  */
 package com.github.acquized.retile.listeners;
 
+import com.google.inject.Inject;
+
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIException;
 import com.github.acquized.retile.notifications.Notifications;
 import com.github.acquized.retile.reports.Report;
@@ -29,16 +32,25 @@ import java.util.concurrent.TimeUnit;
 import static com.github.acquized.retile.i18n.I18n.tl;
 
 public class PostLogin implements Listener {
+    
+    private ProjectRetile retile;
+    private RetileAPI api;
+    
+    @Inject
+    public PostLogin(ProjectRetile retile, RetileAPI api) {
+        this.retile = retile;
+        this.api = api;
+    }
 
     @EventHandler
     public void onPost(PostLoginEvent e) {
-        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> {
+        ProxyServer.getInstance().getScheduler().schedule(retile, () -> {
             if(e.getPlayer().hasPermission("projectretile.report.receive.offline")) {
                 Report[] reports;
                 try {
-                    reports = ProjectRetile.getInstance().getApi().getWaitingReports();
+                    reports = api.getWaitingReports();
                 } catch (RetileAPIException ex) {
-                    ProjectRetile.getInstance().getLog().error("Could not get Waiting Queue Reports.", ex);
+                    retile.getLog().error("Could not get Waiting Queue Reports.", ex);
                     return;
                 }
                 if(reports.length != 0) {

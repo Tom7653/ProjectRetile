@@ -14,11 +14,11 @@
  */
 package com.github.acquized.retile;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import com.github.acquized.retile.api.RetileAPI;
-import com.github.acquized.retile.api.RetileAPIProvider;
 import com.github.acquized.retile.cache.Cache;
-import com.github.acquized.retile.cache.impl.McAPICanada;
-import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.commands.InfoCommand;
 import com.github.acquized.retile.commands.ListReportsCommand;
 import com.github.acquized.retile.commands.QueueCommand;
@@ -45,12 +45,10 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 
-import org.mcstats.Metrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
 import lombok.Getter;
@@ -63,19 +61,17 @@ import static com.github.acquized.retile.utils.Utility.RED;
 public class ProjectRetile extends Plugin {
 
     public static String prefix = RED + "> " + GRAY;
-    @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
+    @Getter private static Injector injector;
+    @Getter private static Injector cacheInjector;
     @Getter @Setter(onParam = @__(@NonNull)) private Database database;
-    @Getter private Blacklist blacklist;
-    @Getter private DBConfig dbConfig;
-    @Getter private RetileAPI api;
-    @Getter private Config config;
-    @Getter private Cache cache;
-    @Getter private I18n i18n;
+    public Blacklist blacklist;
+    public DBConfig dbConfig;
+    public Config config;
 
     @Override
     public void onEnable() {
-        instance = this;
+        injector = Guice.createInjector(new Injection());
         if(!isBungeeUtilInstalled()) {
             log.error("Could not load BungeeUtil. Please install it and start the Proxy Server again.");
             Utility.disablePlugin(this);
@@ -84,19 +80,14 @@ public class ProjectRetile extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinProtection()); // High priority for causing no errors with BungeeUtil
         loadConfigs();
         prefix = Utility.format(config.prefix);
-        i18n = new I18n();
-        i18n.load();
-        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.forceOfflineUUID)) {
-            cache = new McAPICanada();
-        } else {
-            cache = new Offline();
-        }
+        injector.getInstance(I18n.class).load();
+        cacheInjector = Guice.createInjector(new Injection.CacheInjection(injector.getInstance(ProjectRetile.class)));
         try {
             if(dbConfig.jdbcURL.contains("mysql")) {
-                database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
+                database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray(), injector.getInstance(ProjectRetile.class));
                 log.info("Using MySQL Connection...");
             } else {
-                database = new SQLite(dbConfig.jdbcURL);
+                database = new SQLite(injector.getInstance(ProjectRetile.class), dbConfig.jdbcURL);
                 log.info("Using SQLite Connection...");
             }
             database.connect();
@@ -106,19 +97,11 @@ public class ProjectRetile extends Plugin {
             Utility.disablePlugin(this);
             return;
         }
-        Cooldown.setInstance(new Cooldown());
-        Notifications.setInstance(new Notifications());
-        api = new RetileAPIProvider();
+        Cooldown.setInstance(new Cooldown(injector.getInstance(ProjectRetile.class)));
+        Notifications.setInstance(new Notifications(injector.getInstance(ProjectRetile.class), cacheInjector.getInstance(Cache.class)));
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
-        try {
-            Metrics metrics = new Metrics(this); // Maybe use alternative as soon as available: https://www.spigotmc.org/threads/beta-bstats-a-modern-alternative-to-mcstats.187881/
-            addCustomGraphs(metrics);
-            metrics.start();
-        } catch (IOException ex) {
-            log.warn("Could not submit statistics about the plugin to McStats.org", ex);
-        }
         if(config.updater)
             Updater.start();
     }
@@ -131,7 +114,6 @@ public class ProjectRetile extends Plugin {
         } catch (SQLException ex) {
             log.error("Could not disconnect from the MySQL / SQLite Database! Please force end the Java Process.", ex);
         }
-        instance = null;
         log.info("ProjectRetile v{} has been disabled.", getDescription().getVersion());
     }
 
@@ -178,58 +160,16 @@ public class ProjectRetile extends Plugin {
 
     private void registerListeners(PluginManager pm) {
         pm.registerListener(this, new Disconnect());
-        pm.registerListener(this, new PostLogin());
+        pm.registerListener(this, new PostLogin(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class)));
     }
 
     private void registerCommands(PluginManager pm) {
-        pm.registerCommand(this, new InfoCommand());
-        pm.registerCommand(this, new ListReportsCommand());
-        pm.registerCommand(this, new QueueCommand());
-        pm.registerCommand(this, new ReportCommand());
-        pm.registerCommand(this, new RetileCommand());
-        pm.registerCommand(this, new ToggleCommand());
-    }
-
-    private void addCustomGraphs(Metrics metrics) {
-        Metrics.Graph databaseGraph = metrics.createGraph("Database Type");
-        databaseGraph.addPlotter(new Metrics.Plotter("MySQL") {
-            @Override
-            public int getValue() {
-                if(database instanceof MySQL) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-        databaseGraph.addPlotter(new Metrics.Plotter("SQLite") {
-            @Override
-            public int getValue() {
-                if(database instanceof SQLite) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-
-        Metrics.Graph cacheGraph = metrics.createGraph("Cache Resolver");
-        cacheGraph.addPlotter(new Metrics.Plotter("BungeeCord (Offline)") {
-            @Override
-            public int getValue() {
-                if(cache instanceof Offline) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-        cacheGraph.addPlotter(new Metrics.Plotter("McAPI.ca") {
-            @Override
-            public int getValue() {
-                if(cache instanceof McAPICanada) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
+        pm.registerCommand(this, new InfoCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), cacheInjector.getInstance(Cache.class)));
+        pm.registerCommand(this, new ListReportsCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), cacheInjector.getInstance(Cache.class)));
+        pm.registerCommand(this, new QueueCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), cacheInjector.getInstance(Cache.class)));
+        pm.registerCommand(this, new ReportCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), cacheInjector.getInstance(Cache.class)));
+        pm.registerCommand(this, new RetileCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(I18n.class)));
+        pm.registerCommand(this, new ToggleCommand(injector.getInstance(ProjectRetile.class)));
     }
 
 }

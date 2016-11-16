@@ -14,6 +14,8 @@
  */
 package com.github.acquized.retile.sql.impl;
 
+import com.google.inject.Inject;
+
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.sql.Database;
 import com.github.acquized.retile.utils.Utility;
@@ -28,11 +30,11 @@ import java.text.MessageFormat;
 
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor = @__(@Inject))
 public class SQLite implements Database {
 
     private static Connection connection; // Connection Pooling for SQLite doesn't makes really sense
-
+    private ProjectRetile retile;
     private final String url;
 
     @Override
@@ -40,12 +42,12 @@ public class SQLite implements Database {
         try {
             Class.forName("org.sqlite.JDBC").newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not load SQLite Driver. Please download Driver and put in 'lib' Folder.", ex);
-            Utility.disablePlugin(ProjectRetile.getInstance());
+            retile.getLog().error("Could not load SQLite Driver. Please download Driver and put in 'lib' Folder.", ex);
+            Utility.disablePlugin(retile);
             return;
         }
         connection = DriverManager.getConnection(MessageFormat.format(url,
-                ProjectRetile.getInstance().getDataFolder().getPath(), File.separator) + (url.endsWith(".db") ? "" : ".db"));
+                retile.getDataFolder().getPath(), File.separator) + (url.endsWith(".db") ? "" : ".db"));
     }
 
     @Override
@@ -82,18 +84,18 @@ public class SQLite implements Database {
         update("CREATE TABLE IF NOT EXISTS `queue` (token VARCHAR(12), reporter VARCHAR(64), victim VARCHAR(64), reason VARCHAR(128), reportdate BIGINT);");
         if(!doesTableExist("version")) {
             update("CREATE TABLE IF NOT EXISTS `version` (ver VARCHAR(64));");
-            update("INSERT INTO `version` (ver) VALUES ('" + ProjectRetile.getInstance().getDescription().getVersion() + "');");
+            update("INSERT INTO `version` (ver) VALUES ('" + retile.getDescription().getVersion() + "');");
         } else {
             ResultSet rs = query("SELECT * FROM `version` LIMIT 1");
             while(rs.next()) {
-                if(!rs.getString("ver").equals(ProjectRetile.getInstance().getDescription().getVersion())) {
-                    ProjectRetile.getInstance().getLog().warn("ProjectRetile Database is outdated. Moving Tables to backup and resetting...");
+                if(!rs.getString("ver").equals(retile.getDescription().getVersion())) {
+                    retile.getLog().warn("ProjectRetile Database is outdated. Moving Tables to backup and resetting...");
                     update("RENAME TABLE `retile` TO `retileBackup`");
                     update("RENAME TABLE `queue` TO `queueBackup`");
                     update("RENAME TABLE `version` TO `versionBackup`");
                     setup();
                 } else {
-                    ProjectRetile.getInstance().getLog().info("ProjectRetile Database is up to date.");
+                    retile.getLog().info("ProjectRetile Database is up to date.");
                 }
             }
         }
@@ -106,7 +108,7 @@ public class SQLite implements Database {
             ps = connection.prepareStatement(query);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL Update!", ex);
+            retile.getLog().error("Could not execute SQL Update!", ex);
         }
     }
 
@@ -118,7 +120,7 @@ public class SQLite implements Database {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL Query!", ex);
+            retile.getLog().error("Could not execute SQL Query!", ex);
         }
         return rs;
     }

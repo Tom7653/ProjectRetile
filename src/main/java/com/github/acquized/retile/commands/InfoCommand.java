@@ -14,8 +14,12 @@
  */
 package com.github.acquized.retile.commands;
 
+import com.google.inject.Inject;
+
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIException;
+import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.reports.Report;
 
 import net.md_5.bungee.api.CommandSender;
@@ -28,10 +32,19 @@ import static com.github.acquized.retile.i18n.I18n.tl;
 
 public class InfoCommand extends Command {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(ProjectRetile.getInstance().getConfig().dateFormat);
+    private final SimpleDateFormat format;
+    
+    private ProjectRetile retile;
+    private RetileAPI api;
+    private Cache cache;
 
-    public InfoCommand() {
-        super("reportinfo", null, ProjectRetile.getInstance().getConfig().infoAliases);
+    @Inject
+    public InfoCommand(ProjectRetile retile, RetileAPI api, Cache cache) {
+        super("reportinfo", null, retile.config.infoAliases);
+        this.retile = retile;
+        this.api = api;
+        this.cache = cache;
+        this.format = new SimpleDateFormat(retile.config.dateFormat);
     }
 
     @Override
@@ -40,7 +53,7 @@ public class InfoCommand extends Command {
             if(args.length == 1) {
                 Report report;
                 try {
-                    report = ProjectRetile.getInstance().getApi().getReportsUsingToken(args[0]);
+                    report = api.getReportsUsingToken(args[0]);
                 } catch (RetileAPIException ex) {
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Error"));
                     return;
@@ -49,10 +62,10 @@ public class InfoCommand extends Command {
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Format",
                             report.getToken(),
-                            ProjectRetile.getInstance().getCache().username(report.getReporter()),
-                            ProjectRetile.getInstance().getCache().username(report.getVictim()),
+                            cache.username(report.getReporter()),
+                            cache.username(report.getVictim()),
                             report.getReason(),
-                            DATE_FORMAT.format(new Date(report.getTimestamp()))));
+                            format.format(new Date(report.getTimestamp()))));
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
                     return;
                 } else {

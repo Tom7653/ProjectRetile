@@ -4,8 +4,6 @@ machine:
 
 dependencies:
   pre:
-    - wget -O BungeeUtil.jar https://raw.githubusercontent.com/WolverinDEV/BungeeUtil/jars/buildedJars/jars/BungeeUtil-1.6.8.2.jar
-    - mvn install:install-file -Dfile=BungeeUtil.jar -DgroupId=dev.wolveringer -DartifactId=BungeeUtil -Dversion=1.6.8.2 -Dpackaging=jar
     - wget -O Yamler.jar http://ci.md-5.net/job/Yamler/16/artifact/Yamler-Bungee/target/Yamler-Bungee-2.4.0-SNAPSHOT.jar
     - mvn install:install-file -Dfile=Yamler.jar -DgroupId=net.cubespace.yamler -DartifactId=Yamler-Bungee -Dversion=2.4.0 -Dpackaging=jar
   override:
