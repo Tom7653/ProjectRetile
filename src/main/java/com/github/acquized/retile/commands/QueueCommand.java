@@ -30,12 +30,12 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import dev.wolveringer.BungeeUtil.Material;
-import dev.wolveringer.BungeeUtil.Player;
-import dev.wolveringer.BungeeUtil.item.ItemStack;
-import dev.wolveringer.BungeeUtil.item.itemmeta.SkullMeta;
-import dev.wolveringer.BungeeUtil.packets.PacketPlayInWindowClick;
-import dev.wolveringer.api.inventory.Inventory;
+import dev.wolveringer.bungeeutil.inventory.Inventory;
+import dev.wolveringer.bungeeutil.item.ItemStack;
+import dev.wolveringer.bungeeutil.item.Material;
+import dev.wolveringer.bungeeutil.item.meta.SkullMeta;
+import dev.wolveringer.bungeeutil.packets.PacketPlayInWindowClick;
+import dev.wolveringer.bungeeutil.player.Player;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 import static com.github.acquized.retile.utils.Utility.DARK_AQUA;

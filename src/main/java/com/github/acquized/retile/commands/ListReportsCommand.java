@@ -30,12 +30,12 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import dev.wolveringer.BungeeUtil.Material;
-import dev.wolveringer.BungeeUtil.Player;
-import dev.wolveringer.BungeeUtil.item.ItemStack;
-import dev.wolveringer.BungeeUtil.item.itemmeta.SkullMeta;
-import dev.wolveringer.BungeeUtil.packets.PacketPlayInWindowClick;
-import dev.wolveringer.api.inventory.Inventory;
+import dev.wolveringer.bungeeutil.inventory.Inventory;
+import dev.wolveringer.bungeeutil.item.ItemStack;
+import dev.wolveringer.bungeeutil.item.Material;
+import dev.wolveringer.bungeeutil.item.meta.SkullMeta;
+import dev.wolveringer.bungeeutil.packets.PacketPlayInWindowClick;
+import dev.wolveringer.bungeeutil.player.Player;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 import static com.github.acquized.retile.utils.Utility.DARK_AQUA;
@@ -91,7 +91,7 @@ public class ListReportsCommand extends Command {
                         final String victim = cache.username(r.getVictim());
                         ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3) {
                             @Override
-                            public void click(Click click) {
+                            public void click(ItemStack.Click click) {
                                 try {
                                     if(click.getMode() == PacketPlayInWindowClick.Mode.NORMAL_LEFT_CLICK) {
                                         click.getPlayer().connect(api.resolveServer(r.getVictim()));
