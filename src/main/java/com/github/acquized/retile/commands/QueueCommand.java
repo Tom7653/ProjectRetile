@@ -54,11 +54,11 @@ public class QueueCommand extends Command {
 
     @Inject
     public QueueCommand(ProjectRetile retile, RetileAPI api, Cache cache) {
-        super("waitingqueue", null, retile.getConfig().queueAliases);
+        super("waitingqueue", null, retile.config.queueAliases);
         this.retile = retile;
         this.api = api;
         this.cache = cache;
-        this.format = new SimpleDateFormat(retile.getConfig().dateFormat);
+        this.format = new SimpleDateFormat(retile.config.dateFormat);
     }
 
     @Override

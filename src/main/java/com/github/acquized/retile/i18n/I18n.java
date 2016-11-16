@@ -79,9 +79,9 @@ public class I18n {
     public void load() {
         try {
             ClassLoader loader = new URLClassLoader(new URL[]{DIRECTORY.toURI().toURL()});
-            bundle = ResourceBundle.getBundle("messages", new Locale(retile.getConfig().locale), loader);
+            bundle = ResourceBundle.getBundle("messages", new Locale(retile.config.locale), loader);
         } catch (IOException ex) {
-            retile.getLog().error("Could not load messages_" + retile.getConfig().locale + ".properties File. " +
+            retile.getLog().error("Could not load messages_" + retile.config.locale + ".properties File. " +
                     "Please check for Errors.", ex);
         }
     }

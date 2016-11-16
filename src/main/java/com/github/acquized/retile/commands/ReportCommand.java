@@ -41,7 +41,7 @@ public class ReportCommand extends Command {
     
     @Inject
     public ReportCommand(ProjectRetile retile, RetileAPI api, Cache cache) {
-        super("report", null, retile.getConfig().reportAliases);
+        super("report", null, retile.config.reportAliases);
         this.retile = retile;
         this.api = api;
         this.cache = cache;

@@ -40,11 +40,11 @@ public class InfoCommand extends Command {
 
     @Inject
     public InfoCommand(ProjectRetile retile, RetileAPI api, Cache cache) {
-        super("reportinfo", null, retile.getConfig().infoAliases);
+        super("reportinfo", null, retile.config.infoAliases);
         this.retile = retile;
         this.api = api;
         this.cache = cache;
-        this.format = new SimpleDateFormat(retile.getConfig().dateFormat);
+        this.format = new SimpleDateFormat(retile.config.dateFormat);
     }
 
     @Override

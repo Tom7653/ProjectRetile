@@ -54,11 +54,11 @@ public class ListReportsCommand extends Command {
     
     @Inject
     public ListReportsCommand(ProjectRetile retile, RetileAPI api, Cache cache) {
-        super("listreports", null, retile.getConfig().reportsAliases);
+        super("listreports", null, retile.config.reportsAliases);
         this.retile = retile;
         this.api = api;
         this.cache = cache;
-        this.format = new SimpleDateFormat(retile.getConfig().dateFormat);
+        this.format = new SimpleDateFormat(retile.config.dateFormat);
     }
 
     @Override

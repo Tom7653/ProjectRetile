@@ -46,7 +46,7 @@ public class Injection extends AbstractModule {
 
         @Override
         protected void configure() {
-            if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!retile.getConfig().forceOfflineUUID)) {
+            if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!retile.config.forceOfflineUUID)) {
                 bind(Cache.class).to(McAPICanada.class);
             } else {
                 bind(Cache.class).to(Offline.class);

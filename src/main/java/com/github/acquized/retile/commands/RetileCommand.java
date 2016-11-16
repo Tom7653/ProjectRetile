@@ -79,13 +79,13 @@ public class RetileCommand extends Command {
                     if(sender.hasPermission("projectretile.general.reload")) {
                         // Players can only reload Config, Messages & Blacklist - console can reload Database
                         try {
-                            retile.getConfig().reload();
+                            retile.config.reload();
                         } catch (InvalidConfigurationException ex) {
                             sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload config.yml File. Please check for errors."));
                             return;
                         }
                         try {
-                            retile.getBlacklist().reload();
+                            retile.blacklist.reload();
                         } catch (InvalidConfigurationException ex) {
                             sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload blacklist.yml File. Please check for errors."));
                             return;
@@ -94,12 +94,12 @@ public class RetileCommand extends Command {
                         if(!(sender instanceof ProxiedPlayer)) {
                             try {
                                 retile.getDatabase().disconnect();
-                                retile.getDbConfig().reload();
-                                if(retile.getDbConfig().jdbcURL.contains("mysql")) {
-                                    retile.setDatabase(new MySQL(retile.getDbConfig().jdbcURL, retile.getDbConfig().username, retile.getDbConfig().password.toCharArray(), retile));
+                                retile.dbConfig.reload();
+                                if(retile.dbConfig.jdbcURL.contains("mysql")) {
+                                    retile.setDatabase(new MySQL(retile.dbConfig.jdbcURL, retile.dbConfig.username, retile.dbConfig.password.toCharArray(), retile));
                                     retile.getLog().info("Using MySQL Connection...");
                                 } else {
-                                    retile.setDatabase(new SQLite(retile, retile.getDbConfig().jdbcURL));
+                                    retile.setDatabase(new SQLite(retile, retile.dbConfig.jdbcURL));
                                     retile.getLog().info("Using SQLite Connection...");
                                 }
                                 retile.getDatabase().connect();

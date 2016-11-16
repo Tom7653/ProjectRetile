@@ -45,9 +45,9 @@ public class MySQL implements Database {
         cfg.setJdbcUrl(url);
         cfg.setUsername(username);
         cfg.setPassword(new String(password));
-        cfg.setMinimumIdle(retile.getConfig().minPoolIdle);
-        cfg.setMaximumPoolSize(retile.getConfig().maxPoolSize);
-        cfg.setConnectionTimeout(retile.getConfig().poolTimeout);
+        cfg.setMinimumIdle(retile.config.minPoolIdle);
+        cfg.setMaximumPoolSize(retile.config.maxPoolSize);
+        cfg.setConnectionTimeout(retile.config.poolTimeout);
         dataSource = new HikariDataSource(cfg);
     }
 

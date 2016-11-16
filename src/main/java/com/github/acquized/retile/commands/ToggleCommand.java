@@ -29,7 +29,7 @@ public class ToggleCommand extends Command {
 
     @Inject
     public ToggleCommand(ProjectRetile retile) {
-        super("togglereports", null, retile.getConfig().toggleAliases);
+        super("togglereports", null, retile.config.toggleAliases);
     }
 
     @Override

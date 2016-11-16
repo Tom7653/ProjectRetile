@@ -42,11 +42,11 @@ public class Cooldown {
     }
 
     public boolean inCooldown(UUID uuid) {
-        if((watches.containsKey(uuid)) && (TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) < retile.getConfig().cooldown)) {
+        if((watches.containsKey(uuid)) && (TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) < retile.config.cooldown)) {
             return true;
         } else if(!watches.containsKey(uuid)) {
             return false;
-        } else if(TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) >= retile.getConfig().cooldown) {
+        } else if(TimeUnit.MILLISECONDS.toSeconds(watches.get(uuid)) >= retile.config.cooldown) {
             stop(uuid);
             return false;
         }

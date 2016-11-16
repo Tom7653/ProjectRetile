@@ -66,9 +66,9 @@ public class ProjectRetile extends Plugin {
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
     @Getter private static Injector injector;
     @Getter @Setter(onParam = @__(@NonNull)) private Database database;
-    @Getter private Blacklist blacklist;
-    @Getter private DBConfig dbConfig;
-    @Getter private Config config;
+    public Blacklist blacklist;
+    public DBConfig dbConfig;
+    public Config config;
 
     @Override
     public void onEnable() {
