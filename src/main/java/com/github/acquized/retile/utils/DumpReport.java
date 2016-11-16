@@ -93,13 +93,13 @@ public class DumpReport {
                 .add("tableVersion", ProjectRetile.getInjector().getInstance(ProjectRetile.class).getDatabase().doesTableExist("version"));
 
         JsonObject cache = new JsonObject();
-        if(ProjectRetile.getInjector().getInstance(Cache.class) instanceof Offline) {
+        if(ProjectRetile.getCacheInjector().getInstance(Cache.class) instanceof Offline) {
             cache.add("resolver", "BungeeCord");
             cache.add("values", "empty");
         } else {
             cache.add("resolver", "mcapi.ca");
             JsonObject values = new JsonObject();
-            for(Map.Entry<UUID, String> entry : ((McAPICanada) ProjectRetile.getInjector().getInstance(Cache.class)).cache.asMap().entrySet()) {
+            for(Map.Entry<UUID, String> entry : ((McAPICanada) ProjectRetile.getCacheInjector().getInstance(Cache.class)).cache.asMap().entrySet()) {
                 values.add(entry.getKey().toString(), entry.getValue());
             }
             cache.add("values", values);

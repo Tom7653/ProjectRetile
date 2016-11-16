@@ -65,6 +65,7 @@ public class ProjectRetile extends Plugin {
     public static String prefix = RED + "> " + GRAY;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
     @Getter private static Injector injector;
+    @Getter private static Injector cacheInjector;
     @Getter @Setter(onParam = @__(@NonNull)) private Database database;
     public Blacklist blacklist;
     public DBConfig dbConfig;
@@ -82,7 +83,7 @@ public class ProjectRetile extends Plugin {
         loadConfigs();
         prefix = Utility.format(config.prefix);
         injector.getInstance(I18n.class).load();
-        Guice.createInjector(new Injection.CacheInjection(injector.getInstance(ProjectRetile.class)));
+        cacheInjector = Guice.createInjector(new Injection.CacheInjection(injector.getInstance(ProjectRetile.class)));
         try {
             if(dbConfig.jdbcURL.contains("mysql")) {
                 database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray(), injector.getInstance(ProjectRetile.class));
@@ -99,7 +100,7 @@ public class ProjectRetile extends Plugin {
             return;
         }
         Cooldown.setInstance(new Cooldown(injector.getInstance(ProjectRetile.class)));
-        Notifications.setInstance(new Notifications(injector.getInstance(ProjectRetile.class), injector.getInstance(Cache.class)));
+        Notifications.setInstance(new Notifications(injector.getInstance(ProjectRetile.class), cacheInjector.getInstance(Cache.class)));
         registerListeners(ProxyServer.getInstance().getPluginManager());
         registerCommands(ProxyServer.getInstance().getPluginManager());
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
@@ -172,10 +173,10 @@ public class ProjectRetile extends Plugin {
     }
 
     private void registerCommands(PluginManager pm) {
-        pm.registerCommand(this, new InfoCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), injector.getInstance(Cache.class)));
-        pm.registerCommand(this, new ListReportsCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), injector.getInstance(Cache.class)));
-        pm.registerCommand(this, new QueueCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), injector.getInstance(Cache.class)));
-        pm.registerCommand(this, new ReportCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), injector.getInstance(Cache.class)));
+        pm.registerCommand(this, new InfoCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), cacheInjector.getInstance(Cache.class)));
+        pm.registerCommand(this, new ListReportsCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), cacheInjector.getInstance(Cache.class)));
+        pm.registerCommand(this, new QueueCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), cacheInjector.getInstance(Cache.class)));
+        pm.registerCommand(this, new ReportCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(RetileAPI.class), cacheInjector.getInstance(Cache.class)));
         pm.registerCommand(this, new RetileCommand(injector.getInstance(ProjectRetile.class), injector.getInstance(I18n.class)));
         pm.registerCommand(this, new ToggleCommand(injector.getInstance(ProjectRetile.class)));
     }
