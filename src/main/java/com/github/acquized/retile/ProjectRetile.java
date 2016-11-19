@@ -14,6 +14,8 @@
  */
 package com.github.acquized.retile;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIProvider;
 import com.github.acquized.retile.cache.Cache;
@@ -49,7 +51,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -84,7 +92,7 @@ public class ProjectRetile extends Plugin {
         prefix = Utility.format(config.prefix);
         i18n = new I18n();
         i18n.load();
-        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.forceOfflineUUID)) {
+        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.forceOfflineUUID) && (isMcAPIOnline())) {
             cache = new McAPICanada();
         } else {
             cache = new Offline();
@@ -181,6 +189,26 @@ public class ProjectRetile extends Plugin {
         pm.registerCommand(this, new ReportCommand());
         pm.registerCommand(this, new RetileCommand());
         pm.registerCommand(this, new ToggleCommand());
+    }
+
+    private boolean isMcAPIOnline() {
+        FutureTask<Boolean> task = new FutureTask<>(() -> {
+            URL url = new URL("https://mcapi.ca/profile/Notch?" + System.currentTimeMillis());
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
+            conn.setRequestMethod("GET");
+            conn.setUseCaches(false);
+            conn.setDoOutput(true);
+
+            JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
+            return obj.get("error") == null;
+        });
+        ProxyServer.getInstance().getScheduler().runAsync(this, task);
+        try {
+            return task.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            return false;
+        }
     }
 
 }
