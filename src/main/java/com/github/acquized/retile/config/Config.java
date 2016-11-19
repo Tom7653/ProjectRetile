@@ -88,7 +88,7 @@ public class Config extends YamlConfig {
             "Set higher if your database server is hosted somewhere completly else"
     })
     @Path("Pools.PoolTimeOut")
-    public long poolTimeout = 3000;
+    public long poolTimeout = 5000;
 
     // v  Aliases  v
 

@@ -99,8 +99,9 @@ public class ProjectRetile extends Plugin {
             }
             database.connect();
             database.setup();
-        } catch (SQLException ex) {
-            log.error("Could not connect to MySQL / SQLite Database! Did you enter the correct Details?", ex);
+        } catch (Exception ex) { // maybe change this, catching every Exception is always bad
+            log.error("Could not connect to MySQL / SQLite Database! Did you enter the correct Details?");
+            log.debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
             Utility.disablePlugin(this);
             return;
         }
@@ -120,7 +121,8 @@ public class ProjectRetile extends Plugin {
         try {
             database.disconnect();
         } catch (SQLException ex) {
-            log.error("Could not disconnect from the MySQL / SQLite Database! Please force end the Java Process.", ex);
+            log.error("Could not disconnect from the MySQL / SQLite Database! Please force end the Java Process.");
+            ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
         }
         instance = null;
         log.info("ProjectRetile v{} has been disabled.", getDescription().getVersion());

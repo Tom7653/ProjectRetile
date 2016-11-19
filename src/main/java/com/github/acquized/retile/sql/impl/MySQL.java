@@ -103,7 +103,8 @@ public class MySQL implements Database {
             ps = getConnection().prepareStatement(query);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL Update!", ex);
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL Update!");
+            ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
         }
     }
 
@@ -115,7 +116,8 @@ public class MySQL implements Database {
             ps = getConnection().prepareStatement(query);
             rs = ps.executeQuery();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL Query!", ex);
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL Query!");
+            ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
         }
         return rs;
     }
