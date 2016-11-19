@@ -20,18 +20,35 @@ import com.github.acquized.retile.cache.Cache;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Beta
 public class Offline implements Cache {
 
+    private McAPICanada backup = new McAPICanada();
+
     @Override
     public String username(UUID uuid) {
-        return ProxyServer.getInstance().getPlayer(uuid).getName();
+        if(ProxyServer.getInstance().getPlayer(uuid) != null) {
+            return ProxyServer.getInstance().getPlayer(uuid).getName();
+        }
+        try {
+            return backup.resolve(uuid).get();
+        } catch (InterruptedException | ExecutionException ex) {
+            return backup.username(uuid);
+        }
     }
 
     @Override
     public UUID uuid(String name) {
-        return ProxyServer.getInstance().getPlayer(name).getUniqueId();
+        if(ProxyServer.getInstance().getPlayer(name) != null) {
+            return ProxyServer.getInstance().getPlayer(name).getUniqueId();
+        }
+        try {
+            return backup.resolve(name).get();
+        } catch (InterruptedException | ExecutionException ex) {
+            return backup.uuid(name);
+        }
     }
 
     @Override
