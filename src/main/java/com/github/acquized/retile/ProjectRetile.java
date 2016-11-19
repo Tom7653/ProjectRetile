@@ -171,7 +171,15 @@ public class ProjectRetile extends Plugin {
     private boolean isBungeeUtilInstalled() {
         for(Plugin p : ProxyServer.getInstance().getPluginManager().getPlugins()) {
             if(p.getDescription().getName().equals("BungeeUtil")) {
-                return true;
+                if(!p.getDescription().getVersion().startsWith("2")) {
+                    return true;
+                } else {
+                    log.error("ProjectRetile has detected that you're using BungeeUtil v2.x(-SNAPSHOT)");
+                    log.error("BungeeUtil's API v2 contains some big changes that aren't supported (yet!)");
+                    log.error("Please downgrade to API v1 or wait until ProjectRetile gets the API v2 update");
+                    Utility.disablePlugin(this);
+                    return false;
+                }
             }
         }
         return false;
