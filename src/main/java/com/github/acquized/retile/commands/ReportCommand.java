@@ -41,7 +41,7 @@ public class ReportCommand extends Command {
             ProxiedPlayer p = (ProxiedPlayer) sender;
             UUID pUUID = ProjectRetile.getInstance().getCache().uuid(p.getName());
             if(p.hasPermission("projectretile.commands.report")) {
-                if(args.length >= 1) {
+                if(args.length >= 2) {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
                     if(target != null) {
                         UUID targetUUID = ProjectRetile.getInstance().getCache().uuid(target.getName());
