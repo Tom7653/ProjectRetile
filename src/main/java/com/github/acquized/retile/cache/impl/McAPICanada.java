@@ -55,7 +55,7 @@ public class McAPICanada implements Cache {
 
     public Future<String> resolve(UUID uuid) {
         FutureTask<String> task = new FutureTask<>(() -> {
-            URL url = new URL("https://mcapi.ca/name/uuid/" + uuid.toString() + "?" + System.currentTimeMillis());
+            URL url = new URL("https://mcapi.ca/profile/" + uuid.toString().replace("-", "") + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
             conn.setRequestMethod("GET");
@@ -71,7 +71,7 @@ public class McAPICanada implements Cache {
 
     public Future<UUID> resolve(String name) {
         FutureTask<UUID> task = new FutureTask<>(() -> {
-            URL url = new URL("https://mcapi.ca/uuid/player/" + name + "?" + System.currentTimeMillis());
+            URL url = new URL("https://mcapi.ca/profile/" + name + "?" + System.currentTimeMillis());
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
             conn.setRequestMethod("GET");
