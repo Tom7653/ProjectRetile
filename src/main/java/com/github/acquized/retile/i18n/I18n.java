@@ -48,7 +48,7 @@ public class I18n {
                 }
             }
         } catch (IOException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not create Messages Files.", ex);
+            ProjectRetile.getInstance().getLog().error("Could not create Messages files.", ex);
         }
     }
 
@@ -76,8 +76,8 @@ public class I18n {
             ClassLoader loader = new URLClassLoader(new URL[]{DIRECTORY.toURI().toURL()});
             bundle = ResourceBundle.getBundle("messages", new Locale(ProjectRetile.getInstance().getConfig().locale), loader);
         } catch (IOException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not load messages_" + ProjectRetile.getInstance().getConfig().locale + ".properties File. " +
-                    "Please check for Errors.", ex);
+            ProjectRetile.getInstance().getLog().error("Could not load messages_" + ProjectRetile.getInstance().getConfig().locale + ".properties file. " +
+                    "Please check for errors.", ex);
         }
     }
 

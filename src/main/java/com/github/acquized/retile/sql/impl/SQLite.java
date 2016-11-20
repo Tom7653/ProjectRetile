@@ -40,7 +40,7 @@ public class SQLite implements Database {
         try {
             Class.forName("org.sqlite.JDBC").newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not load SQLite Driver. Please download Driver and put in 'lib' Folder.", ex);
+            ProjectRetile.getInstance().getLog().error("Could not load SQLite driver. Please download driver and put in 'lib' Folder.", ex); // TODO: allow loading from lib folder
             Utility.disablePlugin(ProjectRetile.getInstance());
             return;
         }
@@ -106,7 +106,7 @@ public class SQLite implements Database {
             ps = connection.prepareStatement(query);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL Update!");
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL update!");
             ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
         }
     }
@@ -119,7 +119,7 @@ public class SQLite implements Database {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL Query!");
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL query!");
             ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
         }
         return rs;

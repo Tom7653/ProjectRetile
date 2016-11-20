@@ -84,13 +84,13 @@ public class MySQL implements Database {
             ResultSet rs = query("SELECT * FROM `version` LIMIT 1");
             while(rs.next()) {
                 if(!rs.getString("ver").equals(ProjectRetile.getInstance().getDescription().getVersion())) {
-                    ProjectRetile.getInstance().getLog().warn("ProjectRetile Database is outdated. Moving Tables to backup and resetting...");
+                    ProjectRetile.getInstance().getLog().warn("ProjectRetile database is outdated. Moving tables to backup and resetting...");
                     update("RENAME TABLE `retile` TO `retileBackup`");
                     update("RENAME TABLE `queue` TO `queueBackup`");
                     update("RENAME TABLE `version` TO `versionBackup`");
-                    setup();
+                    setup(); // TODO: Fix stackoverflow
                 } else {
-                    ProjectRetile.getInstance().getLog().info("ProjectRetile Database is up to date.");
+                    ProjectRetile.getInstance().getLog().info("ProjectRetile database is up to date.");
                 }
             }
         }
@@ -103,7 +103,7 @@ public class MySQL implements Database {
             ps = getConnection().prepareStatement(query);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL Update!");
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL update!");
             ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
         }
     }
@@ -116,7 +116,7 @@ public class MySQL implements Database {
             ps = getConnection().prepareStatement(query);
             rs = ps.executeQuery();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL Query!");
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL query!");
             ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
         }
         return rs;

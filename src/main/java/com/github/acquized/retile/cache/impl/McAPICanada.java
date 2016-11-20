@@ -91,7 +91,7 @@ public class McAPICanada implements Cache {
         try {
             return cache.get(uuid);
         } catch (ExecutionException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not connect to local Cache regaring Username Resolving of '" + uuid.toString() + "'.", ex);
+            ProjectRetile.getInstance().getLog().error("Could not connect to local cache regaring username resolving of '" + uuid.toString() + "'.", ex);
             return "Cache Failed @ " + uuid.hashCode();
         }
     }

@@ -51,7 +51,7 @@ public class RetileAPIProvider implements RetileAPI {
                         rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
-            throw new RetileAPIException("Error while executing SQL Query", ex);
+            throw new RetileAPIException("Could not execute SQL query", ex);
         }
 
         return reports.toArray(new Report[reports.size()]);
@@ -68,7 +68,7 @@ public class RetileAPIProvider implements RetileAPI {
                         rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
-            throw new RetileAPIException("Error while executing SQL Query", ex);
+            throw new RetileAPIException("Could not execute SQL query", ex);
         }
 
         return reports.toArray(new Report[reports.size()]);
@@ -85,7 +85,7 @@ public class RetileAPIProvider implements RetileAPI {
                         rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
-            throw new RetileAPIException("Error while executing SQL Query", ex);
+            throw new RetileAPIException("Could not execute SQL query", ex);
         }
 
         return reports.toArray(new Report[reports.size()]);
@@ -104,7 +104,7 @@ public class RetileAPIProvider implements RetileAPI {
                 }
             }
         } catch (SQLException ex) {
-            throw new RetileAPIException("Error while executing SQL Query", ex);
+            throw new RetileAPIException("Could not execute SQL query", ex);
         }
 
         return reports.toArray(new Report[reports.size()]);
@@ -160,7 +160,7 @@ public class RetileAPIProvider implements RetileAPI {
                 return true;
             }
         } catch (SQLException ex) {
-            throw new RetileAPIException("Error while executing SQL Query", ex);
+            throw new RetileAPIException("Could not execute SQL query", ex);
         }
 
         return false;
@@ -190,7 +190,7 @@ public class RetileAPIProvider implements RetileAPI {
                         rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
-            throw new RetileAPIException("Error while executing SQL Query", ex);
+            throw new RetileAPIException("Could not execute SQL query", ex);
         }
 
         return reports.toArray(new Report[reports.size()]);
@@ -207,7 +207,7 @@ public class RetileAPIProvider implements RetileAPI {
                         rs.getString("reason"), rs.getLong("reportdate")));
             }
         } catch (SQLException ex) {
-            throw new RetileAPIException("Error while executing SQL Query", ex);
+            throw new RetileAPIException("Could not execute SQL query", ex);
         }
 
         return reports.toArray(new Report[reports.size()]);
@@ -223,7 +223,7 @@ public class RetileAPIProvider implements RetileAPI {
                         rs.getString("reason"), rs.getLong("reportdate"));
             }
         } catch (SQLException | NullPointerException ex) {
-            throw new RetileAPIException("Error while executing SQL Query", ex);
+            throw new RetileAPIException("Could not execute SQL query", ex);
         }
 
         return null;

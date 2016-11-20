@@ -88,7 +88,7 @@ public class ListReportsCommand extends Command {
                                         click.getPlayer().closeInventory();
                                     }
                                 } catch (RetileAPIException ex) {
-                                    ProjectRetile.getInstance().getLog().error("Could not resolve Server of " + victim, ex);
+                                    ProjectRetile.getInstance().getLog().error("Could not resolve server of " + victim, ex);
                                 }
                             }
                         };

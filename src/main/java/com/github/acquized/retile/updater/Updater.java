@@ -50,15 +50,15 @@ public class Updater {
         try { newest = getNewestVersion().get(); } catch (InterruptedException | ExecutionException ignored) {}
 
         if(current.compareTo(newest) < 0) {
-            return "There is a new Version available: " + newest.toString() + " (You are running " + current.toString() + ")";
+            return "There is a new version available: " + newest.toString() + " (You are running " + current.toString() + ")";
         } else if(current.compareTo(newest) != 0) {
             if((current.getTag().toUpperCase().startsWith("DEV")) || (current.getTag().toUpperCase().startsWith("SNAPSHOT")) ||
                (current.getTag().toUpperCase().startsWith("PRE")) || (current.getTag().toUpperCase().startsWith("PRERELEASE"))) {
-                return "You are running a developement Version of ProjectRetile! Please report any Bugs to our GitHub Page.";
+                return "You are running a developement version of ProjectRetile! Please report any bugs to our GitHub page.";
             } else if(current.getTag().equalsIgnoreCase("OFFLINE")) {
-                return "Could not check for Updates. Please check your Internet Connection.";
+                return "Could not check for updates. Please check your Internet connection.";
             } else {
-                return "You are running a newer Version than released!";
+                return "You are running a newer version than released!";
             }
         }
 

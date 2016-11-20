@@ -83,7 +83,7 @@ public class ProjectRetile extends Plugin {
     public void onEnable() {
         instance = this;
         if(!isBungeeUtilInstalled()) {
-            log.error("Could not load BungeeUtil. Please install it and start the Proxy Server again.");
+            log.error("Could not load BungeeUtil. Please install it and start the proxy server again.");
             Utility.disablePlugin(this);
             return;
         }
@@ -100,15 +100,15 @@ public class ProjectRetile extends Plugin {
         try {
             if(dbConfig.jdbcURL.contains("mysql")) {
                 database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
-                log.info("Using MySQL Connection...");
+                log.info("Using MySQL connection...");
             } else {
                 database = new SQLite(dbConfig.jdbcURL);
-                log.info("Using SQLite Connection...");
+                log.info("Using SQLite connection...");
             }
             database.connect();
             database.setup();
         } catch (Exception ex) { // maybe change this, catching every Exception is always bad
-            log.error("Could not connect to MySQL / SQLite Database! Did you enter the correct Details?");
+            log.error("Could not connect to MySQL / SQLite database! Did you enter the correct details?");
             log.debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
             Utility.disablePlugin(this);
             return;
@@ -129,7 +129,7 @@ public class ProjectRetile extends Plugin {
         try {
             database.disconnect();
         } catch (SQLException ex) {
-            log.error("Could not disconnect from the MySQL / SQLite Database! Please force end the Java Process.");
+            log.error("Could not disconnect from the MySQL / SQLite database! Please force end the Java process.");
             ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
         }
         instance = null;
@@ -148,7 +148,7 @@ public class ProjectRetile extends Plugin {
                 config.init();
             }
         } catch (InvalidConfigurationException ex) {
-            log.error("Could not load config.yml File - Please check for Errors", ex);
+            log.error("Could not load config.yml file - Please check for errors", ex);
         }
 
         // database.yml
@@ -156,7 +156,7 @@ public class ProjectRetile extends Plugin {
             dbConfig = new DBConfig(new File(getDataFolder(), "database.yml"));
             dbConfig.init();
         } catch (InvalidConfigurationException ex) {
-            log.error("Could not load database.yml File - Please check for Errors", ex);
+            log.error("Could not load database.yml file - Please check for errors", ex);
         }
 
         // blacklist.yml
@@ -164,7 +164,7 @@ public class ProjectRetile extends Plugin {
             blacklist = new Blacklist(new File(getDataFolder(), "blacklist.yml"));
             blacklist.init();
         } catch (InvalidConfigurationException ex) {
-            log.error("Could not load blacklist.yml File - Please check for Errors", ex);
+            log.error("Could not load blacklist.yml file - Please check for errors", ex);
         }
     }
 

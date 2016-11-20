@@ -26,9 +26,9 @@ import java.util.List;
 public class Blacklist extends YamlConfig {
 
     @Comments({
-            "Put in here a List of Words that should not be allowed in Report Reasons",
-            "Users with the Permission projectretile.blacklist.bypass can bypass this list.",
-            "For best experience, put all Words in LOWER CASE (no upper case!)"
+            "Put in here a list of words that should not be allowed in Report reasons",
+            "Users with the permission projectretile.blacklist.bypass can bypass this list.",
+            "For best experience, put all words in LOWER CASE (no upper case!)"
     })
     @Path("Blacklisted-Words")
     public List<String> list = Arrays.asList(

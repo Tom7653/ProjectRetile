@@ -31,7 +31,7 @@ public class Version implements Comparable<Version> {
         Matcher matcher = SEMVER.matcher(ver);
 
         if(!matcher.matches())
-            throw new IllegalArgumentException("Input Version doesn't matches SemVer Pattern.");
+            throw new IllegalArgumentException("Input version doesn't matches SemVer pattern.");
 
         parts[0] = Integer.parseInt(matcher.group("a"));
         parts[1] = Integer.parseInt(matcher.group("b"));

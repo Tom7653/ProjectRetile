@@ -57,9 +57,9 @@ public class RetileCommand extends Command {
             if(args.length == 1) {
                 if(args[0].equalsIgnoreCase("debug")) {
                     if(sender.hasPermission("projectretile.general.debug")) {
-                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "ProjectRetile is using the " + DARK_AQUA + "Slf4j " + GRAY + "Logger."));
-                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Enabling the Debug Modus is not possible using just a command."));
-                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Please visit the Wiki: " + DARK_AQUA + "https://github.com/Acquized/ProjectRetile/wiki/enabling-debug"));
+                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "ProjectRetile is using the " + DARK_AQUA + "Slf4j " + GRAY + "logger."));
+                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Enabling the debug mode is not possible using just a command."));
+                        sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Please visit the wiki: " + DARK_AQUA + "https://github.com/Acquized/ProjectRetile/wiki/enabling-debug"));
                         return;
                     } else {
                         sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
@@ -72,13 +72,13 @@ public class RetileCommand extends Command {
                         try {
                             ProjectRetile.getInstance().getConfig().reload();
                         } catch (InvalidConfigurationException ex) {
-                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload config.yml File. Please check for errors."));
+                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload config.yml file. Please check for errors."));
                             return;
                         }
                         try {
                             ProjectRetile.getInstance().getBlacklist().reload();
                         } catch (InvalidConfigurationException ex) {
-                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload blacklist.yml File. Please check for errors."));
+                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload blacklist.yml file. Please check for errors."));
                             return;
                         }
                         ProjectRetile.getInstance().getI18n().load();
@@ -88,19 +88,19 @@ public class RetileCommand extends Command {
                                 ProjectRetile.getInstance().getDbConfig().reload();
                                 if(ProjectRetile.getInstance().getDbConfig().jdbcURL.contains("mysql")) {
                                     ProjectRetile.getInstance().setDatabase(new MySQL(ProjectRetile.getInstance().getDbConfig().jdbcURL, ProjectRetile.getInstance().getDbConfig().username, ProjectRetile.getInstance().getDbConfig().password.toCharArray()));
-                                    ProjectRetile.getInstance().getLog().info("Using MySQL Connection...");
+                                    ProjectRetile.getInstance().getLog().info("Using MySQL connection...");
                                 } else {
                                     ProjectRetile.getInstance().setDatabase(new SQLite(ProjectRetile.getInstance().getDbConfig().jdbcURL));
-                                    ProjectRetile.getInstance().getLog().info("Using SQLite Connection...");
+                                    ProjectRetile.getInstance().getLog().info("Using SQLite connection...");
                                 }
                                 ProjectRetile.getInstance().getDatabase().connect();
                                 ProjectRetile.getInstance().getDatabase().setup();
                             } catch (SQLException | InvalidConfigurationException ex) {
-                                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload Database. Please force end the Java Process."));
+                                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload database. Please force end the Java process."));
                                 return;
                             }
                         } else {
-                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "If you wish to reload the Database, execute this command using the console."));
+                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "If you wish to reload the database, execute this command using the Console."));
                         }
                         sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Successfully reloaded."));
                         return;

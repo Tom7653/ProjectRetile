@@ -26,22 +26,23 @@ public class Config extends YamlConfig {
 
     // v  ProjectRetile  v
 
-    @Comment("Set here the Prefix that will be infront of every Messages")
+    @Comment("Set here the Prefix that will be infront of every message")
     @Path("ProjectRetile.Prefix")
     public String prefix = "&c> &7";
 
     @Comments({
-            "Set here the Language Code that should be used for Message Printing",
-            "This requires a File named \"messages_<locale>.properties\" in the \"locale\" Directory.",
-            "If no file with the Locale's Paramter exist, a error will be thrown."
+            "Set here the country code that should be used for message printing",
+            "This requires a file named \"messages_<locale>.properties\" in the \"locale\" directory.",
+            "If no file with the locale's paramter exist, a error will be thrown."
     })
     @Path("ProjectRetile.Locale")
     public String locale = "en";
 
     @Comments({
             "Should UUID's be resolved using BungeeCord?",
-            "Only enable this if you encounter Lags when reporting.",
-            "This may cause errors with wrong UUID on certain Networks"
+            "Only enable this if you encounter lags when reporting",
+            "This may cause errors with wrong UUID on certain networks",
+            "This is automaticly forced if your network is in offline mode."
     })
     @Path("ProjectRetile.ForceOfflineUUID")
     public boolean forceOfflineUUID = false;
@@ -58,14 +59,14 @@ public class Config extends YamlConfig {
     public boolean clickableMsgs = true;
 
     @Comments({
-            "How should the Time be formated?",
-            "This is using java.text.SimpleDateFormat's Date and Time Pattern",
-            "For a list of Patterns visit https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"
+            "How should the time be formatted?",
+            "This is using java.text.SimpleDateFormat's date and time pattern",
+            "For a list of patterns visit https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"
     })
     @Path("ProjectRetile.DateFormat")
     public String dateFormat = "dd.MM.yyyy hh:mm:ss a";
 
-    @Comment("Should the Updater be enabled? The Updater checks every Hour for a new Version.")
+    @Comment("Should the Updater be enabled? The Updater checks every hour for a new version.")
     @Path("ProjectRetile.Updater")
     public boolean updater = true;
 
@@ -93,36 +94,36 @@ public class Config extends YamlConfig {
     // v  Aliases  v
 
     @Comments({
-            "Which Aliases should the Report Command have?",
-            "The default Command /report will always stay."
+            "Which aliases should the Report command have?",
+            "The default command /report will always stay."
     })
     @Path("Aliases.ReportCommand")
     public String[] reportAliases = { "r", "ticket", "reportuser" };
 
     @Comments({
-            "Which Aliases should the Reports Command have?",
-            "The default Command /listreports will always stay."
+            "Which Aliases should the Reports command have?",
+            "The default command /listreports will always stay."
     })
     @Path("Aliases.ReportsCommand")
     public String[] reportsAliases = { "reports", "lr" };
 
     @Comments({
-            "Which Aliases should the Toggle Command have?",
-            "The default Command /togglereports will always stay."
+            "Which Aliases should the Toggle command have?",
+            "The default command /togglereports will always stay."
     })
     @Path("Aliases.ToggleCommand")
     public String[] toggleAliases = { "toggle", "tr" };
 
     @Comments({
-            "Which Aliases should the Info Command have?",
-            "The default Command /reportinfo will always stay."
+            "Which Aliases should the Info command have?",
+            "The default command /reportinfo will always stay."
     })
     @Path("Aliases.InfoCommand")
     public String[] infoAliases = { "inforeport", "ir", "ri", "info" };
 
     @Comments({
-            "Which Aliases should the Queue Command have?",
-            "The default Command /waitingqueue will always stay."
+            "Which Aliases should the Queue command have?",
+            "The default command /waitingqueue will always stay."
     })
     @Path("Aliases.QueueCommand")
     public String[] queueAliases = { "queue", "waitingqueue" };
