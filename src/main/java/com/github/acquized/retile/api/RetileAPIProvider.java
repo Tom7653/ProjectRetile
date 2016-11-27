@@ -113,7 +113,8 @@ public class RetileAPIProvider implements RetileAPI {
     @Override
     public void addReport(@NonNull Report report) throws RetileAPIException {
 
-        for(String s : ProjectRetile.getInstance().getBlacklist().list) {
+        for(Object obj : ProjectRetile.getInstance().getBlacklist().getList("blacklist")) {
+            String s = (String) obj;
             if((report.getReason().contains(s)) && (!ProxyServer.getInstance().getPlayer(report.getReporter()).hasPermission("projectretile.blacklist.bypass"))) {
                 ProxyServer.getInstance().getPlayer(report.getReporter()).sendMessage(tl("ProjectRetile.Commands.Report.Blacklist"));
                 throw new RetileAPIException("Blacklist");
@@ -129,7 +130,7 @@ public class RetileAPIProvider implements RetileAPI {
 
         if(staff.size() > 0) {
             BaseComponent[] components = tl("ProjectRetile.Notifications.Report.Staff", reporter, victim, report.getReason(), resolveServer(report.getVictim()).getName());
-            if(ProjectRetile.getInstance().getConfig().clickableMsgs) {
+            if(ProjectRetile.getInstance().getConfig().getBoolean("General.clickablemessages")) {
                 for(BaseComponent c : components) {
                     c.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/server " + resolveServer(report.getVictim()).getName()));
                 }

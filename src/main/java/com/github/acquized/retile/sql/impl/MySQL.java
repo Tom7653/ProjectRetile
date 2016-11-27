@@ -42,9 +42,9 @@ public class MySQL implements Database {
         cfg.setJdbcUrl(url);
         cfg.setUsername(username);
         cfg.setPassword(new String(password));
-        cfg.setMinimumIdle(ProjectRetile.getInstance().getConfig().minPoolIdle);
-        cfg.setMaximumPoolSize(ProjectRetile.getInstance().getConfig().maxPoolSize);
-        cfg.setConnectionTimeout(ProjectRetile.getInstance().getConfig().poolTimeout);
+        cfg.setMinimumIdle(Integer.valueOf(Double.toString(ProjectRetile.getInstance().getConfig().getDouble(""))));
+        cfg.setMaximumPoolSize(Integer.valueOf(Double.toString(ProjectRetile.getInstance().getConfig().getDouble(""))));
+        cfg.setConnectionTimeout(Integer.valueOf(Double.toString(ProjectRetile.getInstance().getConfig().getDouble(""))));
         dataSource = new HikariDataSource(cfg);
     }
 

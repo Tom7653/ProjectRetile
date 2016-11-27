@@ -1,0 +1,43 @@
+# Configuration file for Project Retile
+
+[General]
+  # Put in here a prefix. This prefix will be infront of every message.
+  prefix = "&c> &7"
+  # Put in here a two character long string with a language code
+  # ProjectRetile will then search for a file named "messages_<code>.properties" in the "locale" directory.
+  # If Retile doesn't finds the file, errors will occur.
+  locale = "en"
+  # Should BungeeCord be used for UUID resolving?
+  # This may be not safe as some hacked clients can fake their UUID
+  # This is automaticly enabled for offline mode networks
+  usebungeecordforuuid = false
+  # How long should be the cooldown for the /report command? This is calculated in seconds.
+  cooldown = 60
+  # Should the report notification be clickable?
+  # A click on that notification sends the clicker to the victim's server
+  clickablemessages = true
+  # Put in here a java.text.SimpleDateFormat time and date pattern
+  # This specifies how the date will be displayed in the click gui's.
+  # You can find a list of patterns here: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+  dateformat = "dd.MM.yyyy hh:mm:ss a"
+  # Should the updater be enabled? The updater checks for a update every hour.
+  updater = true
+  # Don't change this value unless you want to reset the config
+  revision = 1
+
+[Pools]
+  # How many connections should be keept alive when idling?
+  minpoolidlesize = 5
+  # How many connections should be max. openend?
+  maxpoolsize = 20
+  # How long should we try to connect to a database? Set higher if the a error occurs when connecting
+  timeout = 5000
+
+# Put in the [] a list of aliases. These aliases need to be prefixed and suffixed with ""
+# The key (before the =) is the /<key> command
+[Aliases]
+  report = [ "r", "ticket", "reportuser" ]
+  listreports = [ "reports", "lr" ]
+  togglereports = [ "toggle", "tr" ]
+  reportinfo = [ "inforeport", "ir", "ri", "info" ]
+  waitingqueue = [ "queue", "listqueue" ]

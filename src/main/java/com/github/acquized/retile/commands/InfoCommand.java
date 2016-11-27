@@ -28,10 +28,12 @@ import static com.github.acquized.retile.i18n.I18n.tl;
 
 public class InfoCommand extends Command {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(ProjectRetile.getInstance().getConfig().dateFormat);
+    private final SimpleDateFormat format;
 
-    public InfoCommand() {
-        super("reportinfo", null, ProjectRetile.getInstance().getConfig().infoAliases);
+    @SuppressWarnings("SuspiciousToArrayCall")
+    public InfoCommand(SimpleDateFormat format) {
+        super("reportinfo", null, ProjectRetile.getInstance().getConfig().getList("Aliases.reportinfo").toArray(new String[ProjectRetile.getInstance().getConfig().getList("Aliases.reportinfo").size()]));
+        this.format = format;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class InfoCommand extends Command {
                             ProjectRetile.getInstance().getCache().username(report.getReporter()),
                             ProjectRetile.getInstance().getCache().username(report.getVictim()),
                             report.getReason(),
-                            DATE_FORMAT.format(new Date(report.getTimestamp()))));
+                            format.format(new Date(report.getTimestamp()))));
                     sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
                     return;
                 } else {

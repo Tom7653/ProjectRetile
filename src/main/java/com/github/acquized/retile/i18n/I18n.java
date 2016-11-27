@@ -44,7 +44,7 @@ public class I18n {
             for (String l : SUPPORTED_LOCALES) {
                 File f = new File(DIRECTORY, "messages_" + l + ".properties");
                 if (!f.exists()) {
-                    Files.copy(ProjectRetile.getInstance().getResourceAsStream(f.getName()), f.toPath());
+                    Files.copy(ProjectRetile.getInstance().getResourceAsStream("messages/" + f.getName()), f.toPath());
                 }
             }
         } catch (IOException ex) {
@@ -53,11 +53,11 @@ public class I18n {
     }
 
     public static String getMessage(String key) {
-        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key).replace("\\n", "\n"));
+        return Utility.format(ProjectRetile.getInstance().getConfig().getString("General.prefix") + bundle.getString(key).replace("\\n", "\n"));
     }
 
     public static String getMessage(String key, Object... obj) {
-        return Utility.format(ProjectRetile.getInstance().getConfig().prefix + bundle.getString(key).replace("\\n", "\n"), obj);
+        return Utility.format(ProjectRetile.getInstance().getConfig().getString("General.prefix") + bundle.getString(key).replace("\\n", "\n"), obj);
     }
 
 
@@ -74,9 +74,9 @@ public class I18n {
     public void load() {
         try {
             ClassLoader loader = new URLClassLoader(new URL[]{DIRECTORY.toURI().toURL()});
-            bundle = ResourceBundle.getBundle("messages", new Locale(ProjectRetile.getInstance().getConfig().locale), loader);
+            bundle = ResourceBundle.getBundle("messages", new Locale(ProjectRetile.getInstance().getConfig().getString("General.locale")), loader);
         } catch (IOException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not load messages_" + ProjectRetile.getInstance().getConfig().locale + ".properties file. " +
+            ProjectRetile.getInstance().getLog().error("Could not load messages_" + ProjectRetile.getInstance().getConfig().getString("General.locale") + ".properties file. " +
                     "Please check for errors.", ex);
         }
     }

@@ -52,27 +52,35 @@ public class DumpReport {
         JsonObject machine = new JsonObject().add("java", System.getProperty("java.version"))
                 .add("system", System.getProperty("os.name"));
 
-        JsonObject config = new JsonObject().add("prefix", ProjectRetile.getInstance().getConfig().prefix)
-                .add("locale", ProjectRetile.getInstance().getConfig().locale)
-                .add("forceOfflineUUID", ProjectRetile.getInstance().getConfig().forceOfflineUUID)
-                .add("cooldown", ProjectRetile.getInstance().getConfig().cooldown)
-                .add("clickableMsgs", ProjectRetile.getInstance().getConfig().clickableMsgs)
-                .add("dateFormat", ProjectRetile.getInstance().getConfig().dateFormat)
-                .add("version", ProjectRetile.getInstance().getConfig().version)
-                .add("minPoolIdle", ProjectRetile.getInstance().getConfig().minPoolIdle)
-                .add("maxPoolSize", ProjectRetile.getInstance().getConfig().maxPoolSize)
-                .add("poolTimeout", ProjectRetile.getInstance().getConfig().poolTimeout)
-                .add("reportAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().reportAliases))
-                .add("reportsAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().reportsAliases))
-                .add("toggleAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().toggleAliases))
-                .add("infoAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().infoAliases))
-                .add("queueAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().queueAliases));
+        JsonObject config = new JsonObject().add("prefix", ProjectRetile.getInstance().getConfig().getString("General.prefix"))
+                .add("locale", ProjectRetile.getInstance().getConfig().getString("General.locale"))
+                .add("usebungeecordforuuid", ProjectRetile.getInstance().getConfig().getBoolean("General.usebungeecordforuuid"))
+                .add("cooldown", ProjectRetile.getInstance().getConfig().getLong("General.cooldown"))
+                .add("clickableMsgs", ProjectRetile.getInstance().getConfig().getBoolean("General.clickablemessages"))
+                .add("dateFormat", ProjectRetile.getInstance().getConfig().getString("General.dateformat"))
+                .add("updater", ProjectRetile.getInstance().getConfig().getBoolean("General.updater"))
+                .add("revision", ProjectRetile.getInstance().getConfig().getLong("General.revision"))
+                .add("minPoolIdle", ProjectRetile.getInstance().getConfig().getLong("Pools.minpoolidlesize"))
+                .add("maxPoolSize", ProjectRetile.getInstance().getConfig().getLong("Pools.maxpoolsize"))
+                .add("poolTimeout", ProjectRetile.getInstance().getConfig().getLong("Pools.timeout"))
+                .add("reportAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.report")))
+                .add("reportsAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.listreports")))
+                .add("toggleAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.togglereports")))
+                .add("infoAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.reportinfo")))
+                .add("queueAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.waitingqueue")));
 
-        JsonObject dbConfig = new JsonObject().add("jdbcURL", ProjectRetile.getInstance().getDbConfig().jdbcURL)
-                .add("username", ProjectRetile.getInstance().getDbConfig().username)
-                .add("password", ProjectRetile.getInstance().getDbConfig().password);
+        JsonObject dbConfig = new JsonObject().add("type", ProjectRetile.getInstance().getDbConfig().getString("Database.type"));
+        if(ProjectRetile.getInstance().getDbConfig().getString("Database.type").equalsIgnoreCase("MYSQL")) {
+            dbConfig.add("adress", ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.adress"))
+            .add("port", ProjectRetile.getInstance().getDbConfig().getLong("Database.MySQL.port"))
+            .add("database", ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.database"))
+            .add("username", ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.username"))
+            .add("password", ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.password"));
+        } else {
+            dbConfig.add("file", ProjectRetile.getInstance().getDbConfig().getString("Database.SQLite.file"));
+        }
 
-        JsonObject blacklist = new JsonObject().add("blacklist", Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().list.toArray()));
+        JsonObject blacklist = new JsonObject().add("blacklist", Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().getList("blacklist")));
 
         JsonObject plugins = new JsonObject();
         ProxyServer.getInstance().getPluginManager().getPlugins().stream().filter(p -> !p.getDescription().getAuthor().equals("SpigotMC")).forEach(p -> {
@@ -108,7 +116,7 @@ public class DumpReport {
                 .add("server", server)
                 .add("machine", machine)
                 .add("config", config)
-                .add("dbConfig", dbConfig)
+                .add("dbConfig1", dbConfig)
                 .add("blacklist", blacklist)
                 .add("plugins", plugins)
                 .add("database", database)

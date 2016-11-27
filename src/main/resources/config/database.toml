@@ -1,0 +1,16 @@
+# Database file for Project Retile
+
+[Database]
+  # Put in here the database type that should be used
+  # Supported: "SQLite", "MySQL" (case-sensitive)
+  type = "SQLite"
+
+[Database.MySQL]
+  adress = "127.0.0.1"
+  port = 3307
+  database = "ProjectRetile"
+  username = "root"
+  password = "passw0rd"
+
+[Database.SQLite]
+  file = "database.db"

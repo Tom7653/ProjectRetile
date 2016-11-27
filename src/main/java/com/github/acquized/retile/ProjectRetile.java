@@ -27,9 +27,6 @@ import com.github.acquized.retile.commands.QueueCommand;
 import com.github.acquized.retile.commands.ReportCommand;
 import com.github.acquized.retile.commands.RetileCommand;
 import com.github.acquized.retile.commands.ToggleCommand;
-import com.github.acquized.retile.config.Blacklist;
-import com.github.acquized.retile.config.Config;
-import com.github.acquized.retile.config.DBConfig;
 import com.github.acquized.retile.cooldown.Cooldown;
 import com.github.acquized.retile.i18n.I18n;
 import com.github.acquized.retile.listeners.Disconnect;
@@ -41,8 +38,8 @@ import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.sql.impl.SQLite;
 import com.github.acquized.retile.updater.Updater;
 import com.github.acquized.retile.utils.Utility;
+import com.moandjiezana.toml.Toml;
 
-import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -53,7 +50,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -72,10 +71,10 @@ public class ProjectRetile extends Plugin {
     @Getter private static ProjectRetile instance;
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
     @Getter @Setter(onParam = @__(@NonNull)) private Database database;
-    @Getter private Blacklist blacklist;
-    @Getter private DBConfig dbConfig;
+    @Getter private Toml blacklist;
+    @Getter private Toml dbConfig;
     @Getter private RetileAPI api;
-    @Getter private Config config;
+    @Getter private Toml config;
     @Getter private Cache cache;
     @Getter private I18n i18n;
 
@@ -89,20 +88,20 @@ public class ProjectRetile extends Plugin {
         }
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinProtection()); // High priority for causing no errors with BungeeUtil
         loadConfigs();
-        prefix = Utility.format(config.prefix);
+        prefix = Utility.format(config.getString("General.prefix"));
         i18n = new I18n();
         i18n.load();
-        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.forceOfflineUUID) && (isMcAPIOnline())) {
+        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.getBoolean("General.usebungeecordforuuid")) && (isMcAPIOnline())) {
             cache = new McAPICanada();
         } else {
             cache = new Offline();
         }
         try {
-            if(dbConfig.jdbcURL.contains("mysql")) {
-                database = new MySQL(dbConfig.jdbcURL, dbConfig.username, dbConfig.password.toCharArray());
+            if(dbConfig.getString("Database.type").equalsIgnoreCase("MYSQL")) {
+                database = new MySQL("jdbc:mysql://" + dbConfig.getString("Database.MySQL.adress") + ":" + dbConfig.getDouble("Database.MySQL.port") + "/" + dbConfig.getString("Database.MySQL.database"), dbConfig.getString("Database.MySQL.username"), dbConfig.getString("Database.MySQL.password").toCharArray());
                 log.info("Using MySQL connection...");
             } else {
-                database = new SQLite(dbConfig.jdbcURL);
+                database = new SQLite("jdbc:sqlite:{0}{1}" + dbConfig.getString("Database.SQLite.file"));
                 log.info("Using SQLite connection...");
             }
             database.connect();
@@ -117,9 +116,9 @@ public class ProjectRetile extends Plugin {
         Notifications.setInstance(new Notifications());
         api = new RetileAPIProvider();
         registerListeners(ProxyServer.getInstance().getPluginManager());
-        registerCommands(ProxyServer.getInstance().getPluginManager());
+        registerCommands(ProxyServer.getInstance().getPluginManager(), new SimpleDateFormat(getConfig().getString("General.dateformat")));
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
-        if(config.updater)
+        if(config.getBoolean("General.updater"))
             Updater.start();
     }
 
@@ -138,33 +137,42 @@ public class ProjectRetile extends Plugin {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void loadConfigs() {
-        // config.yml
+        // Directory
+        if(!getDataFolder().isDirectory()) {
+            getDataFolder().mkdirs();
+        }
+
+        // config.toml
         try {
-            File file;
-            config = new Config(file = new File(getDataFolder(), "config.yml"));
-            config.init();
-            if (!config.version.equalsIgnoreCase(getDescription().getVersion())) {
-                file.delete();
-                config.init();
+            File file = new File(getDataFolder(), "config.toml");
+            if(!file.exists()) {
+                Files.copy(getResourceAsStream("config/config.toml"), file.toPath());
             }
-        } catch (InvalidConfigurationException ex) {
-            log.error("Could not load config.yml file - Please check for errors", ex);
+            config = new Toml(new Toml().read(getResourceAsStream("config/config.toml"))).read(file);
+        } catch (Exception ex) {
+            log.error("Could not load config.toml file - Please check for errors", ex);
         }
 
-        // database.yml
+        // database.toml
         try {
-            dbConfig = new DBConfig(new File(getDataFolder(), "database.yml"));
-            dbConfig.init();
-        } catch (InvalidConfigurationException ex) {
-            log.error("Could not load database.yml file - Please check for errors", ex);
+            File file = new File(getDataFolder(), "database.toml");
+            if(!file.exists()) {
+                Files.copy(getResourceAsStream("config/database.toml"), file.toPath());
+            }
+            dbConfig = new Toml(new Toml().read(getResourceAsStream("config/database.toml"))).read(file);
+        } catch (Exception ex) {
+            log.error("Could not load database.toml file - Please check for errors", ex);
         }
 
-        // blacklist.yml
+        // blacklist.toml
         try {
-            blacklist = new Blacklist(new File(getDataFolder(), "blacklist.yml"));
-            blacklist.init();
-        } catch (InvalidConfigurationException ex) {
-            log.error("Could not load blacklist.yml file - Please check for errors", ex);
+            File file = new File(getDataFolder(), "blacklist.toml");
+            if(!file.exists()) {
+                Files.copy(getResourceAsStream("config/blacklist.toml"), file.toPath());
+            }
+            blacklist = new Toml(new Toml().read(getResourceAsStream("config/blacklist.toml"))).read(file);
+        } catch (Exception ex) {
+            log.error("Could not load blacklist.toml file - Please check for errors", ex);
         }
     }
 
@@ -190,10 +198,10 @@ public class ProjectRetile extends Plugin {
         pm.registerListener(this, new PostLogin());
     }
 
-    private void registerCommands(PluginManager pm) {
-        pm.registerCommand(this, new InfoCommand());
-        pm.registerCommand(this, new ListReportsCommand());
-        pm.registerCommand(this, new QueueCommand());
+    private void registerCommands(PluginManager pm, SimpleDateFormat format) {
+        pm.registerCommand(this, new InfoCommand(format));
+        pm.registerCommand(this, new ListReportsCommand(format));
+        pm.registerCommand(this, new QueueCommand(format));
         pm.registerCommand(this, new ReportCommand());
         pm.registerCommand(this, new RetileCommand());
         pm.registerCommand(this, new ToggleCommand());

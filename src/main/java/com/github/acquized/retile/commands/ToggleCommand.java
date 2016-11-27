@@ -25,8 +25,9 @@ import static com.github.acquized.retile.i18n.I18n.tl;
 
 public class ToggleCommand extends Command {
 
+    @SuppressWarnings("SuspiciousToArrayCall")
     public ToggleCommand() {
-        super("togglereports", null, ProjectRetile.getInstance().getConfig().toggleAliases);
+        super("togglereports", null, ProjectRetile.getInstance().getConfig().getList("Aliases.togglereports").toArray(new String[ProjectRetile.getInstance().getConfig().getList("Aliases.togglereports").size()]));
     }
 
     @Override
