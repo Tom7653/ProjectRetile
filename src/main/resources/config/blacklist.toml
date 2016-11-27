@@ -1,0 +1,20 @@
+# Blacklist file for Project Retile
+
+blacklist = [
+  "shit",
+  "fuck",
+  "damn",
+  "bitch",
+  "crap",
+  "piss",
+  "dick",
+  "darn",
+  "pussy",
+  "cock",
+  "fag",
+  "faggot",
+  "asshole",
+  "bastard",
+  "slut",
+  "douche"
+]

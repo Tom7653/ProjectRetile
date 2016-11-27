@@ -31,8 +31,9 @@ import static com.github.acquized.retile.i18n.I18n.tl;
 
 public class ReportCommand extends Command {
 
+    @SuppressWarnings("SuspiciousToArrayCall")
     public ReportCommand() {
-        super("report", null, ProjectRetile.getInstance().getConfig().reportAliases);
+        super("report", null, ProjectRetile.getInstance().getConfig().getList("Aliases.report").toArray(new String[ProjectRetile.getInstance().getConfig().getList("Aliases.report").size()]));
     }
 
     @Override

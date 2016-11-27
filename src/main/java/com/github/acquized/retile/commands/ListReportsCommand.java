@@ -42,10 +42,12 @@ import static com.github.acquized.retile.utils.Utility.formatLegacy;
 
 public class ListReportsCommand extends Command {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(ProjectRetile.getInstance().getConfig().dateFormat);
+    private final SimpleDateFormat format;
 
-    public ListReportsCommand() {
-        super("listreports", null, ProjectRetile.getInstance().getConfig().reportsAliases);
+    @SuppressWarnings("SuspiciousToArrayCall")
+    public ListReportsCommand(SimpleDateFormat format) {
+        super("listreports", null, ProjectRetile.getInstance().getConfig().getList("Aliases.listreports").toArray(new String[ProjectRetile.getInstance().getConfig().getList("Aliases.listreports").size()]));
+        this.format = format;
     }
 
     @Override
@@ -98,7 +100,7 @@ public class ListReportsCommand extends Command {
                         meta.setLore(Arrays.asList(GRAY + "ID: " + DARK_AQUA + r.getToken(),
                                 GRAY + "Reported by: " + DARK_AQUA + reporter,
                                 GRAY + "Reason: " + DARK_AQUA + r.getReason(),
-                                GRAY + "Time: " + DARK_AQUA + DATE_FORMAT.format(new Date(r.getTimestamp())),
+                                GRAY + "Time: " + DARK_AQUA + format.format(new Date(r.getTimestamp())),
                                 GRAY + " ",
                                 GREEN + "Left click to connect",
                                 RED + "Right click to delete"));

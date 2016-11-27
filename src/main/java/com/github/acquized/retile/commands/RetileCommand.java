@@ -22,7 +22,6 @@ import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.sql.impl.SQLite;
 import com.github.acquized.retile.utils.DumpReport;
 
-import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -32,7 +31,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.SQLException;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 import static com.github.acquized.retile.utils.Utility.DARK_AQUA;
@@ -60,6 +58,7 @@ public class RetileCommand extends Command {
                         sender.sendMessage(formatLegacy(RED + "> " + GRAY + "ProjectRetile is using the " + DARK_AQUA + "Slf4j " + GRAY + "logger."));
                         sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Enabling the debug mode is not possible using just a command."));
                         sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Please visit the wiki: " + DARK_AQUA + "https://github.com/Acquized/ProjectRetile/wiki/enabling-debug"));
+                        ProjectRetile.getInstance().getLog().debug("The debug mode has already been enabled.");
                         return;
                     } else {
                         sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
@@ -70,32 +69,32 @@ public class RetileCommand extends Command {
                     if(sender.hasPermission("projectretile.general.reload")) {
                         // Players can only reload Config, Messages & Blacklist - console can reload Database
                         try {
-                            ProjectRetile.getInstance().getConfig().reload();
-                        } catch (InvalidConfigurationException ex) {
-                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload config.yml file. Please check for errors."));
+                            ProjectRetile.getInstance().getConfig().read(ProjectRetile.getInstance().getResourceAsStream("config/config.toml"));
+                        } catch (Exception ex) {
+                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload config.toml file. Please check for errors."));
                             return;
                         }
                         try {
-                            ProjectRetile.getInstance().getBlacklist().reload();
-                        } catch (InvalidConfigurationException ex) {
-                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload blacklist.yml file. Please check for errors."));
+                            ProjectRetile.getInstance().getBlacklist().read(ProjectRetile.getInstance().getResourceAsStream("config/blacklist.toml"));
+                        } catch (Exception ex) {
+                            sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload blacklist.toml file. Please check for errors."));
                             return;
                         }
                         ProjectRetile.getInstance().getI18n().load();
                         if(!(sender instanceof ProxiedPlayer)) {
                             try {
                                 ProjectRetile.getInstance().getDatabase().disconnect();
-                                ProjectRetile.getInstance().getDbConfig().reload();
-                                if(ProjectRetile.getInstance().getDbConfig().jdbcURL.contains("mysql")) {
-                                    ProjectRetile.getInstance().setDatabase(new MySQL(ProjectRetile.getInstance().getDbConfig().jdbcURL, ProjectRetile.getInstance().getDbConfig().username, ProjectRetile.getInstance().getDbConfig().password.toCharArray()));
+                                ProjectRetile.getInstance().getDbConfig().read(ProjectRetile.getInstance().getResourceAsStream("config/database.toml"));
+                                if(ProjectRetile.getInstance().getDbConfig().getString("Database.type").equalsIgnoreCase("MYSQL")) {
+                                    ProjectRetile.getInstance().setDatabase(new MySQL("jdbc:mysql://" + ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.adress") + ":" + ProjectRetile.getInstance().getDbConfig().getDouble("Database.MySQL.port") + "/" + ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.database"), ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.username"), ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.password").toCharArray()));
                                     ProjectRetile.getInstance().getLog().info("Using MySQL connection...");
                                 } else {
-                                    ProjectRetile.getInstance().setDatabase(new SQLite(ProjectRetile.getInstance().getDbConfig().jdbcURL));
+                                    ProjectRetile.getInstance().setDatabase(new SQLite("jdbc:sqlite:{0}{1}" + ProjectRetile.getInstance().getDbConfig().getString("Database.SQLite.file")));
                                     ProjectRetile.getInstance().getLog().info("Using SQLite connection...");
                                 }
                                 ProjectRetile.getInstance().getDatabase().connect();
                                 ProjectRetile.getInstance().getDatabase().setup();
-                            } catch (SQLException | InvalidConfigurationException ex) {
+                            } catch (Exception ex) {
                                 sender.sendMessage(formatLegacy(RED + "> " + GRAY + "Could not reload database. Please force end the Java process."));
                                 return;
                             }
