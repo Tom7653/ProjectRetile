@@ -82,7 +82,6 @@ public class ProjectRetile extends Plugin {
     public void onEnable() {
         instance = this;
         if(!isBungeeUtilInstalled()) {
-            log.error("Could not load BungeeUtil. Please install it and start the proxy server again.");
             Utility.disablePlugin(this);
             return;
         }
@@ -179,17 +178,18 @@ public class ProjectRetile extends Plugin {
     private boolean isBungeeUtilInstalled() {
         for(Plugin p : ProxyServer.getInstance().getPluginManager().getPlugins()) {
             if(p.getDescription().getName().equals("BungeeUtil")) {
-                if(!p.getDescription().getVersion().startsWith("2")) {
-                    return true;
-                } else {
-                    log.error("ProjectRetile has detected that you're using BungeeUtil v2.x(-SNAPSHOT)");
-                    log.error("BungeeUtil's API v2 contains some big changes that aren't supported (yet!)");
-                    log.error("Please downgrade to API v1 or wait until ProjectRetile gets the API v2 update");
-                    Utility.disablePlugin(this);
+                try {
+                    Class.forName("dev.wolveringer.BungeeUtil.Main");
+                } catch (ClassNotFoundException ex) {
+                    log.error("Could not load BungeeUtil. You are using a outdated or newer version than supported.");
+                    log.error("ProjectRetile only supports BungeeUtil prior to v1.6.10. Please downgrade BungeeUtil or wait until ProjectRetile gets a update.");
                     return false;
                 }
+                log.info("BungeeUtil detected.");
+                return true;
             }
         }
+        log.error("Could not load BungeeUtil. Please install it and start the proxy server again.");
         return false;
     }
 
