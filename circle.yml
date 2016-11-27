@@ -6,8 +6,6 @@ dependencies:
   pre:
     - wget -O BungeeUtil.jar https://raw.githubusercontent.com/WolverinDEV/BungeeUtil/jars/buildedJars/jars/BungeeUtil-1.6.8.2.jar
     - mvn install:install-file -Dfile=BungeeUtil.jar -DgroupId=dev.wolveringer -DartifactId=BungeeUtil -Dversion=1.6.8.2 -Dpackaging=jar
-    - wget -O Yamler.jar http://ci.md-5.net/job/Yamler/16/artifact/Yamler-Bungee/target/Yamler-Bungee-2.4.0-SNAPSHOT.jar
-    - mvn install:install-file -Dfile=Yamler.jar -DgroupId=net.cubespace.yamler -DartifactId=Yamler-Bungee -Dversion=2.4.0 -Dpackaging=jar
   override:
     - chmod +x gradlew
     - ./gradlew dependencies
@@ -18,6 +16,6 @@ test:
     - ./gradlew shadowJar
     - ./gradlew test
   post:
-    - cp build/libs/ProjectRetile-1.0.0-PRERELEASEg-all.jar $CIRCLE_ARTIFACTS/ProjectRetile.jar
+    - cp build/libs/ProjectRetile-1.0.0-SNAPSHOT-all.jar $CIRCLE_ARTIFACTS/ProjectRetile.jar
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
