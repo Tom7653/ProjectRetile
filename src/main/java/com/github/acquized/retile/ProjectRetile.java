@@ -124,7 +124,9 @@ public class ProjectRetile extends Plugin {
     public void onDisable() {
         ProxyServer.getInstance().getScheduler().cancel(this);
         try {
-            database.disconnect();
+            if((database != null) && (database.isConnected())) {
+                database.disconnect();
+            }
         } catch (SQLException ex) {
             log.error("Could not disconnect from the MySQL / SQLite database! Please force end the Java process.", ex);
         }
