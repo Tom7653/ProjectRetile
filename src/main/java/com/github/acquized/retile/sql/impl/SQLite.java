@@ -106,8 +106,7 @@ public class SQLite implements Database {
             ps = connection.prepareStatement(query);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL update!");
-            ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL update!", ex);
         }
     }
 
@@ -119,8 +118,7 @@ public class SQLite implements Database {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL query!");
-            ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL query!", ex);
         }
         return rs;
     }

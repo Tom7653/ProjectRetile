@@ -42,9 +42,9 @@ public class MySQL implements Database {
         cfg.setJdbcUrl(url);
         cfg.setUsername(username);
         cfg.setPassword(new String(password));
-        cfg.setMinimumIdle(Integer.valueOf(Double.toString(ProjectRetile.getInstance().getConfig().getDouble(""))));
-        cfg.setMaximumPoolSize(Integer.valueOf(Double.toString(ProjectRetile.getInstance().getConfig().getDouble(""))));
-        cfg.setConnectionTimeout(Integer.valueOf(Double.toString(ProjectRetile.getInstance().getConfig().getDouble(""))));
+        cfg.setMinimumIdle(Integer.valueOf(Long.toString(ProjectRetile.getInstance().getConfig().getLong("Pools.minpoolidlesize"))));
+        cfg.setMaximumPoolSize(Integer.valueOf(Long.toString(ProjectRetile.getInstance().getConfig().getLong("Pools.maxpoolsize"))));
+        cfg.setConnectionTimeout(ProjectRetile.getInstance().getConfig().getLong("Pools.timeout"));
         dataSource = new HikariDataSource(cfg);
     }
 
@@ -103,8 +103,7 @@ public class MySQL implements Database {
             ps = getConnection().prepareStatement(query);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL update!");
-            ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL update!", ex);
         }
     }
 
@@ -116,8 +115,7 @@ public class MySQL implements Database {
             ps = getConnection().prepareStatement(query);
             rs = ps.executeQuery();
         } catch (SQLException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not execute SQL query!");
-            ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
+            ProjectRetile.getInstance().getLog().error("Could not execute SQL query!", ex);
         }
         return rs;
     }

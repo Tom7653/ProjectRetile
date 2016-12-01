@@ -97,7 +97,7 @@ public class ProjectRetile extends Plugin {
         }
         try {
             if(dbConfig.getString("Database.type").equalsIgnoreCase("MYSQL")) {
-                database = new MySQL("jdbc:mysql://" + dbConfig.getString("Database.MySQL.adress") + ":" + dbConfig.getDouble("Database.MySQL.port") + "/" + dbConfig.getString("Database.MySQL.database"), dbConfig.getString("Database.MySQL.username"), dbConfig.getString("Database.MySQL.password").toCharArray());
+                database = new MySQL("jdbc:mysql://" + dbConfig.getString("Database.MySQL.adress") + ":" + dbConfig.getLong("Database.MySQL.port") + "/" + dbConfig.getString("Database.MySQL.database"), dbConfig.getString("Database.MySQL.username"), dbConfig.getString("Database.MySQL.password").toCharArray());
                 log.info("Using MySQL connection...");
             } else {
                 database = new SQLite("jdbc:sqlite:{0}{1}" + dbConfig.getString("Database.SQLite.file"));
@@ -106,8 +106,7 @@ public class ProjectRetile extends Plugin {
             database.connect();
             database.setup();
         } catch (Exception ex) { // maybe change this, catching every Exception is always bad
-            log.error("Could not connect to MySQL / SQLite database! Did you enter the correct details?");
-            log.debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
+            log.error("Could not connect to MySQL / SQLite database! Did you enter the correct details?", ex);
             Utility.disablePlugin(this);
             return;
         }
@@ -127,8 +126,7 @@ public class ProjectRetile extends Plugin {
         try {
             database.disconnect();
         } catch (SQLException ex) {
-            log.error("Could not disconnect from the MySQL / SQLite database! Please force end the Java process.");
-            ProjectRetile.getInstance().getLog().debug(ex.getClass().getName() + ": " + ex.getMessage(), ex);
+            log.error("Could not disconnect from the MySQL / SQLite database! Please force end the Java process.", ex);
         }
         instance = null;
         log.info("ProjectRetile v{} has been disabled.", getDescription().getVersion());
