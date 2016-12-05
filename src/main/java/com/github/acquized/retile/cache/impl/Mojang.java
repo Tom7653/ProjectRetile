@@ -1,4 +1,5 @@
-/* Copyright 2016 Acquized
+/*
+ * Copyright 2016 Acquized
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,24 +40,29 @@ import javax.net.ssl.HttpsURLConnection;
 import lombok.Getter;
 
 @Beta
-public class McAPICanada implements Cache {
+public class Mojang implements Cache {
 
     @Getter
-    public final LoadingCache<UUID, String> cache = CacheBuilder.newBuilder()
-            .maximumSize(15000)
-            .expireAfterWrite(1, TimeUnit.HOURS)
+    private final LoadingCache<UUID, String> cache = CacheBuilder.newBuilder()
+            .maximumSize(Long.MAX_VALUE)
+            .expireAfterWrite(3, TimeUnit.HOURS)
             .build(new CacheLoader<UUID, String>() {
                 @Override
                 public String load(UUID key) throws Exception {
                     return resolve(key).get();
                 }
             });
+    @Getter private int requests = 0;
+
+    public Mojang() {
+        ProxyServer.getInstance().getScheduler().schedule(ProjectRetile.getInstance(), () -> requests = 0, 10, 10, TimeUnit.MINUTES);
+    }
 
     public Future<String> resolve(UUID uuid) {
         FutureTask<String> task = new FutureTask<>(() -> {
-            URL url = new URL("https://mcapi.ca/profile/" + uuid.toString().replace("-", "") + "?" + System.currentTimeMillis());
+            URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", ""));
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
+            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion() + " (BungeeCord Server-Side Plugin)");
             conn.setRequestMethod("GET");
             conn.setUseCaches(false);
             conn.setDoOutput(true);
@@ -70,18 +76,18 @@ public class McAPICanada implements Cache {
 
     public Future<UUID> resolve(String name) {
         FutureTask<UUID> task = new FutureTask<>(() -> {
-            URL url = new URL("https://mcapi.ca/profile/" + name + "?" + System.currentTimeMillis());
+            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion());
+            conn.addRequestProperty("User-Agent", "ProjectRetile v" + ProjectRetile.getInstance().getDescription().getVersion() + " (BungeeCord Server-Side Plugin)");
             conn.setRequestMethod("GET");
             conn.setUseCaches(false);
             conn.setDoOutput(true);
 
             JsonObject obj = ProjectRetile.getInstance().getJsonParser().parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
-            addEntry(UUID.fromString(obj.get("uuid_formatted").getAsString()), name);
-            return UUID.fromString(obj.get("uuid_formatted").getAsString());
+            return UUID.fromString(obj.get("id").getAsString().replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
         });
         ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), task);
+        requests++;
         return task;
     }
 
@@ -90,8 +96,8 @@ public class McAPICanada implements Cache {
         try {
             return cache.get(uuid);
         } catch (ExecutionException ex) {
-            ProjectRetile.getInstance().getLog().error("Could not connect to local cache regaring username resolving of '" + uuid.toString() + "'.", ex);
-            return "Cache Failed @ " + uuid.hashCode();
+            ProjectRetile.getInstance().getLog().error("Could not contact to local Cache regarding the username of " + uuid.toString() + ".", ex);
+            return ProxyServer.getInstance().getPlayer(uuid).getName();
         }
     }
 
@@ -103,8 +109,16 @@ public class McAPICanada implements Cache {
             }
         }
         try {
-            return resolve(name).get();
-        } catch (InterruptedException | ExecutionException e) {
+            if(requests >= 600) {
+                ProjectRetile.getInstance().getLog().warn("ProjectRetile has reached Mojang's conversation service rate limit.");
+                ProjectRetile.getInstance().getLog().warn("While were waiting for the limit to expire, we're using BungeeCord's UUID service.");
+                ProjectRetile.getInstance().getLog().warn("We're using Mojang's conversation service again in 10 minutes.");
+                return ProxyServer.getInstance().getPlayer(name).getUniqueId();
+            } else {
+                return resolve(name).get();
+            }
+        } catch (InterruptedException | ExecutionException ex) {
+            ProjectRetile.getInstance().getLog().error("Could not resolve UUID of " + name + ".", ex);
             return ProxyServer.getInstance().getPlayer(name).getUniqueId();
         }
     }

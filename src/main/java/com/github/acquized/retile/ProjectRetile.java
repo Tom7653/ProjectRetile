@@ -14,8 +14,11 @@
  */
 package com.github.acquized.retile;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIProvider;
 import com.github.acquized.retile.cache.Cache;
@@ -69,8 +72,10 @@ public class ProjectRetile extends Plugin {
 
     public static String prefix = RED + "> " + GRAY;
     @Getter private static ProjectRetile instance;
+    @Getter private Gson gson = new GsonBuilder().setPrettyPrinting().create();
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
     @Getter @Setter(onParam = @__(@NonNull)) private Database database;
+    @Getter private JsonParser jsonParser = new JsonParser();
     @Getter private Toml blacklist;
     @Getter private Toml dbConfig;
     @Getter private RetileAPI api;
@@ -216,8 +221,8 @@ public class ProjectRetile extends Plugin {
             conn.setUseCaches(false);
             conn.setDoOutput(true);
 
-            JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
-            return obj.get("error") == null;
+            JsonObject obj = jsonParser.parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
+            return !obj.get("error").isJsonNull();
         });
         ProxyServer.getInstance().getScheduler().runAsync(this, task);
         try {

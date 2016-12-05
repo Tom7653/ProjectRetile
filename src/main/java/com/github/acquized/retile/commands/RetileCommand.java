@@ -14,9 +14,8 @@
  */
 package com.github.acquized.retile.commands;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.WriterConfig;
+import com.google.gson.JsonObject;
+
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.sql.impl.SQLite;
@@ -120,11 +119,13 @@ public class RetileCommand extends Command {
                                 conn.setDoOutput(true);
 
                                 OutputStream out = conn.getOutputStream();
-                                out.write(DumpReport.create().toString(WriterConfig.PRETTY_PRINT).getBytes("UTF-8"));
+
+                                out.write(DumpReport.create().toString().getBytes("UTF-8"));
                                 out.close();
 
-                                JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
-                                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A dump has been successfully created. View it at " + DARK_AQUA + "http://hastebin.com/{0}", obj.get("key").asString()));
+                                JsonObject obj = ProjectRetile.getInstance().getJsonParser().parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
+                                String key = obj.get("key").getAsString();
+                                sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A dump has been successfully created. View it at " + DARK_AQUA + "http://hastebin.com/{0}", key));
                             } catch (Exception ex) {
                                 sender.sendMessage(formatLegacy(RED + "> " + GRAY + "A error occured. Please checkout the console."));
                                 ProjectRetile.getInstance().getLog().error("An error occured while contacting Hastebin.", ex);

@@ -14,8 +14,8 @@
  */
 package com.github.acquized.retile.updater;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
+import com.google.gson.JsonObject;
+
 import com.github.acquized.retile.ProjectRetile;
 
 import net.md_5.bungee.api.ProxyServer;
@@ -74,8 +74,8 @@ public class Updater {
             conn.setUseCaches(true);
             conn.setDoOutput(true);
 
-            JsonObject obj = Json.parse(new InputStreamReader(conn.getInputStream())).asObject();
-            return new Version(obj.get("name").asString());
+            JsonObject obj = ProjectRetile.getInstance().getJsonParser().parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
+            return new Version(obj.get("name").getAsString());
         });
         ProxyServer.getInstance().getScheduler().runAsync(ProjectRetile.getInstance(), task);
         return task;

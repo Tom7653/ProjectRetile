@@ -17,8 +17,9 @@ package com.github.acquized.retile.utils;
 import com.google.common.base.Joiner;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
-import com.eclipsesource.json.JsonObject;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.cache.impl.McAPICanada;
 import com.github.acquized.retile.cache.impl.Offline;
@@ -34,93 +35,110 @@ import java.util.UUID;
 
 public class DumpReport {
 
-    public static JsonObject create() throws IllegalAccessException, SQLException, IOException {
-        JsonObject retilePlugin = new JsonObject().add("name", ProjectRetile.getInstance().getDescription().getName())
-                .add("version", ProjectRetile.getInstance().getDescription().getVersion())
-                .add("author", ProjectRetile.getInstance().getDescription().getAuthor())
-                .add("main", ProjectRetile.getInstance().getDescription().getMain())
-                .add("hash", Files.hash(ProjectRetile.getInstance().getDescription().getFile(), Hashing.md5()).toString());
+    // TODO: Maybe change this to the reason GSON is better than minimal json (object json convertation)
 
-        JsonObject server = new JsonObject().add("name", ProxyServer.getInstance().getName())
-                .add("version", ProxyServer.getInstance().getVersion());
+    public static JsonObject create() throws IllegalAccessException, SQLException, IOException {
+        JsonObject retilePlugin = new JsonObject();
+        retilePlugin.add("name", new JsonPrimitive(ProjectRetile.getInstance().getDescription().getName()));
+        retilePlugin.add("version", new JsonPrimitive(ProjectRetile.getInstance().getDescription().getVersion()));
+        retilePlugin.add("author", new JsonPrimitive(ProjectRetile.getInstance().getDescription().getAuthor()));
+        retilePlugin.add("main", new JsonPrimitive(ProjectRetile.getInstance().getDescription().getMain()));
+        retilePlugin.add("hash", new JsonPrimitive(Files.hash(ProjectRetile.getInstance().getDescription().getFile(), Hashing.md5()).toString()));
+
+        JsonObject server = new JsonObject();
+        server.add("name", new JsonPrimitive(ProxyServer.getInstance().getName()));
+        server.add("version", new JsonPrimitive(ProxyServer.getInstance().getVersion()));
+
         JsonObject servers = new JsonObject();
-        for(Map.Entry<String, ServerInfo> entry : ProxyServer.getInstance().getServers().entrySet()) {
-            servers.add(entry.getKey(), entry.getValue().getAddress().toString());
+        for (Map.Entry<String, ServerInfo> entry : ProxyServer.getInstance().getServers().entrySet()) {
+            servers.add(entry.getKey(), new JsonPrimitive(entry.getValue().getAddress().toString()));
         }
         server.add("servers", servers);
 
-        JsonObject machine = new JsonObject().add("java", System.getProperty("java.version"))
-                .add("system", System.getProperty("os.name"));
+        JsonObject machine = new JsonObject();
+        machine.add("java", new JsonPrimitive(System.getProperty("java.version")));
+        machine.add("system", new JsonPrimitive(System.getProperty("os.name")));
 
-        JsonObject config = new JsonObject().add("prefix", ProjectRetile.getInstance().getConfig().getString("General.prefix"))
-                .add("locale", ProjectRetile.getInstance().getConfig().getString("General.locale"))
-                .add("usebungeecordforuuid", ProjectRetile.getInstance().getConfig().getBoolean("General.usebungeecordforuuid"))
-                .add("cooldown", ProjectRetile.getInstance().getConfig().getLong("General.cooldown"))
-                .add("clickableMsgs", ProjectRetile.getInstance().getConfig().getBoolean("General.clickablemessages"))
-                .add("dateFormat", ProjectRetile.getInstance().getConfig().getString("General.dateformat"))
-                .add("updater", ProjectRetile.getInstance().getConfig().getBoolean("General.updater"))
-                .add("revision", ProjectRetile.getInstance().getConfig().getLong("General.revision"))
-                .add("minPoolIdle", ProjectRetile.getInstance().getConfig().getLong("Pools.minpoolidlesize"))
-                .add("maxPoolSize", ProjectRetile.getInstance().getConfig().getLong("Pools.maxpoolsize"))
-                .add("poolTimeout", ProjectRetile.getInstance().getConfig().getLong("Pools.timeout"))
-                .add("reportAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.report")))
-                .add("reportsAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.listreports")))
-                .add("toggleAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.togglereports")))
-                .add("infoAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.reportinfo")))
-                .add("queueAliases", Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.waitingqueue")));
+        JsonObject config = new JsonObject();
+        config.add("prefix", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getString("General.prefix")));
+        config.add("locale", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getString("General.locale")));
+        config.add("usebungeecordforuuid", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getBoolean("General.usebungeecordforuuid")));
+        config.add("cooldown", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getLong("General.cooldown")));
+        config.add("clickableMsgs", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getBoolean("General.clickablemessages")));
+        config.add("dateFormat", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getString("General.dateformat")));
+        config.add("updater", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getBoolean("General.updater")));
+        config.add("revision", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getLong("General.revision")));
+        config.add("minPoolIdle", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getLong("Pools.minpoolidlesize")));
+        config.add("maxPoolSize", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getLong("Pools.maxpoolsize")));
+        config.add("poolTimeout", new JsonPrimitive(ProjectRetile.getInstance().getConfig().getLong("Pools.timeout")));
+        config.add("reportAliases", new JsonPrimitive(Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.report"))));
+        config.add("reportsAliases", new JsonPrimitive(Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.listreports"))));
+        config.add("toggleAliases", new JsonPrimitive(Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.togglereports"))));
+        config.add("infoAliases", new JsonPrimitive(Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.reportinfo"))));
+        config.add("queueAliases", new JsonPrimitive(Joiner.on(", ").join(ProjectRetile.getInstance().getConfig().getList("Aliases.waitingqueue"))));
 
-        JsonObject dbConfig = new JsonObject().add("type", ProjectRetile.getInstance().getDbConfig().getString("Database.type"));
-        if(ProjectRetile.getInstance().getDbConfig().getString("Database.type").equalsIgnoreCase("MYSQL")) {
-            dbConfig.add("adress", ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.adress"))
-            .add("port", ProjectRetile.getInstance().getDbConfig().getLong("Database.MySQL.port"))
-            .add("database", ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.database"))
-            .add("username", ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.username"))
-            .add("password", ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.password"));
+        JsonObject dbConfig = new JsonObject();
+        dbConfig.add("type", new JsonPrimitive(ProjectRetile.getInstance().getDbConfig().getString("Database.type")));
+        if (ProjectRetile.getInstance().getDbConfig().getString("Database.type").equalsIgnoreCase("MYSQL")) {
+            dbConfig.add("adress", new JsonPrimitive(ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.adress")));
+            dbConfig.add("port", new JsonPrimitive(ProjectRetile.getInstance().getDbConfig().getLong("Database.MySQL.port")));
+            dbConfig.add("database", new JsonPrimitive(ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.database")));
+            dbConfig.add("username", new JsonPrimitive(ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.username")));
+            dbConfig.add("password", new JsonPrimitive(ProjectRetile.getInstance().getDbConfig().getString("Database.MySQL.password")));
         } else {
-            dbConfig.add("file", ProjectRetile.getInstance().getDbConfig().getString("Database.SQLite.file"));
+            dbConfig.add("file", new JsonPrimitive(ProjectRetile.getInstance().getDbConfig().getString("Database.SQLite.file")));
         }
 
-        JsonObject blacklist = new JsonObject().add("blacklist", Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().getList("blacklist")));
+        JsonObject blacklist = new JsonObject();
+        blacklist.add("blacklist", new JsonPrimitive(Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().getList("blacklist"))));
 
         JsonObject plugins = new JsonObject();
         ProxyServer.getInstance().getPluginManager().getPlugins().stream().filter(p -> !p.getDescription().getAuthor().equals("SpigotMC")).forEach(p -> {
             try {
-                plugins.add(p.getDescription().getName(), new JsonObject()
-                        .add("version", p.getDescription().getVersion())
-                        .add("main", p.getDescription().getMain())
-                        .add("author", p.getDescription().getAuthor())
-                        .add("hash", Files.hash(p.getDescription().getFile(), Hashing.md5()).toString()));
-            } catch (IOException ignored) {}
+                JsonObject tmp = new JsonObject();
+                tmp.add("version", new JsonPrimitive(p.getDescription().getVersion()));
+                tmp.add("main", new JsonPrimitive(p.getDescription().getMain()));
+                tmp.add("author", new JsonPrimitive(p.getDescription().getAuthor()));
+                tmp.add("hash", new JsonPrimitive(Files.hash(p.getDescription().getFile(), Hashing.md5()).toString()));
+
+                plugins.add(p.getDescription().getName(), tmp);
+            } catch (IOException ex) {
+                ProjectRetile.getInstance().getLog().error("Hashing for Plugin \"" + p.getDescription().getName() + "\" failed. Dump may be incomplete.");
+            }
         });
 
-        JsonObject database = new JsonObject().add("conntected", ProjectRetile.getInstance().getDatabase().isConnected())
-                .add("type", ProjectRetile.getInstance().getDatabase() instanceof MySQL ? "MySQL" : "SQLite")
-                .add("tableRetile", ProjectRetile.getInstance().getDatabase().doesTableExist("retile"))
-                .add("tableQueue", ProjectRetile.getInstance().getDatabase().doesTableExist("queue"))
-                .add("tableVersion", ProjectRetile.getInstance().getDatabase().doesTableExist("version"));
+        JsonObject database = new JsonObject();
+        database.add("conntected", new JsonPrimitive(ProjectRetile.getInstance().getDatabase().isConnected()));
+        database.add("type", new JsonPrimitive(ProjectRetile.getInstance().getDatabase() instanceof MySQL ? "MySQL" : "SQLite"));
+        database.add("tableRetile", new JsonPrimitive(ProjectRetile.getInstance().getDatabase().doesTableExist("retile")));
+        database.add("tableQueue", new JsonPrimitive(ProjectRetile.getInstance().getDatabase().doesTableExist("queue")));
+        database.add("tableVersion", new JsonPrimitive(ProjectRetile.getInstance().getDatabase().doesTableExist("version")));
 
         JsonObject cache = new JsonObject();
-        if(ProjectRetile.getInstance().getCache() instanceof Offline) {
-            cache.add("resolver", "BungeeCord");
-            cache.add("values", "empty");
+        if (ProjectRetile.getInstance().getCache() instanceof Offline) {
+            cache.add("resolver", new JsonPrimitive("BungeeCord"));
+            cache.add("values", new JsonPrimitive("empty"));
         } else {
-            cache.add("resolver", "mcapi.ca");
+            cache.add("resolver", new JsonPrimitive("mcapi.ca"));
             JsonObject values = new JsonObject();
-            for(Map.Entry<UUID, String> entry : ((McAPICanada) ProjectRetile.getInstance().getCache()).cache.asMap().entrySet()) {
-                values.add(entry.getKey().toString(), entry.getValue());
+            for (Map.Entry<UUID, String> entry : ((McAPICanada) ProjectRetile.getInstance().getCache()).cache.asMap().entrySet()) {
+                values.add(entry.getKey().toString(), new JsonPrimitive(entry.getValue()));
             }
             cache.add("values", values);
         }
 
-        return new JsonObject().add("retile", retilePlugin)
-                .add("server", server)
-                .add("machine", machine)
-                .add("config", config)
-                .add("dbConfig1", dbConfig)
-                .add("blacklist", blacklist)
-                .add("plugins", plugins)
-                .add("database", database)
-                .add("cache", cache);
+        JsonObject finalObj = new JsonObject();
+        finalObj.add("retile", retilePlugin);
+        finalObj.add("server", server);
+        finalObj.add("machine", machine);
+        finalObj.add("config", config);
+        finalObj.add("dbConfig", dbConfig);
+        finalObj.add("blacklist", blacklist);
+        finalObj.add("plugins", plugins);
+        finalObj.add("database", database);
+        finalObj.add("cache", cache);
+
+        return finalObj;
     }
 
 }
