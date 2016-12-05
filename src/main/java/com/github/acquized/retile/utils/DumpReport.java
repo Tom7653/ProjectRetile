@@ -113,7 +113,6 @@ public class DumpReport {
         database.add("type", new JsonPrimitive(ProjectRetile.getInstance().getDatabase() instanceof MySQL ? "MySQL" : "SQLite"));
         database.add("tableRetile", new JsonPrimitive(ProjectRetile.getInstance().getDatabase().doesTableExist("retile")));
         database.add("tableQueue", new JsonPrimitive(ProjectRetile.getInstance().getDatabase().doesTableExist("queue")));
-        database.add("tableVersion", new JsonPrimitive(ProjectRetile.getInstance().getDatabase().doesTableExist("version")));
 
         JsonObject cache = new JsonObject();
         if (ProjectRetile.getInstance().getCache() instanceof Offline) {

@@ -81,23 +81,6 @@ public class SQLite implements Database {
     public void setup() throws SQLException {
         update("CREATE TABLE IF NOT EXISTS `retile` (token VARCHAR(12), reporter VARCHAR(64), victim VARCHAR(64), reason VARCHAR(128), reportdate BIGINT);");
         update("CREATE TABLE IF NOT EXISTS `queue` (token VARCHAR(12), reporter VARCHAR(64), victim VARCHAR(64), reason VARCHAR(128), reportdate BIGINT);");
-        if(!doesTableExist("version")) {
-            update("CREATE TABLE IF NOT EXISTS `version` (ver VARCHAR(64));");
-            update("INSERT INTO `version` (ver) VALUES ('" + ProjectRetile.getInstance().getDescription().getVersion() + "');");
-        } else {
-            ResultSet rs = query("SELECT * FROM `version` LIMIT 1");
-            while(rs.next()) {
-                if(!rs.getString("ver").equals(ProjectRetile.getInstance().getDescription().getVersion())) {
-                    ProjectRetile.getInstance().getLog().warn("ProjectRetile Database is outdated. Moving Tables to backup and resetting...");
-                    update("RENAME TABLE `retile` TO `retileBackup`");
-                    update("RENAME TABLE `queue` TO `queueBackup`");
-                    update("RENAME TABLE `version` TO `versionBackup`");
-                    setup();
-                } else {
-                    ProjectRetile.getInstance().getLog().info("ProjectRetile Database is up to date.");
-                }
-            }
-        }
     }
 
     @Override
