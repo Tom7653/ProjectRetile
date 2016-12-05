@@ -50,7 +50,7 @@ repositories {
 
 dependencies {
     // Provided at Runtime
-    compile group: 'net.md-5', name: 'bungeecord-api', version: '1.10-SNAPSHOT'
+    compile group: 'net.md-5', name: 'bungeecord-api', version: '1.11-SNAPSHOT'
     compile group: 'org.projectlombok', name: 'lombok', version: '1.16.10'
     compile group: 'dev.wolveringer', name: 'BungeeUtil', version: '2.0-SNAPSHOT'
 
