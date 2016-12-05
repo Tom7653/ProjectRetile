@@ -223,7 +223,7 @@ public class ProjectRetile extends Plugin {
             conn.setDoOutput(true);
 
             JsonObject obj = jsonParser.parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
-            return !obj.get("error").isJsonNull();
+            return obj.get("error").isJsonNull();
         });
         ProxyServer.getInstance().getScheduler().runAsync(this, task);
         try {
