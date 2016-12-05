@@ -1,3 +1,17 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath 'io.franzbecker:gradle-lombok:1.6'
+    }
+}
+
+plugins {
+    id 'net.minecrell.licenser' version '0.3'
+}
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -19,6 +33,7 @@ println """
 group 'com.github.acquized'
 version '1.0.0-SNAPSHOT' // <- A commit changing this String must be Signed using a valid GPG Key
 sourceCompatibility = 1.8
+defaultTasks 'dependencies', 'shadowJar', 'licenseFormat'
 
 repositories {
     mavenCentral()
@@ -49,15 +64,12 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-buildscript {
-    repositories {
-        jcenter()
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-        classpath 'io.franzbecker:gradle-lombok:1.6'
-    }
+license {
+    header = project.file('HEADER.txt')
+    newLine = false
+    ignoreFailures = true
+    exclude '**/*.properties'
+    exclude '**/*.yml'
 }
 
 //noinspection GroovyMissingReturnStatement

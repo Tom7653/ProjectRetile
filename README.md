@@ -32,6 +32,12 @@ dependencies {
 }
 ```  
   
+### Clone
+The following steps will ensure your project is cloned properly.  
+1. `git clone https://github.com/Acquized/ProjectRetile.git`  
+2. `cd ProjectRetile`  
+3. `cp gradle/scripts/pre-commit .git/hooks`  
+  
 ### License
 The Project is licensed under the Apache Software License, Version 2.0. Please visit the LICENSE.txt File for the complete License.
   
