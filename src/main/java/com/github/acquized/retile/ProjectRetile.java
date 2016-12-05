@@ -184,10 +184,10 @@ public class ProjectRetile extends Plugin {
         for(Plugin p : ProxyServer.getInstance().getPluginManager().getPlugins()) {
             if(p.getDescription().getName().equals("BungeeUtil")) {
                 try {
-                    Class.forName("dev.wolveringer.BungeeUtil.Main");
+                    Class.forName("dev.wolveringer.bungeeutil.BungeeUtil");
                 } catch (ClassNotFoundException ex) {
                     log.error("Could not load BungeeUtil. You are using a outdated or newer version than supported.");
-                    log.error("ProjectRetile only supports BungeeUtil prior to v1.6.10. Please downgrade BungeeUtil or wait until ProjectRetile gets a update.");
+                    log.error("ProjectRetile only supports BungeeUtil after v2.0.0. Please upgrade BungeeUtil or download a older version of ProjectRetile.");
                     return false;
                 }
                 log.info("BungeeUtil detected.");
