@@ -15,7 +15,6 @@
  */
 package com.github.acquized.retile.cache.impl;
 
-import com.github.acquized.retile.annotations.Beta;
 import com.github.acquized.retile.cache.Cache;
 
 import net.md_5.bungee.api.ProxyServer;
@@ -23,7 +22,6 @@ import net.md_5.bungee.api.ProxyServer;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-@Beta
 public class Offline implements Cache {
 
     private McAPICanada backup = new McAPICanada();

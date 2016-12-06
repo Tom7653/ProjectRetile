@@ -15,7 +15,6 @@
  */
 package com.github.acquized.retile.api;
 
-import com.github.acquized.retile.annotations.Beta;
 import com.github.acquized.retile.annotations.Documented;
 import com.github.acquized.retile.reports.Report;
 
@@ -33,7 +32,6 @@ import lombok.NonNull;
  * @version 1.0.0
  * @author Acquized
  */
-@Beta
 @Documented
 public interface RetileAPI {
 

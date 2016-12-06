@@ -39,7 +39,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 import lombok.Getter;
 
-@Beta
 public class McAPICanada implements Cache {
 
     @Getter

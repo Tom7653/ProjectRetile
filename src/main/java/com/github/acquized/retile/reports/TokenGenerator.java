@@ -17,12 +17,10 @@ package com.github.acquized.retile.reports;
 
 import com.google.common.io.BaseEncoding;
 
-import com.github.acquized.retile.annotations.Beta;
 import com.github.acquized.retile.annotations.Documented;
 
 import java.security.SecureRandom;
 
-@Beta
 @Documented
 public class TokenGenerator {
 
