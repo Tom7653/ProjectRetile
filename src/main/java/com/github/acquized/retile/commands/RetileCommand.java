@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.sql.impl.MySQL;
 import com.github.acquized.retile.sql.impl.SQLite;
-import com.github.acquized.retile.utils.DumpReport;
+import com.github.acquized.retile.utils.Dump;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -120,8 +120,7 @@ public class RetileCommand extends Command {
                                 conn.setDoOutput(true);
 
                                 OutputStream out = conn.getOutputStream();
-
-                                out.write(DumpReport.create().toString().getBytes("UTF-8"));
+                                out.write(ProjectRetile.getInstance().getGson().toJson(Dump.create()).getBytes("UTF-8"));
                                 out.close();
 
                                 JsonObject obj = ProjectRetile.getInstance().getJsonParser().parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();

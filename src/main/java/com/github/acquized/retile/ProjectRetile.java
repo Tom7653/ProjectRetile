@@ -24,6 +24,7 @@ import com.github.acquized.retile.api.RetileAPI;
 import com.github.acquized.retile.api.RetileAPIProvider;
 import com.github.acquized.retile.cache.Cache;
 import com.github.acquized.retile.cache.impl.McAPICanada;
+import com.github.acquized.retile.cache.impl.Mojang;
 import com.github.acquized.retile.cache.impl.Offline;
 import com.github.acquized.retile.commands.InfoCommand;
 import com.github.acquized.retile.commands.ListReportsCommand;
@@ -96,8 +97,12 @@ public class ProjectRetile extends Plugin {
         prefix = Utility.format(config.getString("General.prefix"));
         i18n = new I18n();
         i18n.load();
-        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.getBoolean("General.usebungeecordforuuid")) && (isMcAPIOnline())) {
-            cache = new McAPICanada();
+        if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.getBoolean("General.usebungeecordforuuid"))) {
+            if(isMcAPIOnline()) {
+                cache = new McAPICanada();
+            } else {
+                cache = new Mojang();
+            }
         } else {
             cache = new Offline();
         }

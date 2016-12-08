@@ -20,16 +20,21 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 import com.github.acquized.retile.ProjectRetile;
+import com.github.acquized.retile.api.RetileAPIException;
+import com.github.acquized.retile.cache.impl.McAPICanada;
+import com.github.acquized.retile.cache.impl.Mojang;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 
@@ -44,6 +49,8 @@ public class Dump {
     public final DBConfig dbConfig;
     public final String blacklist;
     public final Map<String, PluginInfo> plugins;
+    public final Database database;
+    public final Cache cache;
 
     @AllArgsConstructor
     public static class RetilePlugin {
@@ -77,19 +84,70 @@ public class Dump {
 
         private String java;
         private String system;
-        private long freeMemory;
-        private long maxMemory;
-        private long totalMemory;
+        private String freeMemory;
+        private String maxMemory;
+        private String totalMemory;
 
     }
 
-    @AllArgsConstructor
     public static class Config {
 
+        public static class General {
+
+            String prefix;
+            String locale;
+            boolean usebungeecordforuuid;
+            int cooldown;
+            boolean clickablemessages;
+            String dateformat;
+            boolean updater;
+            int revision;
+
+        }
+
+        public static class Pools {
+
+            int minpoolidlesize;
+            int maxpoolsize;
+            long timeout;
+
+        }
+
+        public static class Aliases {
+
+            String[] report;
+            String[] listreports;
+            String[] togglereports;
+            String[] reportinfo;
+            String[] waitingqueue;
+
+        }
+
     }
 
-    @AllArgsConstructor
     public static class DBConfig {
+
+        public static class Database {
+
+            String type;
+
+            public static class MySQL {
+
+                String adress;
+                int port;
+                String database;
+                String username;
+                String password;
+
+            }
+
+            public static class SQLite {
+
+                String file;
+
+            }
+
+        }
 
     }
 
@@ -103,7 +161,27 @@ public class Dump {
 
     }
 
-    public static Dump create() throws IOException {
+    @AllArgsConstructor
+    public static class Database {
+
+        boolean connected;
+        String type;
+        boolean tableRetile;
+        boolean tableQueue;
+        int retileSize;
+        int queueSize;
+
+    }
+
+    @AllArgsConstructor
+    public static class Cache {
+
+        String resolver;
+        Map<UUID, String> entries;
+
+    }
+
+    public static Dump create() throws IOException, RetileAPIException {
 
         List<SubServer> servers = new ArrayList<>();
         for(Map.Entry<String, ServerInfo> entry : ProxyServer.getInstance().getServers().entrySet()) {
@@ -112,45 +190,77 @@ public class Dump {
 
         Map<String, PluginInfo> plugins = new HashMap<>();
         for(Plugin p : ProxyServer.getInstance().getPluginManager().getPlugins()) {
-            plugins.put(p.getDescription().getName(), new PluginInfo(
-                    p.getDescription().getVersion(),
-                    p.getDescription().getMain(),
-                    p.getDescription().getAuthor(),
-                    Files.hash(p.getDescription().getFile(), Hashing.md5()).toString()
-            ));
+            if(!p.getDescription().getAuthor().equalsIgnoreCase("SpigotMC")) {
+                plugins.put(p.getDescription().getName(), new PluginInfo(
+                        p.getDescription().getVersion(),
+                        p.getDescription().getMain(),
+                        p.getDescription().getAuthor(),
+                        Files.hash(p.getDescription().getFile(), Hashing.md5()).toString()
+                ));
+            }
         }
 
-        Dump dump = new Dump(
-                // Retile Plugin Information
-                new RetilePlugin(ProjectRetile.getInstance().getDescription().getName(),
-                        ProjectRetile.getInstance().getDescription().getVersion(),
-                        ProjectRetile.getInstance().getDescription().getAuthor(),
-                        ProjectRetile.getInstance().getDescription().getMain(),
-                        Files.hash(ProjectRetile.getInstance().getDescription().getFile(), Hashing.md5()).toString()),
+        Map<UUID, String> cache = new HashMap<>();
+        if(ProjectRetile.getInstance().getCache() instanceof McAPICanada) {
+            cache = ((McAPICanada) ProjectRetile.getInstance().getCache()).getCache().asMap();
+        } else if(ProjectRetile.getInstance().getCache() instanceof Mojang) {
+            cache = ((Mojang) ProjectRetile.getInstance().getCache()).getCache().asMap();
+        } else {
+            cache.put(UUID.randomUUID(), "Empty");
+        }
 
-                // Server Information
-                new Server(ProxyServer.getInstance().getName(), ProxyServer.getInstance().getVersion()),
+        ProjectRetile.getInstance().getConfig().to(Config.class);
+        ProjectRetile.getInstance().getDbConfig().to(DBConfig.class);
 
-                // Servers available thought BungeeCord
-                servers,
+        try {
+            return new Dump(
+                    // Retile Plugin Information
+                    new RetilePlugin(ProjectRetile.getInstance().getDescription().getName(),
+                            ProjectRetile.getInstance().getDescription().getVersion(),
+                            ProjectRetile.getInstance().getDescription().getAuthor(),
+                            ProjectRetile.getInstance().getDescription().getMain(),
+                            Files.hash(ProjectRetile.getInstance().getDescription().getFile(), Hashing.md5()).toString()),
 
-                // Machine on which BungeeCord is running
-                new Machine(System.getProperty("java.version"), System.getProperty("os.name"),
-                        Runtime.getRuntime().freeMemory(), Runtime.getRuntime().maxMemory(), Runtime.getRuntime().totalMemory()),
+                    // Server Information
+                    new Server(ProxyServer.getInstance().getName(), ProxyServer.getInstance().getVersion()),
 
-                // Configuration
-                null,
+                    // Servers available thought BungeeCord
+                    servers,
 
-                // Database Configuration
-                null,
+                    // Machine on which BungeeCord is running
+                    new Machine(System.getProperty("java.version"), System.getProperty("os.name"),
+                            Utility.convertToReadableString(Runtime.getRuntime().freeMemory()),
+                            Utility.convertToReadableString(Runtime.getRuntime().maxMemory()),
+                            Utility.convertToReadableString(Runtime.getRuntime().totalMemory())),
 
-                // Blacklist
-                Joiner.on(',').join(ProjectRetile.getInstance().getBlacklist().getList("blacklist")),
+                    // Configuration
+                    ProjectRetile.getInstance().getConfig().to(Config.class),
 
-                // Plugins
-                plugins
-        );
-        return dump;
+                    // Database Configuration
+                    ProjectRetile.getInstance().getConfig().to(DBConfig.class),
+
+                    // Blacklist
+                    Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().getList("blacklist")),
+
+                    // Plugins
+                    plugins,
+
+                    // Database
+                    new Database(ProjectRetile.getInstance().getDatabase().isConnected(),
+                            ProjectRetile.getInstance().getDatabase().getClass().getSimpleName().replace(".class", ""),
+                            ProjectRetile.getInstance().getDatabase().doesTableExist("retile"),
+                            ProjectRetile.getInstance().getDatabase().doesTableExist("queue"),
+                            ProjectRetile.getInstance().getApi().getAllReports().length,
+                            ProjectRetile.getInstance().getApi().getWaitingReports().length),
+
+                    // Cache
+                    new Cache(ProjectRetile.getInstance().getCache().getClass().getSimpleName().replace(".class", ""),
+                            cache)
+
+            );
+        } catch (SQLException | RetileAPIException ex) {
+            throw new RetileAPIException("Could not create Dump", ex);
+        }
     }
 
 }
