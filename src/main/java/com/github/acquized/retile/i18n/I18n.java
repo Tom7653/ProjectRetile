@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
 
 public class I18n {
 
-    public static final String[] SUPPORTED_LOCALES = { "en", /*"de", "nl", "es", "fr" These Locales are outdated. */ };
+    public static final String[] SUPPORTED_LOCALES = { "en", "fr", "es", "de" };
     public static final File DIRECTORY = new File(ProjectRetile.getInstance().getDataFolder() + File.separator + "locale");
 
     public static ResourceBundle bundle;
