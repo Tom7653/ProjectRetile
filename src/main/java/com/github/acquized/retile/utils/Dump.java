@@ -209,8 +209,17 @@ public class Dump {
             cache.put(UUID.randomUUID(), "Empty");
         }
 
+        // Config
         ProjectRetile.getInstance().getConfig().to(Config.class);
+        ProjectRetile.getInstance().getConfig().to(Config.General.class);
+        ProjectRetile.getInstance().getConfig().to(Config.Pools.class);
+        ProjectRetile.getInstance().getConfig().to(Config.Aliases.class);
+
+        // DB Config
         ProjectRetile.getInstance().getDbConfig().to(DBConfig.class);
+        ProjectRetile.getInstance().getDbConfig().to(DBConfig.Database.class);
+        ProjectRetile.getInstance().getDbConfig().to(DBConfig.Database.MySQL.class);
+        ProjectRetile.getInstance().getDbConfig().to(DBConfig.Database.SQLite.class);
 
         try {
             return new Dump(
@@ -234,10 +243,10 @@ public class Dump {
                             Utility.convertToReadableString(Runtime.getRuntime().totalMemory())),
 
                     // Configuration
-                    ProjectRetile.getInstance().getConfig().to(Config.class),
+                    new Config(),
 
                     // Database Configuration
-                    ProjectRetile.getInstance().getConfig().to(DBConfig.class),
+                    new DBConfig(),
 
                     // Blacklist
                     Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().getList("blacklist")),
