@@ -61,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
@@ -104,7 +105,9 @@ public class ProjectRetile extends Plugin {
             return;
         }
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinProtection()); // High priority for causing no errors with BungeeUtil
-        loadConfigs();
+        config = loadConfig("config");
+        dbConfig = loadConfig("database");
+        blacklist = loadConfig("blacklist");
         prefix = Utility.format(config.getString("General.prefix"));
         dateFormat = new SimpleDateFormat(config.getString("General.dateformat"));
         i18n = new I18n();
@@ -158,43 +161,19 @@ public class ProjectRetile extends Plugin {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void loadConfigs() {
-        // Directory
-        if(!getDataFolder().isDirectory()) {
-            getDataFolder().mkdirs();
-        }
-
-        // config.toml
+    private Toml loadConfig(String name) {
         try {
-            File file = new File(getDataFolder(), "config.toml");
-            if(!file.exists()) {
-                Files.copy(getResourceAsStream("config/config.toml"), file.toPath());
+            if(!getDataFolder().exists()) {
+                getDataFolder().mkdirs();
             }
-            config = new Toml(new Toml().read(getResourceAsStream("config/config.toml"))).read(file);
-        } catch (Exception ex) {
-            log.error("Could not load config.toml file - Please check for errors", ex);
-        }
-
-        // database.toml
-        try {
-            File file = new File(getDataFolder(), "database.toml");
+            File file = new File(getDataFolder(), name + ".toml");
             if(!file.exists()) {
-                Files.copy(getResourceAsStream("config/database.toml"), file.toPath());
+                Files.copy(getResourceAsStream("config/" + name + ".toml"), file.toPath());
             }
-            dbConfig = new Toml(new Toml().read(getResourceAsStream("config/database.toml"))).read(file);
-        } catch (Exception ex) {
-            log.error("Could not load database.toml file - Please check for errors", ex);
-        }
-
-        // blacklist.toml
-        try {
-            File file = new File(getDataFolder(), "blacklist.toml");
-            if(!file.exists()) {
-                Files.copy(getResourceAsStream("config/blacklist.toml"), file.toPath());
-            }
-            blacklist = new Toml(new Toml().read(getResourceAsStream("config/blacklist.toml"))).read(file);
-        } catch (Exception ex) {
-            log.error("Could not load blacklist.toml file - Please check for errors", ex);
+            return new Toml(new Toml().read(getResourceAsStream("config/" + name + ".toml"))).read(file);
+        } catch (IOException ex) {
+            log.error("Could not load " + name + ".toml file - Please check for errors", ex);
+            return null;
         }
     }
 
