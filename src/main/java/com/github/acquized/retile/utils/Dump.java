@@ -92,6 +92,10 @@ public class Dump {
 
     public static class Config {
 
+        General General;
+        Pools Pools;
+        Aliases Aliases;
+
         public static class General {
 
             String prefix;
@@ -127,9 +131,13 @@ public class Dump {
 
     public static class DBConfig {
 
+        Database database;
+
         public static class Database {
 
             String type;
+            MySQL MySQL;
+            SQLite SQLite;
 
             public static class MySQL {
 
@@ -209,18 +217,6 @@ public class Dump {
             cache.put(UUID.randomUUID(), "Empty");
         }
 
-        // Config
-        ProjectRetile.getInstance().getConfig().to(Config.class);
-        ProjectRetile.getInstance().getConfig().to(Config.General.class);
-        ProjectRetile.getInstance().getConfig().to(Config.Pools.class);
-        ProjectRetile.getInstance().getConfig().to(Config.Aliases.class);
-
-        // DB Config
-        ProjectRetile.getInstance().getDbConfig().to(DBConfig.class);
-        ProjectRetile.getInstance().getDbConfig().to(DBConfig.Database.class);
-        ProjectRetile.getInstance().getDbConfig().to(DBConfig.Database.MySQL.class);
-        ProjectRetile.getInstance().getDbConfig().to(DBConfig.Database.SQLite.class);
-
         try {
             return new Dump(
                     // Retile Plugin Information
@@ -243,10 +239,10 @@ public class Dump {
                             Utility.convertToReadableString(Runtime.getRuntime().totalMemory())),
 
                     // Configuration
-                    new Config(),
+                    ProjectRetile.getInstance().getConfig().to(Config.class),
 
                     // Database Configuration
-                    new DBConfig(),
+                    ProjectRetile.getInstance().getDbConfig().to(DBConfig.class),
 
                     // Blacklist
                     Joiner.on(", ").join(ProjectRetile.getInstance().getBlacklist().getList("blacklist")),
