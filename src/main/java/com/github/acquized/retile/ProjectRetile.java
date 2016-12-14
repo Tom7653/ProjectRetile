@@ -15,6 +15,8 @@
  */
 package com.github.acquized.retile;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -44,8 +46,17 @@ import com.github.acquized.retile.sql.impl.SQLite;
 import com.github.acquized.retile.updater.Updater;
 import com.github.acquized.retile.utils.Utility;
 import com.moandjiezana.toml.Toml;
+import com.sk89q.bungee.util.BungeeCommandsManager;
+import com.sk89q.bungee.util.CommandRegistration;
+import com.sk89q.minecraft.util.commands.CommandNumberFormatException;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.CommandUsageException;
+import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
 
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 
@@ -54,10 +65,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -67,6 +80,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import static com.github.acquized.retile.i18n.I18n.tl;
 import static com.github.acquized.retile.utils.Utility.GRAY;
 import static com.github.acquized.retile.utils.Utility.RED;
 
@@ -78,6 +92,8 @@ public class ProjectRetile extends Plugin {
     @Getter private Logger log = LoggerFactory.getLogger(ProjectRetile.class);
     @Getter @Setter(onParam = @__(@NonNull)) private Database database;
     @Getter private JsonParser jsonParser = new JsonParser();
+    @Getter private CommandsManager<CommandSender> commands;
+    @Getter private SimpleDateFormat dateFormat;
     @Getter private Toml blacklist;
     @Getter private Toml dbConfig;
     @Getter private RetileAPI api;
@@ -95,6 +111,7 @@ public class ProjectRetile extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinProtection()); // High priority for causing no errors with BungeeUtil
         loadConfigs();
         prefix = Utility.format(config.getString("General.prefix"));
+        dateFormat = new SimpleDateFormat(config.getString("General.dateformat"));
         i18n = new I18n();
         i18n.load();
         if((ProxyServer.getInstance().getConfig().isOnlineMode()) && (!config.getBoolean("General.usebungeecordforuuid"))) {
@@ -125,10 +142,26 @@ public class ProjectRetile extends Plugin {
         Notifications.setInstance(new Notifications());
         api = new RetileAPIProvider();
         registerListeners(ProxyServer.getInstance().getPluginManager());
-        registerCommands(ProxyServer.getInstance().getPluginManager(), new SimpleDateFormat(getConfig().getString("General.dateformat")));
+        registerCommands();
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
         if(config.getBoolean("General.updater"))
             Updater.start();
+
+        log.info("--* DEBUG *-- List of commands registered: ");
+        try {
+            Field f = ProxyServer.getInstance().getPluginManager().getClass().getDeclaredField("commandsByPlugin");
+            f.setAccessible(true);
+            Multimap<Plugin, Command> commands = ArrayListMultimap.create();
+            commands = (Multimap<Plugin, Command>) f.get(commands);
+            for(Command c : commands.get(this)) {
+                log.info("CMD: /" + c.getName() + " - Perm: " + c.getPermission() + " - Alias: " + Arrays.toString(c.getAliases()));
+            }
+        } catch (NoSuchFieldException | IllegalAccessException ex) {
+            ex.printStackTrace();
+        }
+
+        log.info("--* DEBUG *-- List of commands registered DONE");
+
     }
 
     @Override
@@ -209,13 +242,33 @@ public class ProjectRetile extends Plugin {
         pm.registerListener(this, new PostLogin());
     }
 
-    private void registerCommands(PluginManager pm, SimpleDateFormat format) {
-        pm.registerCommand(this, new InfoCommand(format));
-        pm.registerCommand(this, new ListReportsCommand(format));
-        pm.registerCommand(this, new QueueCommand(format));
-        pm.registerCommand(this, new ReportCommand());
-        pm.registerCommand(this, new RetileCommand());
-        pm.registerCommand(this, new ToggleCommand());
+    private void registerCommands() {
+        CommandRegistration register = new CommandRegistration(this, ProxyServer.getInstance().getPluginManager(),
+                commands = new BungeeCommandsManager(), (sender, cmd, args) -> {
+                    try {
+                        ProjectRetile.getInstance().getCommands().execute(cmd, args, sender, sender);
+                    } catch (CommandPermissionsException ex) {
+                        sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
+                    } catch (CommandUsageException ex) {
+                        sender.sendMessage(tl("ProjectRetile.Commands.General.Syntax", ex.getUsage()));
+                    } catch (WrappedCommandException ex) {
+                        if (ex.getCause() instanceof NumberFormatException) {
+                            sender.sendMessage(tl("ProjectRetile.Commands.General.NumberExpected"));
+                        } else {
+                            sender.sendMessage(tl("ProjectRetile.Commands.General.InternalError", ex.getMessage()));
+                        }
+                    } catch (CommandNumberFormatException ex) {
+                        sender.sendMessage(tl("ProjectRetile.Commands.General.NumberExpected"));
+                    } catch (Exception ex) {
+                        sender.sendMessage(tl("ProjectRetile.Commands.General.InternalError", ex.getMessage()));
+                    }
+                });
+        register.register(InfoCommand.class);
+        register.register(ListReportsCommand.class);
+        register.register(QueueCommand.class);
+        register.register(ReportCommand.class);
+        register.register(RetileCommand.Parent.class);
+        register.register(ToggleCommand.class);
     }
 
     private boolean isMcAPIOnline() {

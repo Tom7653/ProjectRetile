@@ -43,6 +43,14 @@ repositories {
         url 'https://oss.sonatype.org/content/repositories/snapshots'
     }
     maven {
+        name 'overcast-repo'
+        url 'https://repo.oc.tc/content/groups/public/'
+    }
+    maven {
+        name 'aikar-repo'
+        url 'http://ci.emc.gs/nexus/content/groups/aikar/'
+    }
+    maven {
         name 'jitpack-central'
         url 'https://jitpack.io'
     }
@@ -59,6 +67,7 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.14.2.1'
     compile group: 'com.moandjiezana.toml', name: 'toml4j', version: '0.7.1'
+    compile group: 'com.sk89q', name: 'command-framework-bungee', version: '1.9-SNAPSHOT' // Should also work for 1.10 as it doesn't changes anything on the command api
 
     // Test
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -77,12 +86,14 @@ shadowJar {
     relocate 'com.zaxxer.hikari', 'com.github.acquized.retile.libs.hikaricp'
     relocate 'org.slf4j', 'com.github.acquized.retile.libs.slf4j'
     relocate 'com.moandjiezana.toml', 'com.github.acquized.retile.libs.toml4j'
+    relocate 'com.sk89q', 'com.github.acquized.retile.libs.sk89q.commands'
 
     dependencies {
         include(dependency('com.zaxxer:HikariCP:2.5.1'))
         include(dependency('org.slf4j::1.7.21'))
         include(dependency('org.xerial:sqlite-jdbc:3.14.2.1')) // Relocating not suggest as its SQLite Driver.
         include(dependency('com.moandjiezana.toml:toml4j:0.7.1'))
+        include(dependency('com.sk89q:command-framework-bungee:1.9-SNAPSHOT'))
     }
 }
 

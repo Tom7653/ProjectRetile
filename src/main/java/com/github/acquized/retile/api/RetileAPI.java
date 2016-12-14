@@ -84,9 +84,21 @@ public interface RetileAPI {
      * online, the Report will be also added to the <code>queue</code> Database Table.
      *
      * @param report Report
+     * @deprecated Use RetileAPI#processReport
      * @throws RetileAPIException If an error occurs
      */
-    void addReport(@NonNull Report report) throws RetileAPIException;
+    @Deprecated void addReport(@NonNull Report report) throws RetileAPIException;
+
+    /**
+     * Adds a Report into the <code>retile</code> Database Table and (if online)
+     * notifies Staff Members and the console about it. This method will be called
+     * when a player sends a Report using the Command or Gui. If no staff member is
+     * online, the Report will be also added to the <code>queue</code> Database Table.
+     *
+     * @param report Report
+     * @throws RetileAPIException If an error occurs
+     */
+    void processReport(@NonNull Report report) throws RetileAPIException;
 
     /**
      * Checks if a Report with the {@link com.github.acquized.retile.reports.Report#token} already

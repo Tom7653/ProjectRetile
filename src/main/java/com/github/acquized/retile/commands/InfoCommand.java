@@ -18,56 +18,43 @@ package com.github.acquized.retile.commands;
 import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.api.RetileAPIException;
 import com.github.acquized.retile.reports.Report;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Console;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.plugin.Command;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 
-public class InfoCommand extends Command {
+public class InfoCommand {
 
-    private final SimpleDateFormat format;
-
-    @SuppressWarnings("SuspiciousToArrayCall")
-    public InfoCommand(SimpleDateFormat format) {
-        super("reportinfo", null, ProjectRetile.getInstance().getConfig().getList("Aliases.reportinfo").toArray(new String[ProjectRetile.getInstance().getConfig().getList("Aliases.reportinfo").size()]));
-        this.format = format;
-    }
-
-    @Override
-    public void execute(CommandSender sender, String[] args) {
-        if(sender.hasPermission("projectretile.commands.reportinfo")) {
-            if(args.length == 1) {
-                Report report;
-                try {
-                    report = ProjectRetile.getInstance().getApi().getReportsUsingToken(args[0]);
-                } catch (RetileAPIException ex) {
-                    sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Error"));
-                    return;
-                }
-                if(report != null) {
-                    sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
-                    sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Format",
-                            report.getToken(),
-                            ProjectRetile.getInstance().getCache().username(report.getReporter()),
-                            ProjectRetile.getInstance().getCache().username(report.getVictim()),
-                            report.getReason(),
-                            format.format(new Date(report.getTimestamp()))));
-                    sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
-                    return;
-                } else {
-                    sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Unknown"));
-                    return;
-                }
-            }
-        } else {
-            sender.sendMessage(tl("ProjectRetile.General.NoPermission"));
-            return;
+    @Console
+    @CommandPermissions({ "projectretile.commands.reportinfo" })
+    @Command(aliases = { "reportinfo", "inforeport", "info", "ir", "ri" }, usage = "<Token>",
+             desc = "Shows advanced informations about a report", min = 1, max = 1)
+    public static void onInfo(CommandSender sender, CommandContext args) throws CommandException {
+        Report report;
+        try {
+            report = ProjectRetile.getInstance().getApi().getReportsUsingToken(args.getString(0));
+        } catch (RetileAPIException ex) {
+            throw new CommandException("A error occured when resolving a report using token \"" + args.getString(0) + "\".");
         }
-        sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Syntax"));
+        if(report != null) {
+            sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
+            sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Format",
+                    report.getToken(),
+                    ProjectRetile.getInstance().getCache().username(report.getReporter()),
+                    ProjectRetile.getInstance().getCache().username(report.getVictim()),
+                    report.getReason(),
+                    ProjectRetile.getInstance().getDateFormat().format(new Date(report.getTimestamp()))));
+            sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.HeaderFooter"));
+        } else {
+            sender.sendMessage(tl("ProjectRetile.Commands.ReportInfo.Unknown"));
+        }
     }
 
 }

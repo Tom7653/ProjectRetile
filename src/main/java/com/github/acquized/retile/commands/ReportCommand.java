@@ -19,81 +19,57 @@ import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.api.RetileAPIException;
 import com.github.acquized.retile.cooldown.Cooldown;
 import com.github.acquized.retile.reports.Report;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 
-public class ReportCommand extends Command {
+public class ReportCommand {
 
-    @SuppressWarnings("SuspiciousToArrayCall")
-    public ReportCommand() {
-        super("report", null, ProjectRetile.getInstance().getConfig().getList("Aliases.report").toArray(new String[ProjectRetile.getInstance().getConfig().getList("Aliases.report").size()]));
-    }
-
-    @Override
-    public void execute(CommandSender sender, String[] args) {
-        if(sender instanceof ProxiedPlayer) {
-            ProxiedPlayer p = (ProxiedPlayer) sender;
-            UUID pUUID = ProjectRetile.getInstance().getCache().uuid(p.getName());
-            if(p.hasPermission("projectretile.commands.report")) {
-                if(args.length >= 2) {
-                    ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
-                    if(target != null) {
-                        UUID targetUUID = ProjectRetile.getInstance().getCache().uuid(target.getName());
-                        if(!pUUID.toString().equals(targetUUID.toString())) {
-                            if(!Cooldown.getInstance().inCooldown(pUUID)) {
-                                if(!target.hasPermission("projectretile.report.bypass")) {
-                                    StringBuilder builder = new StringBuilder(args[1]);
-                                    for(int i = 2; i < args.length; i++) {
-                                        builder.append(" ").append(args[i]);
-                                    }
-                                    Report report = new Report(pUUID, targetUUID, builder.toString(), System.currentTimeMillis());
-                                    try {
-                                        ProjectRetile.getInstance().getApi().addReport(report);
-                                    } catch (RetileAPIException ex) {
-                                        if(!ex.getMessage().contains("Blacklist")) {
-                                            p.sendMessage(tl("ProjectRetile.Commands.Report.Failure"));
-                                        }
-                                        return;
-                                    }
-                                    p.sendMessage(tl("ProjectRetile.Commands.Report.Success", target.getName(), report.getToken()));
-                                    if(!p.hasPermission("projectretile.cooldown.bypass")) {
-                                        Cooldown.getInstance().start(pUUID);
-                                    }
-                                    return;
-                                } else {
-                                    p.sendMessage(tl("ProjectRetile.Commands.Report.Bypass"));
-                                    return;
-                                }
-                            } else {
-                                p.sendMessage(tl("ProjectRetile.Commands.Report.Cooldown", Cooldown.getInstance().getRemaining(pUUID, TimeUnit.SECONDS)));
-                                return;
-                            }
-                        } else {
-                            p.sendMessage(tl("ProjectRetile.Commands.Report.ForeverAlone"));
+    @CommandPermissions({ "projectretile.commands.report" })
+    @Command(aliases = { "report", "r", "ticket", "reportuser" }, usage = "<Player> <Reason ...>",
+             desc = "Reports a player to the staff", min = 2)
+    public static void onReport(CommandSender sender, CommandContext args) throws CommandException {
+        ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args.getString(0));
+        if(target != null) {
+            UUID senderUUID = ProjectRetile.getInstance().getCache().uuid(sender.getName());
+            UUID targetUUID = ProjectRetile.getInstance().getCache().uuid(target.getName());
+            if(senderUUID.compareTo(targetUUID) != 0) {
+                if(!Cooldown.getInstance().inCooldown(senderUUID)) {
+                    if(!target.hasPermission("projectretile.commands.report.bypass")) {
+                        Report report = new Report(senderUUID, targetUUID, args.getJoinedStrings(1), System.currentTimeMillis());
+                        try {
+                            ProjectRetile.getInstance().getApi().processReport(report);
+                        } catch (RetileAPIException ex) {
+                            if(!ex.getMessage().toLowerCase().contains("blacklist"))
+                                sender.sendMessage(tl("ProjectRetile.Commands.Report.Failure"));
                             return;
                         }
+                        sender.sendMessage(tl("ProjectRetile.Commands.Report.Success", target.getName(), report.getToken()));
+                        if(!sender.hasPermission("projectretile.cooldown.bypass")) {
+                            Cooldown.getInstance().start(senderUUID);
+                        }
                     } else {
-                        p.sendMessage(tl("ProjectRetile.Commands.Report.TargetUnknown"));
-                        return;
+                        sender.sendMessage(tl("ProjectRetile.Commands.Report.Bypass"));
                     }
+                } else {
+                    sender.sendMessage(tl("ProjectRetile.Commands.Report.Cooldown", Cooldown.getInstance().getRemaining(senderUUID, TimeUnit.SECONDS)));
                 }
             } else {
-                p.sendMessage(tl("ProjectRetile.General.NoPermission"));
-                return;
+                sender.sendMessage(tl("ProjectRetile.Commands.Report.ForeverAlone"));
             }
         } else {
-            sender.sendMessage(tl("ProjectRetile.General.PlayersPermitted"));
-            return;
+            sender.sendMessage(tl("ProjectRetile.Commands.Report.TargetUnknown"));
         }
-        sender.sendMessage(tl("ProjectRetile.Commands.Report.Syntax"));
     }
 
 }

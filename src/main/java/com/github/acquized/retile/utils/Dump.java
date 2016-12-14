@@ -131,7 +131,7 @@ public class Dump {
 
     public static class DBConfig {
 
-        Database database;
+        Database Database;
 
         public static class Database {
 

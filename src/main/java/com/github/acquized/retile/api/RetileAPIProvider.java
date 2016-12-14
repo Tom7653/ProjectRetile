@@ -111,9 +111,13 @@ public class RetileAPIProvider implements RetileAPI {
         return reports.toArray(new Report[reports.size()]);
     }
 
-    @Override
+    @Deprecated
     public void addReport(@NonNull Report report) throws RetileAPIException {
+        processReport(report);
+    }
 
+    @Override
+    public void processReport(@NonNull Report report) throws RetileAPIException {
         for(Object obj : ProjectRetile.getInstance().getBlacklist().getList("blacklist")) {
             String s = (String) obj;
             if((report.getReason().contains(s)) && (!ProxyServer.getInstance().getPlayer(report.getReporter()).hasPermission("projectretile.blacklist.bypass"))) {

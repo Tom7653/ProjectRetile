@@ -15,46 +15,30 @@
  */
 package com.github.acquized.retile.commands;
 
-import com.github.acquized.retile.ProjectRetile;
 import com.github.acquized.retile.notifications.Notifications;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
 import static com.github.acquized.retile.i18n.I18n.tl;
 
-public class ToggleCommand extends Command {
+public class ToggleCommand {
 
-    @SuppressWarnings("SuspiciousToArrayCall")
-    public ToggleCommand() {
-        super("togglereports", null, ProjectRetile.getInstance().getConfig().getList("Aliases.togglereports").toArray(new String[ProjectRetile.getInstance().getConfig().getList("Aliases.togglereports").size()]));
-    }
-
-    @Override
-    public void execute(CommandSender sender, String[] args) {
-        if(sender instanceof ProxiedPlayer) {
-            ProxiedPlayer p = (ProxiedPlayer) sender;
-            if((p.hasPermission("projectretile.commands.togglereports")) && (p.hasPermission("projectretile.report.receive"))) {
-                if(args.length == 0) {
-                    if(Notifications.getInstance().isReceiving(p)) {
-                        Notifications.getInstance().unsetReceiving(p);
-                        p.sendMessage(tl("ProjectRetile.Commands.Toggle.On"));
-                    } else {
-                        Notifications.getInstance().setReceiving(p);
-                        p.sendMessage(tl("ProjectRetile.Commands.Toggle.Off"));
-                    }
-                    return;
-                }
-            } else {
-                p.sendMessage(tl("ProjectRetile.General.NoPermission"));
-                return;
-            }
+    @CommandPermissions({ "projectretile.commands.togglereports", "projectretile.report.receive" })
+    @Command(aliases = { "togglereports", "toggle", "tr" },
+             desc = "Toggles receiving of incoming report messages", max = 0)
+    public static void onToggle(CommandSender sender, CommandContext args) throws CommandException {
+        if(Notifications.getInstance().isReceiving((ProxiedPlayer) sender)) {
+            Notifications.getInstance().unsetReceiving((ProxiedPlayer) sender);
+            sender.sendMessage(tl("ProjectRetile.Commands.Toggle.On"));
         } else {
-            sender.sendMessage(tl("ProjectRetile.General.PlayersPermitted"));
-            return;
+            Notifications.getInstance().setReceiving((ProxiedPlayer) sender);
+            sender.sendMessage(tl("ProjectRetile.Commands.Toggle.Off"));
         }
-        sender.sendMessage(tl("ProjectRetile.Commands.Toggle.Syntax"));
     }
 
 }
