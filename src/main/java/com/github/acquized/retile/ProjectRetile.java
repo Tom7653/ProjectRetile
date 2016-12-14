@@ -15,8 +15,6 @@
  */
 package com.github.acquized.retile;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -56,7 +54,6 @@ import com.sk89q.minecraft.util.commands.WrappedCommandException;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 
@@ -65,12 +62,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -146,22 +141,6 @@ public class ProjectRetile extends Plugin {
         log.info("ProjectRetile v{} has been enabled.", getDescription().getVersion());
         if(config.getBoolean("General.updater"))
             Updater.start();
-
-        log.info("--* DEBUG *-- List of commands registered: ");
-        try {
-            Field f = ProxyServer.getInstance().getPluginManager().getClass().getDeclaredField("commandsByPlugin");
-            f.setAccessible(true);
-            Multimap<Plugin, Command> commands = ArrayListMultimap.create();
-            commands = (Multimap<Plugin, Command>) f.get(commands);
-            for(Command c : commands.get(this)) {
-                log.info("CMD: /" + c.getName() + " - Perm: " + c.getPermission() + " - Alias: " + Arrays.toString(c.getAliases()));
-            }
-        } catch (NoSuchFieldException | IllegalAccessException ex) {
-            ex.printStackTrace();
-        }
-
-        log.info("--* DEBUG *-- List of commands registered DONE");
-
     }
 
     @Override
