@@ -19,8 +19,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public interface Database {
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.codecs.Codec;
+import org.owasp.esapi.codecs.OracleCodec;
 
+public interface Database {
+	static Codec SQL_CODEC = new OracleCodec();
+	
     void connect() throws SQLException;
     void disconnect() throws SQLException;
 
@@ -31,7 +36,10 @@ public interface Database {
 
     void update(String query);
     ResultSet query(String query);
-
+    default String encodeParameter(String parm){
+    	return ESAPI.encoder().encodeForSQL(SQL_CODEC, parm);
+    }
+    
     Connection getConnection() throws SQLException;
 
     /* TODO list for databases
