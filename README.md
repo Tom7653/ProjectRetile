@@ -1,3 +1,6 @@
+
+This project is once again being updated. An update is due soon.
+
 # ProjectRetile
 [![Circle CI](https://img.shields.io/circleci/project/Acquized/ProjectRetile.svg?maxAge=300&style=flat-square)](https://circleci.com/gh/Acquized/ProjectRetile)
 [![Version](https://img.shields.io/github/release/Acquized/ProjectRetile.svg?maxAge=2592000&style=flat-square)]()
